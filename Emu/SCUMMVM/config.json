@@ -1,0 +1,12 @@
+{
+    "label":"ScummVM",
+    "icon":"scummvm.png",
+    "extlist":"scummvm",
+    "background":"bg.png",
+    "themecolor":"FFFFFF",
+    "launch":"launch.sh",
+    "rompath":"../../Roms/SCUMMVM",
+    "imgpath":"../../Imgs/SCUMMVM",
+    "useswap":0,
+    "shortname":0
+}

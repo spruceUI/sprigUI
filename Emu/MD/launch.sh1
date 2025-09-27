@@ -1,0 +1,9 @@
+#!/bin/sh
+echo $0 $*
+#add old libtmenu.so PATH
+export LD_LIBRARY_PATH=./:./lib/:$LD_LIBRARY_PATH
+
+progdir=`dirname "$0"`
+homedir=`dirname "$1"`
+cd $progdir
+HOME=$homedir $progdir/PicoDrive "$1"

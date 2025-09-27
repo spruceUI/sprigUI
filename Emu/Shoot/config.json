@@ -1,0 +1,13 @@
+{
+"label":"Shoot",
+"icon":"./Shoot.png",
+"iconsel":"",
+"launch":"launch.sh",
+"rompath":"../../Roms/Shoot",
+"imgpath":"../../Imgs/Shoot",
+"gamelist":"../../Roms/Shoot/gamelist.xml",
+"useswap":1,
+"shortname":1,
+"hidebios":1,
+"extlist":"zip"
+}

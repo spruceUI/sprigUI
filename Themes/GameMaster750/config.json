@@ -1,0 +1,43 @@
+{
+    "name":"GameMaster750",
+    "title":{
+        "font":"wqy-microhei.ttc",
+        "size":32,
+        "color":"#FFFFFF"
+    },
+    "path":{
+        "font":"wqy-microhei.ttc",
+        "size":24,
+        "color":"#FFFFFF"
+    },
+    "hint":{
+        "font":"wqy-microhei.ttc",
+        "size":24,
+        "color":"#ABABAB"
+    },
+    "currentpage":{
+        "font":"HENB.TTF",
+        "size":24,
+        "color":"#ABABAB"
+    },
+    "total":{
+        "font":"HENB.TTF",
+        "size":24,
+        "color":"#FFFFFF"
+    },
+    "grid":{
+        "font":"wqy-microhei.ttc",
+        "fontascii":"DIN Condensed Bold.TTF",
+        "grid1x4":24,
+        "grid3x4":18,
+        "color":"#8F8F8F",
+        "selectedcolor":"#FFFFFF"       
+    },
+    "list":{
+        "font":"wqy-microhei.ttc",
+        "fontascii":"DIN Condensed Bold.TTF",
+        "size":24,
+        "color":"#FFFFFF",
+        "selectedcolor":"#FFFFFF"       
+    }    
+}   

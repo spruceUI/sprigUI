@@ -1,0 +1,26 @@
+{
+    "label":"GBC",
+    "icon":"gbc.png",
+    "iconsel":"",
+    "launch":"launch.sh",
+    "rompath":"../../Roms/GBC",
+    "imgpath":"../../Imgs/GB",
+    "useswap":0,
+    "shortname":0,
+    "hidebios":0,
+    "extlist":"gb|gbc|zip|GB|GBC",
+    "launchlist": [
+        {
+            "name": "GAMBATTE",
+            "launch": "launch.sh"
+        },
+        {
+            "name": "MGBA",
+            "launch": "launch1.sh"
+        },
+        {
+            "name": "DoubleCherryGB",
+            "launch": "launch2.sh"
+        }
+    ]
+}

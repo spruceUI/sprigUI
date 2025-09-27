@@ -1,0 +1,12 @@
+{
+"label":"snes9x2018",
+"icon":"snes9x2010.png",
+"iconsel":"",
+"launch":"launch.sh",
+"rompath":"../../Roms/SFC",
+"imgpath":"../../Imgs/SFC",
+"useswap":0,
+"shortname":0,
+"hidebios":1,
+"extlist":"smc|fig|sfc|gd3|gd7|dx2|bsx|swc|zip"
+}

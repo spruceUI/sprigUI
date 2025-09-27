@@ -1,0 +1,30 @@
+{
+"label":"GBA",
+"icon":"gba.png",
+"iconsel":"",
+"launch":"launch.sh",
+"rompath":"../../Roms/GBA",
+"imgpath":"../../Imgs/GBA",
+"useswap":0,
+"shortname":0,
+"hidebios":1,
+"extlist":"gba|agb|gbz|zip",
+"launchlist": [
+        {
+            "name": "GPSP",
+            "launch": "launch.sh"
+        },
+        {
+            "name": "GPSP Rumble",
+            "launch": "launch_rumble.sh"
+        },
+        {
+            "name": "MGBA",
+            "launch": "launch1.sh"
+        },
+        {
+            "name": "MGBA Rumble",
+            "launch": "launch1_rumble.sh"
+        }
+    ]
+}

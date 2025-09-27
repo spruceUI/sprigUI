@@ -1,0 +1,13 @@
+{
+"label":"开放平台 - PICO-8",
+"icon":"retro8.png",
+"iconsel":"",
+"launch":"launch.sh",
+"rompath":"../../Roms/PICO",
+"imgpath":"../../Imgs/PICO",
+"useswap":1,
+"shortname":0,
+"hidebios":0,
+"extlist":"p8",
+"noaudiofix":1
+}

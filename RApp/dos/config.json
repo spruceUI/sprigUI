@@ -1,0 +1,12 @@
+{
+"label":"DOSBOX",
+"icon":"dos.png",
+"iconsel":"dos_sel.png",
+"launch":"launch.sh",
+"rompath":"../../Roms/DOS",
+"imgpath":"../../Imgs/dos",
+"useswap":0,
+"shortname":0,
+"hidebios":0,
+"extlist":"exe|bat|zip"
+}

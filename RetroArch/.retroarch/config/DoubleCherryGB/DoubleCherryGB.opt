@@ -1,0 +1,8 @@
+dcgb_audio_output = "Game Boy #1"
+dcgb_emulated_gameboys = "1"
+dcgb_gblink_enable = "disabled"
+dcgb_number_of_local_screens = "1"
+dcgb_power_antenna_use_rumble = "Strong"
+dcgb_screen_placement = "splitscreen"
+dcgb_single_screen_mp = "all players"
+dcgbt_gblink_device = "4-player adapter"

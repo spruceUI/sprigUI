@@ -1,0 +1,23 @@
+#!/bin/sh
+echo $0 $*
+progdir=`dirname "$0"`
+RA_DIR=/mnt/SDCARD/RetroArch
+./cpufreq.sh
+
+#第一次运行 初始化时间文件
+if [ ! -f $progdir/currentTime.txt ] ;then
+	echo 1640966400 > $progdir/currentTime.txt
+fi
+#从时间文件中读取时间戳
+sTime=$(cat $progdir/currentTime.txt)
+#时间加上1小时
+sTime=$(($sTime + 3600))
+sTime="@${sTime}"
+#设置系统时间
+$(date +%s -s ${sTime})
+
+cd $RA_DIR/
+HOME=$RA_DIR/ $RA_DIR/retroarch -v -L $RA_DIR/.retroarch/cores/gpsp_libretro.so "$1"
+
+#保存当前时间到时间文件
+date +%s > $progdir/currentTime.txt

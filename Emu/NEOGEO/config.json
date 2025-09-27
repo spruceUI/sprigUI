@@ -1,0 +1,22 @@
+{
+"label":"NEOGEO",
+"icon":"neogeo.png",
+"iconsel":"",
+"launch":"launch.sh",
+"rompath":"../../Roms/NEOGEO",
+"imgpath":"../../Imgs/neogeo",
+"useswap":1,
+"shortname":1,
+"hidebios":1,
+"extlist":"zip",
+"launchlist": [
+        {
+            "name": "FBNEO",
+            "launch": "launch.sh"
+        },
+		{
+            "name": "FBNEO_PLUS",
+            "launch": "launch4.sh"
+        }
+	]
+}
