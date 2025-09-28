@@ -2,10 +2,10 @@
 		"label":	"ARCADE",
 		"show":	1
 	}, {
-		"label":	"DraStic",
+		"label":	"NDS",
 		"show":	1
 	}, {
-		"label":	"FC",
+		"label":	"NES",
 		"show":	1
 	}, {
 		"label":	"FFPLAY",
@@ -47,7 +47,7 @@
 		"label":	"PS",
 		"show":	1
 	}, {
-		"label":	"SFC",
+		"label":	"SNES",
 		"show":	1
 	}, {
 		"label":	"Shoot",
