@@ -1,0 +1,21 @@
+{
+	"vol":	16,
+	"keymap":	"L2,L,R2,R,X,A,B,Y",
+	"mute":	1,
+	"bgmvol":	8,
+	"brightness":	4,
+	"language":	"en.lang",
+	"hibernate":	0,
+	"lumination":	7,
+	"hue":	10,
+	"saturation":	10,
+	"contrast":	10,
+	"theme":	"/mnt/SDCARD/Themes/SPRUCE/",
+	"fontsize":	26,
+	"audiofix":	1,
+	"wifi":	1,
+	"usenetworktime":	1,
+	"24hourclock":	1,
+	"timezone":	"Asia/Shanghai",
+	"autopoweroff":	1
+}
