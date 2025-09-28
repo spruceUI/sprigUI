@@ -1,0 +1,10 @@
+vtpath = /dev/vc/2, fd = -1
+vtpath = /dev/tty2, fd = 6
+Current VT: 2
+32896248.000000 FB_VideoInit shadow_fb is 0
+SDL_GetVideoMode 640x480 32 -> 640x480 32
+SDL_SetVideoMode publicsurface 0x7fa20, shadowsurface (nil), videosurface 0x7fa20
+Double buf enabled 0, use SDL_UpdateRect when flip
+Directory "/mnt/SDCARD/Media/Books" does not exist
+SDL_CalculateBlitN blitfun idx is 2, bytesperpixel 4, blitfun is 0xb6cfda14, BlitN2N is 0xb6cfda14
+SDL_CalculateBlitN blitfun idx is 2, bytesperpixel 4, blitfun is 0xb6cfda14, BlitN2N is 0xb6cfda14

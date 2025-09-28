@@ -1,0 +1,6 @@
+{
+	"label":	"Clock",
+	"icon":	"/mnt/SDCARD/Icons/Default/app/clock.png",
+	"launch":	"launch.sh",
+	"description":	"Set the current time"
+}
