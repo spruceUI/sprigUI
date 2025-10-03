@@ -1,26 +1,53 @@
 {
-    "label":"GBC",
-    "icon":"gbc.png",
-    "iconsel":"",
-    "launch":"launch.sh",
-    "rompath":"../../Roms/GBC",
-    "imgpath":"../../Imgs/GB",
-    "useswap":0,
-    "shortname":0,
-    "hidebios":0,
-    "extlist":"gb|gbc|zip|GB|GBC",
-    "launchlist": [
-        {
-            "name": "GAMBATTE",
-            "launch": "launch.sh"
-        },
-        {
-            "name": "MGBA",
-            "launch": "launch1.sh"
-        },
-        {
-            "name": "DoubleCherryGB",
-            "launch": "launch2.sh"
-        }
-    ]
+  "label": "GBC",
+  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/gbc.png",
+  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/gbc.png",
+  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/gbc.png",
+  "background": "",
+  "themecolor": "FFB800",
+  "effectsh": "effect.sh",
+  "launch": "../.emu_setup/standard_launch.sh",
+  "rompathlist": [
+    {
+      "rompath": "../../Roms/GBC",
+      "imgpath": "../../Roms/GBC/Imgs"
+    },
+    {
+      "rompath": "../../../../media/sdcard1/Roms/GBC",
+      "imgpath": "../../../../media/sdcard1/Roms/GBC/Imgs"
+    }
+  ],
+  "rompath": "../../Roms/GBC",
+  "imgpath": "../../Roms/GBC/Imgs",
+  "gamelist": "../../Roms/GBC/miyoogamelist.xml",
+  "useswap": 0,
+  "shortname": 0,
+  "hidebios": 0,
+  "extlist": "gb|gbc|zip|7z|bin|dmg",
+  "launchlist": [
+    {
+      "name": "Add/Remove Favorite",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/toggle_favourite.sh"
+    },
+    {
+      "name": "Jump to random GameBoy Color game",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
+    },
+    {
+      "name": "Emu Core: (✓GAMBATTE)-mgba-tgbdual",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/core_switch.sh"
+    },
+    {
+      "name": "CPU: (✓SMART)-Perf-Max",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/cpu_switch.sh"
+    },
+    {
+      "name": "Save current launch settings as per-game override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/set_override.sh"
+    },
+    {
+      "name": "Remove per-game launch setting override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/remove_override.sh"
+    }
+  ]
 }

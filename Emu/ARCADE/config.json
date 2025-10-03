@@ -1,35 +1,53 @@
 {
-"label":"ARCADE",
-"icon":"arcade.png",
-"iconsel":"",
-"launch":"launch.sh",
-"rompath":"../../Roms/ARCADE",
-"imgpath":"../../Imgs/ARCADE",
-"useswap":1,
-"shortname":1,
-"hidebios":1,
-"extlist":"zip",
-"launchlist": [
-        {
-            "name": "FBNEO",
-            "launch": "launch.sh"
-        },
-				{
-            "name": "FBNEO_PLUS",
-            "launch": "launch4.sh"
-        },
-        {
-            "name": "FBA2012",
-            "launch": "launch1.sh"
-        },
-		{
-            "name": "MAME2003PLUS",
-            "launch": "launch2.sh"
-        },
-		{
-            "name": "MAME",
-            "launch": "launch3.sh"
-        }
-		
-	]
+  "label": "Arcade",
+  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/arcade.png",
+  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/arcade.png",
+  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/arcade.png",
+  "background": "",
+  "themecolor": "CD6155",
+  "effectsh": "effect.sh",
+  "launch": "../.emu_setup/standard_launch.sh",
+  "rompathlist": [
+    {
+      "rompath": "../../Roms/ARCADE",
+      "imgpath": "../../Roms/ARCADE/Imgs"
+    },
+    {
+      "rompath": "../../../../media/sdcard1/Roms/ARCADE",
+      "imgpath": "../../../../media/sdcard1/Roms/ARCADE/Imgs"
+    }
+  ],
+  "rompath": "../../Roms/ARCADE",
+  "imgpath": "../../Roms/ARCADE/Imgs",
+  "gamelist": "../../Roms/ARCADE/miyoogamelist.xml",
+  "useswap": 1,
+  "shortname": 1,
+  "hidebios": 1,
+  "extlist": "zip",
+  "launchlist": [
+    {
+      "name": "Add/Remove Favorite",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/toggle_favourite.sh"
+    },
+    {
+      "name": "Jump to random Arcade game",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
+    },
+    {
+      "name": "Emu Core: (✓FBNEO)-mame2003+-fbalpha2012",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/core_switch.sh"
+    },
+    {
+      "name": "CPU: (✓SMART)-Perf-Max",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/cpu_switch.sh"
+    },
+    {
+      "name": "Save current launch settings as per-game override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/set_override.sh"
+    },
+    {
+      "name": "Remove per-game launch setting override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/remove_override.sh"
+    }
+  ]
 }

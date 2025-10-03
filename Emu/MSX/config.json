@@ -1,0 +1,53 @@
+{
+  "label": "MSX",
+  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/msx.png",
+  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/msx.png",
+  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/msx.png",
+  "background": "",
+  "themecolor": "",
+  "effectsh": "",
+  "launch": "../.emu_setup/standard_launch.sh",
+  "rompathlist": [
+    {
+      "rompath": "../../Roms/MSX",
+      "imgpath": "../../Roms/MSX/Imgs"
+    },
+    {
+      "rompath": "../../../../media/sdcard1/Roms/MSX",
+      "imgpath": "../../../../media/sdcard1/Roms/MSX/Imgs"
+    }
+  ],
+  "rompath": "../../Roms/MSX",
+  "imgpath": "../../Roms/MSX/Imgs",
+  "gamelist": "../../Roms/MSX/miyoogamelist.xml",
+  "useswap": 1,
+  "shortname": 0,
+  "hidebios": 1,
+  "extlist": "zip|7z|rom|mx1|mx2|dsk|cas|m3u",
+  "launchlist": [
+    {
+      "name": "Add/Remove Favorite",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/toggle_favourite.sh"
+    },
+    {
+      "name": "Jump to random MSX game",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
+    },
+    {
+      "name": "Emu Core: (✓BLUEMSX)-fmsx",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/core_switch.sh"
+    },
+    {
+      "name": "CPU: (✓SMART)-Perf-Max",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/cpu_switch.sh"
+    },
+    {
+      "name": "Save current launch settings as per-game override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/set_override.sh"
+    },
+    {
+      "name": "Remove per-game launch setting override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/remove_override.sh"
+    }
+  ]
+}

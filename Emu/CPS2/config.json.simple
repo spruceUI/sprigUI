@@ -1,0 +1,32 @@
+{
+  "label": "CPS2",
+  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/cps2.png",
+  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/cps2.png",
+  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/cps2.png",
+  "background": "",
+  "themecolor":"FFFF00",
+  "effectsh":"effect.sh",
+  "launch": "../.emu_setup/standard_launch.sh",
+  "rompathlist": [
+    {"rompath": "../../Roms/CPS2",
+    "imgpath": "../../Roms/CPS2/Imgs"},
+    {"rompath": "../../../../media/sdcard1/Roms/CPS2",
+    "imgpath": "../../../../media/sdcard1/Roms/CPS2/Imgs"}],
+  "rompath": "../../Roms/CPS2",
+  "imgpath": "../../Roms/CPS2/Imgs",
+  "gamelist": "../../Roms/CPS2/miyoogamelist.xml",
+  "useswap": 1,
+  "shortname": 1,
+  "hidebios": 1,
+  "extlist": "zip|7z|cue",
+  "launchlist": [
+    {
+      "name": "Add/Remove Favorite",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/toggle_favourite.sh"
+    },
+    {
+      "name": "Jump to random CPS2 game",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
+    }
+  ]
+}

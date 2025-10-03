@@ -1,0 +1,33 @@
+{
+  "label": "NDS",
+  "icontop":"/mnt/SDCARD/Themes/SPRUCE/icontop/nds.png",
+  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/nds.png",
+  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/nds.png",
+  "background": "",
+  "themecolor":"FF8800",
+  "effectsh":"effect.sh",
+  "launch": "../.emu_setup/standard_launch.sh",
+  "rompathlist": [
+    {"rompath": "../../Roms/NDS",
+    "imgpath": "../../Roms/NDS/Imgs"},
+    {"rompath": "../../../../media/sdcard1/Roms/NDS",
+    "imgpath": "../../../../media/sdcard1/Roms/NDS/Imgs"}],
+  "rompath": "../../Roms/NDS",
+  "imgpath": "../../Roms/NDS/Imgs",
+  "gamelist": "../../Roms/NDS/miyoogamelist.xml",
+  "useswap": 1,
+  "shortname": 0,
+  "hidebios": 0,
+  "noaudiofix": 1,
+  "extlist": "nds|zip|7z|rar",
+  "launchlist": [
+    {
+      "name": "Add/Remove Favorite",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/toggle_favourite.sh"
+    },
+    {
+      "name": "Jump to random Nintendo DS game",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
+    }
+  ]
+}

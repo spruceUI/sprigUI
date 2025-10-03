@@ -1,7 +1,0 @@
-#!/bin/sh
-echo $0 $*
-RA_DIR=/mnt/SDCARD/App/RetroArch_standalone
-./cpufreq.sh
-cd $RA_DIR/
-export LD_LIBRARY_PATH=$RA_DIR:$LD_LIBRARY_PATH
-HOME=$RA_DIR/ $RA_DIR/retroarch -v -L $RA_DIR/.retroarch/cores/mednafen_wswan_libretro.so "$1"

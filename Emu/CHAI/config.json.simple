@@ -1,0 +1,32 @@
+{
+  "label": "ChaiLove",
+  "icontop":"/mnt/SDCARD/Themes/SPRUCE/icontop/chai.png",
+  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/chai.png",
+  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/chai.png",
+  "background": "",
+  "themecolor": "",
+  "effectsh": "",
+  "launch": "../.emu_setup/standard_launch.sh",
+  "rompathlist": [
+    {"rompath": "../../Roms/CHAI",
+    "imgpath": "../../Roms/CHAI/Imgs"},
+    {"rompath": "../../../../media/sdcard1/Roms/CHAI",
+    "imgpath": "../../../../media/sdcard1/Roms/CHAI/Imgs"}],
+  "rompath": "../../Roms/CHAI",
+  "imgpath": "../../Roms/CHAI/Imgs",
+  "gamelist": "../../Roms/CHAI/miyoogamelist.xml",
+  "useswap": 1,
+  "shortname": 0,
+  "hidebios": 1,
+  "extlist": "chailove",
+  "launchlist": [
+    {
+      "name": "Add/Remove Favorite",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/toggle_favourite.sh"
+    },
+    {
+      "name": "Jump to random ChaiLove game",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "label": "Sega 32X",
+  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/32x.png",
+  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/32X.png",
+  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/32X.png",
+  "background": "",
+  "themecolor": "",
+  "effectsh": "",
+  "launch": "../.emu_setup/standard_launch.sh",
+  "rompathlist": [
+    {
+      "rompath": "../../Roms/THIRTYTWOX",
+      "imgpath": "../../Roms/THIRTYTWOX/Imgs"
+    },
+    {
+      "rompath": "../../../../media/sdcard1/Roms/THIRTYTWOX",
+      "imgpath": "../../../../media/sdcard1/Roms/THIRTYTWOX/Imgs"
+    }
+  ],
+  "rompath": "../../Roms/THIRTYTWOX",
+  "imgpath": "../../Roms/THIRTYTWOX/Imgs",
+  "gamelist": "../../Roms/THIRTYTWOX/miyoogamelist.xml",
+  "useswap": 1,
+  "shortname": 0,
+  "hidebios": 0,
+  "extlist": "zip|7z|gen|smd|md|32x|bin|iso|sms|68k|chd",
+  "launchlist": [
+    {
+      "name": "Add/Remove Favorite",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/toggle_favourite.sh"
+    },
+    {
+      "name": "Jump to random Sega 32X game",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
+    },
+    {
+      "name": "CPU: (✓SMART)-Perf-Max",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/cpu_switch.sh"
+    },
+    {
+      "name": "Save current launch settings as per-game override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/set_override.sh"
+    },
+    {
+      "name": "Remove per-game launch setting override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/remove_override.sh"
+    }
+  ]
+}

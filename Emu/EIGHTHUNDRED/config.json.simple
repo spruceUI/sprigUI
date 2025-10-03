@@ -1,0 +1,32 @@
+{
+  "label": "Atari 800",
+  "icontop":"/mnt/SDCARD/Themes/SPRUCE/icontop/atari800.png",
+  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/atari800.png",
+  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/atari800.png",
+  "background": "",
+  "themecolor": "",
+  "effectsh": "",
+  "launch": "../.emu_setup/standard_launch.sh",
+  "rompathlist": [
+    {"rompath": "../../Roms/EIGHTHUNDRED",
+    "imgpath": "../../Roms/EIGHTHUNDRED/Imgs"},
+    {"rompath": "../../../../media/sdcard1/Roms/EIGHTHUNDRED",
+    "imgpath": "../../../../media/sdcard1/Roms/EIGHTHUNDRED/Imgs"}],
+  "rompath": "../../Roms/EIGHTHUNDRED",
+  "imgpath": "../../Roms/EIGHTHUNDRED/Imgs",
+  "gamelist": "../../Roms/EIGHTHUNDRED/miyoogamelist.xml",
+  "useswap": 1,
+  "shortname": 0,
+  "hidebios": 1,
+  "extlist": "zip|7z|xfd|atr|cdm|cas|bin|a52|atx|car|com|xex",
+  "launchlist": [
+    {
+      "name": "Add/Remove Favorite",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/toggle_favourite.sh"
+    },
+    {
+      "name": "Jump to random Atari 800 game",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
+    }
+  ]
+}

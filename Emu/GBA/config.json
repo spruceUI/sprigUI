@@ -1,30 +1,53 @@
 {
-"label":"GBA",
-"icon":"gba.png",
-"iconsel":"",
-"launch":"launch.sh",
-"rompath":"../../Roms/GBA",
-"imgpath":"../../Imgs/GBA",
-"useswap":0,
-"shortname":0,
-"hidebios":1,
-"extlist":"gba|agb|gbz|zip",
-"launchlist": [
-        {
-            "name": "GPSP",
-            "launch": "launch.sh"
-        },
-        {
-            "name": "GPSP Rumble",
-            "launch": "launch_rumble.sh"
-        },
-        {
-            "name": "MGBA",
-            "launch": "launch1.sh"
-        },
-        {
-            "name": "MGBA Rumble",
-            "launch": "launch1_rumble.sh"
-        }
-    ]
+  "label": "GBA",
+  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/gba.png",
+  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/gba.png",
+  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/gba.png",
+  "background": "",
+  "themecolor": "FF00FF",
+  "effectsh": "effect.sh",
+  "launch": "../.emu_setup/standard_launch.sh",
+  "rompathlist": [
+    {
+      "rompath": "../../Roms/GBA",
+      "imgpath": "../../Roms/GBA/Imgs"
+    },
+    {
+      "rompath": "../../../../media/sdcard1/Roms/GBA",
+      "imgpath": "../../../../media/sdcard1/Roms/GBA/Imgs"
+    }
+  ],
+  "rompath": "../../Roms/GBA",
+  "imgpath": "../../Roms/GBA/Imgs",
+  "gamelist": "../../Roms/GBA/miyoogamelist.xml",
+  "useswap": 1,
+  "shortname": 0,
+  "hidebios": 1,
+  "extlist": "gba|zip|7z|bin",
+  "launchlist": [
+    {
+      "name": "Add/Remove Favorite",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/toggle_favourite.sh"
+    },
+    {
+      "name": "Jump to random GameBoy Advance game",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
+    },
+    {
+      "name": "Emu Core: (✓MGBA)-gpsp",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/core_switch.sh"
+    },
+    {
+      "name": "CPU: (✓SMART)-Perf-Max",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/cpu_switch.sh"
+    },
+    {
+      "name": "Save current launch settings as per-game override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/set_override.sh"
+    },
+    {
+      "name": "Remove per-game launch setting override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/remove_override.sh"
+    }
+  ]
 }

@@ -1,12 +1,49 @@
 {
-"label":"PCE",
-"icon":"pce.png",
-"iconsel":"",
-"launch":"launch.sh",
-"rompath":"../../Roms/PCE",
-"imgpath":"../../Imgs/PCE",
-"useswap":0,
-"shortname":0,
-"hidebios":1,
-"extlist":"pce|cue|bin|chd|zip"
+  "label": "TG-16",
+  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/pce.png",
+  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/pce.png",
+  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/pce.png",
+  "background": "",
+  "themecolor": "EA483F",
+  "effectsh": "effect.sh",
+  "launch": "../.emu_setup/standard_launch.sh",
+  "rompathlist": [
+    {
+      "rompath": "../../Roms/PCE",
+      "imgpath": "../../Roms/PCE/Imgs"
+    },
+    {
+      "rompath": "../../../../media/sdcard1/Roms/PCE",
+      "imgpath": "../../../../media/sdcard1/Roms/PCE/Imgs"
+    }
+  ],
+  "rompath": "../../Roms/PCE",
+  "imgpath": "../../Roms/PCE/Imgs",
+  "gamelist": "../../Roms/PCE/miyoogamelist.xml",
+  "useswap": 1,
+  "shortname": 0,
+  "hidebios": 0,
+  "extlist": "pce|zip|7z|ccd|iso|img|chd|cue",
+  "launchlist": [
+    {
+      "name": "Add/Remove Favorite",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/toggle_favourite.sh"
+    },
+    {
+      "name": "Jump to random TG16/PCE game",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
+    },
+    {
+      "name": "CPU: (✓SMART)-Perf-Max",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/cpu_switch.sh"
+    },
+    {
+      "name": "Save current launch settings as per-game override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/set_override.sh"
+    },
+    {
+      "name": "Remove per-game launch setting override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/remove_override.sh"
+    }
+  ]
 }

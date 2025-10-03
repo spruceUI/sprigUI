@@ -1,0 +1,32 @@
+{
+  "label": "WndrSwan",
+  "icontop":"/mnt/SDCARD/Themes/SPRUCE/icontop/ws.png",
+  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/ws.png",
+  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/ws.png",
+  "background": "",
+  "themecolor": "",
+  "effectsh": "",
+  "launch": "../.emu_setup/standard_launch.sh",
+  "rompathlist": [
+    {"rompath": "../../Roms/WS",
+    "imgpath": "../../Roms/WS/Imgs"},
+    {"rompath": "../../../../media/sdcard1/Roms/WS",
+    "imgpath": "../../../../media/sdcard1/Roms/WS/Imgs"}],
+  "rompath": "../../Roms/WS",
+  "imgpath": "../../Roms/WS/Imgs",
+  "gamelist": "../../Roms/WS/miyoogamelist.xml",
+  "useswap": 1,
+  "shortname": 0,
+  "hidebios": 1,
+  "extlist": "ws|wsc|zip|7z|pc2",
+  "launchlist": [
+    {
+      "name": "Add/Remove Favorite",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/toggle_favourite.sh"
+    },
+    {
+      "name": "Select Random WonderSwan Game",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
+    }
+  ]
+}

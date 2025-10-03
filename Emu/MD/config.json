@@ -1,22 +1,53 @@
 {
-"label":"MD",
-"icon":"md.png",
-"iconsel":"",
-"launch":"launch.sh",
-"rompath":"../../Roms/MD",
-"imgpath":"../../Imgs/MD",
-"useswap":0,
-"shortname":0,
-"hidebios":0,
-"extlist":"gen|md|smd|32x|zip|bin|gg",
-    "launchlist": [
-        {
-            "name": "GenesisPlusGx",
-            "launch": "launch.sh"
-        },
-        {
-            "name": "Picodriver",
-            "launch": "launch1.sh"
-        }
-    ]
+  "label": "Genesis",
+  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/md.png",
+  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/md.png",
+  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/md.png",
+  "background": "",
+  "themecolor": "0088CF",
+  "effectsh": "effect.sh",
+  "launch": "../.emu_setup/standard_launch.sh",
+  "rompathlist": [
+    {
+      "rompath": "../../Roms/MD",
+      "imgpath": "../../Roms/MD/Imgs"
+    },
+    {
+      "rompath": "../../../../media/sdcard1/Roms/MD",
+      "imgpath": "../../../../media/sdcard1/Roms/MD/Imgs"
+    }
+  ],
+  "rompath": "../../Roms/MD",
+  "imgpath": "../../Roms/MD/Imgs",
+  "gamelist": "../../Roms/MD/miyoogamelist.xml",
+  "useswap": 1,
+  "shortname": 0,
+  "hidebios": 0,
+  "extlist": "zip|7z|gen|smd|md|32x|bin|iso|sms|68k|chd",
+  "launchlist": [
+    {
+      "name": "Add/Remove Favorite",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/toggle_favourite.sh"
+    },
+    {
+      "name": "Jump to random Genesis/MD game",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
+    },
+    {
+      "name": "Emu Core: (✓PICODRIVE)-genesis+gx",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/core_switch.sh"
+    },
+    {
+      "name": "CPU: (✓SMART)-Perf-Max",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/cpu_switch.sh"
+    },
+    {
+      "name": "Save current launch settings as per-game override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/set_override.sh"
+    },
+    {
+      "name": "Remove per-game launch setting override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/remove_override.sh"
+    }
+  ]
 }

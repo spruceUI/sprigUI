@@ -1,0 +1,49 @@
+{
+  "label": "Fake08",
+  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/pico.png",
+  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/pico.png",
+  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/pico.png",
+  "background": "",
+  "themecolor": "00FF88",
+  "effectsh": "effect.sh",
+  "launch": "../.emu_setup/standard_launch.sh",
+  "rompathlist": [
+    {
+      "rompath": "../../Roms/FAKE08",
+      "imgpath": "../../Roms/FAKE08/Imgs"
+    },
+    {
+      "rompath": "../../../../media/sdcard1/Roms/FAKE08",
+      "imgpath": "../../../../media/sdcard1/Roms/FAKE08/Imgs"
+    }
+  ],
+  "rompath": "../../Roms/FAKE08",
+  "imgpath": "../../Roms/FAKE08/Imgs",
+  "gamelist": "../../Roms/FAKE08/miyoogamelist.xml",
+  "useswap": 1,
+  "shortname": 0,
+  "hidebios": 0,
+  "extlist": "p8|png",
+  "launchlist": [
+    {
+      "name": "Add/Remove Favorite",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/toggle_favourite.sh"
+    },
+    {
+      "name": "Jump to random Fake-08 game",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
+    },
+    {
+      "name": "CPU: (✓SMART)-Perf-Max",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/cpu_switch.sh"
+    },
+    {
+      "name": "Save current launch settings as per-game override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/set_override.sh"
+    },
+    {
+      "name": "Remove per-game launch setting override",
+      "launch": "/mnt/SDCARD/Emu/.emu_setup/remove_override.sh"
+    }
+  ]
+}
