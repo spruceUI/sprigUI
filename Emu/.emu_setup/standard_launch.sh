@@ -63,11 +63,9 @@ set_cpu_mode() {
 }
 
 run_drastic() {
-	CUST_LOGO=0
-	CUST_CPUCLOCK=1
-	USE_752x560_RES=0
 
-	mydir=`dirname "$0"`
+	CUST_CPUCLOCK=1
+	mydir=/mnt/SDCARD/Emu/NDS
 
 	cd $mydir
 	if [ ! -f "/tmp/.show_hotkeys" ]; then
@@ -82,25 +80,8 @@ run_drastic() {
 	export SDL_AUDIODRIVER=mmiyoo
 	export EGL_VIDEODRIVER=mmiyoo
 
-	if [ -f /mnt/SDCARD/.tmp_update/script/stop_audioserver.sh ]; then
-		/mnt/SDCARD/.tmp_update/script/stop_audioserver.sh
-	else
-		killall audioserver
-		killall audioserver.mod
-	fi
-
-	if [  -d "/customer/app/skin_large" ]; then
-		USE_752x560_RES=1
-	fi
-
-	if [ "$USE_752x560_RES" == "1" ]; then
-		fbset -g 752 560 752 1120 32
-	fi
-
-	cd $mydir
-	if [ "$CUST_LOGO" == "1" ]; then
-		./png2raw
-	fi
+	killall audioserver
+	killall audioserver.mod
 
 	sv=`cat /proc/sys/vm/swappiness`
 
@@ -117,14 +98,6 @@ run_drastic() {
 	sync
 
 	echo $sv > /proc/sys/vm/swappiness
-
-	if [  -d "/customer/app/skin_large" ]; then
-		USE_752x560_RES=0
-	fi
-
-	if [ "$USE_752x560_RES" == "1" ]; then
-		fbset -g 640 480 640 960 32
-	fi
 }
 
 run_openbor() {
