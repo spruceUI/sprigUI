@@ -5,7 +5,6 @@
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/gg.png",
   "background": "",
   "themecolor": "FFFFFF",
-  "effectsh": "effect.sh",
   "launch": "../.emu_setup/standard_launch.sh",
   "rompathlist": [
     {
