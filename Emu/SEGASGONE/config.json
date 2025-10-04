@@ -3,7 +3,6 @@
   "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/segasgone.png",
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/segasgone.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/segasgone.png",
-  "background": "",
   "themecolor": "",
   "launch": "../.emu_setup/standard_launch.sh",
   "rompathlist": [

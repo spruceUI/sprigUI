@@ -3,7 +3,6 @@
   "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/32x.png",
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/32X.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/32X.png",
-  "background": "",
   "themecolor": "",
   "launch": "../.emu_setup/standard_launch.sh",
   "rompathlist": [

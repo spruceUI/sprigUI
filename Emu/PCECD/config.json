@@ -3,7 +3,6 @@
   "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/pcecd.png",
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/pcecd.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/pcecd.png",
-  "background": "",
   "themecolor": "",
   "launch": "../.emu_setup/standard_launch.sh",
   "rompathlist": [
