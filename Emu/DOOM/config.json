@@ -1,19 +1,8 @@
 {
   "label": "DOOM",
-  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/doom.png",
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/doom.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/doom.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompathlist": [
-    {
-      "rompath": "../../Roms/DOOM",
-      "imgpath": "../../Roms/DOOM/Imgs"
-    },
-    {
-      "rompath": "../../../../media/sdcard1/Roms/DOOM",
-      "imgpath": "../../../../media/sdcard1/Roms/DOOM/Imgs"
-    }
-  ],
   "rompath": "../../Roms/DOOM",
   "imgpath": "../../Roms/DOOM/Imgs",
   "gamelist": "../../Roms/DOOM/miyoogamelist.xml",

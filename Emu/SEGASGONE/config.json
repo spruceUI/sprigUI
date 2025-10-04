@@ -1,19 +1,8 @@
 {
   "label": "SG-1000",
-  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/segasgone.png",
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/segasgone.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/segasgone.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompathlist": [
-    {
-      "rompath": "../../Roms/SEGASGONE",
-      "imgpath": "../../Roms/SEGASGONE/Imgs"
-    },
-    {
-      "rompath": "../../../../media/sdcard1/Roms/SEGASGONE",
-      "imgpath": "../../../../media/sdcard1/Roms/SEGASGONE/Imgs"
-    }
-  ],
   "rompath": "../../Roms/SEGASGONE",
   "imgpath": "../../Roms/SEGASGONE/Imgs",
   "gamelist": "../../Roms/SEGASGONE/miyoogamelist.xml",

@@ -1,19 +1,8 @@
 {
   "label": "Sega CD",
-  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/segacd.png",
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/segacd.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/segacd.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompathlist": [
-    {
-      "rompath": "../../Roms/SEGACD",
-      "imgpath": "../../Roms/SEGACD/Imgs"
-    },
-    {
-      "rompath": "../../../../media/sdcard1/Roms/SEGACD",
-      "imgpath": "../../../../media/sdcard1/Roms/SEGACD/Imgs"
-    }
-  ],
   "rompath": "../../Roms/SEGACD",
   "imgpath": "../../Roms/SEGACD/Imgs",
   "gamelist": "../../Roms/SEGACD/miyoogamelist.xml",

@@ -1,19 +1,8 @@
 {
   "label": "NGP",
-  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/ngp.png",
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/ngp.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/ngp.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompathlist": [
-    {
-      "rompath": "../../Roms/NGP",
-      "imgpath": "../../Roms/NGP/Imgs"
-    },
-    {
-      "rompath": "../../../../media/sdcard1/Roms/NGP",
-      "imgpath": "../../../../media/sdcard1/Roms/NGP/Imgs"
-    }
-  ],
   "rompath": "../../Roms/NGP",
   "imgpath": "../../Roms/NGP/Imgs",
   "gamelist": "../../Roms/NGP/miyoogamelist.xml",

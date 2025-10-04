@@ -1,19 +1,8 @@
 {
   "label": "Atari Lynx",
-  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/lynx.png",
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/lynx.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/lynx.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompathlist": [
-    {
-      "rompath": "../../Roms/LYNX",
-      "imgpath": "../../Roms/LYNX/Imgs"
-    },
-    {
-      "rompath": "../../../../media/sdcard1/Roms/LYNX",
-      "imgpath": "../../../../media/sdcard1/Roms/LYNX/Imgs"
-    }
-  ],
   "rompath": "../../Roms/LYNX",
   "imgpath": "../../Roms/LYNX/Imgs",
   "gamelist": "../../Roms/LYNX/miyoogamelist.xml",

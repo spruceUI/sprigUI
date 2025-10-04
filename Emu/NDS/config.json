@@ -1,19 +1,8 @@
 {
   "label": "NDS",
-  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/nds.png",
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/nds.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/nds.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompathlist": [
-    {
-      "rompath": "../../Roms/NDS",
-      "imgpath": "../../Roms/NDS/Imgs"
-    },
-    {
-      "rompath": "../../../../media/sdcard1/Roms/NDS",
-      "imgpath": "../../../../media/sdcard1/Roms/NDS/Imgs"
-    }
-  ],
   "rompath": "../../Roms/NDS",
   "imgpath": "../../Roms/NDS/Imgs",
   "gamelist": "../../Roms/NDS/miyoogamelist.xml",
@@ -27,10 +16,6 @@
     {
       "name": "Jump to random Nintendo DS game",
       "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
-    },
-    {
-      "name": "Emu Core: (✓TRNGAJE)-steward-original",
-      "launch": "/mnt/SDCARD/Emu/.emu_setup/core_switch.sh"
     },
     {
       "name": "CPU: (✓SMART)-Perf-Max",

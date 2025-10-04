@@ -1,19 +1,8 @@
 {
   "label": "Arcade",
-  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/arcade.png",
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/arcade.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/arcade.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompathlist": [
-    {
-      "rompath": "../../Roms/ARCADE",
-      "imgpath": "../../Roms/ARCADE/Imgs"
-    },
-    {
-      "rompath": "../../../../media/sdcard1/Roms/ARCADE",
-      "imgpath": "../../../../media/sdcard1/Roms/ARCADE/Imgs"
-    }
-  ],
   "rompath": "../../Roms/ARCADE",
   "imgpath": "../../Roms/ARCADE/Imgs",
   "gamelist": "../../Roms/ARCADE/miyoogamelist.xml",

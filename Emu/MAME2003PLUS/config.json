@@ -1,19 +1,8 @@
 {
   "label": "MAME 03+",
-  "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/mame.png",
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/mame.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/mame.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompathlist": [
-    {
-      "rompath": "../../Roms/MAME2003PLUS",
-      "imgpath": "../../Roms/MAME2003PLUS/Imgs"
-    },
-    {
-      "rompath": "../../../../media/sdcard1/Roms/MAME2003PLUS",
-      "imgpath": "../../../../media/sdcard1/Roms/MAME2003PLUS/Imgs"
-    }
-  ],
   "rompath": "../../Roms/MAME2003PLUS",
   "imgpath": "../../Roms/MAME2003PLUS/Imgs",
   "gamelist": "../../Roms/MAME2003PLUS/miyoogamelist.xml",
