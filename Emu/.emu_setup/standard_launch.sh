@@ -44,16 +44,8 @@ import_launch_options() {
 }
 
 set_cpu_mode() {
-	if [ "$MODE" = "overclock" ]; then
-		if [ "$EMU_NAME" = "NDS" ]; then
-			( sleep 33 && set_overclock ) &
-		else
-			set_overclock
-		fi
-	fi
-
 	if [ "$MODE" != "overclock" ] && [ "$MODE" != "performance" ]; then
-		/mnt/SDCARD/spruce/scripts/enforceSmartCPU.sh &
+		/mnt/SDCARD/sprig/enforceSmartCPU.sh &
 	fi
 }
 
@@ -168,16 +160,6 @@ run_drastic() {
 		[ -d "$EMU_DIR/backup" ] && mv "$EMU_DIR/backup" "$EMU_DIR/backup-64"
 	fi
 	sync
-}
-
-load_drastic_configs() {
-	DS_DIR="/mnt/SDCARD/Emu/NDS/config"
-	cp -f "$DS_DIR/drastic-$PLATFORM.cfg" "$DS_DIR/drastic.cfg"
-}
-
-save_drastic_configs() {
-	DS_DIR="/mnt/SDCARD/Emu/NDS/config"
-	cp -f "$DS_DIR/drastic.cfg" "$DS_DIR/drastic-$PLATFORM.cfg"
 }
 
 run_openbor() {
@@ -432,9 +414,7 @@ case $EMU_NAME in
 		run_ffplay
 		;;
 	"NDS")
-		load_drastic_configs
 		run_drastic
-		save_drastic_configs
 		;;
 	"OPENBOR")
 		run_openbor
@@ -447,9 +427,7 @@ case $EMU_NAME in
 		run_port
 		;;
 	*)
-		ready_architecture_dependent_states
 		run_retroarch
-		stash_architecture_dependent_states
 		;;
 esac
 
