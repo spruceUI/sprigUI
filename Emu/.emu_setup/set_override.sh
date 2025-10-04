@@ -2,7 +2,7 @@
 
 ##### DEFINE BASE VARIABLES #####
 
-. /mnt/SDCARD/spruce/scripts/helperFunctions.sh
+. /mnt/SDCARD/sprig/helperFunctions.sh
 log_message "--- Setting per-game launch options ---"
 
 EMU_NAME="$(echo "$1" | cut -d'/' -f5)"

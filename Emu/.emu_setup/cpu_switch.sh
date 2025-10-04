@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /mnt/SDCARD/spruce/scripts/helperFunctions.sh
+. /mnt/SDCARD/sprig/helperFunctions.sh
 EMU_NAME="$(echo "$1" | cut -d'/' -f5)"
 CONFIG="/mnt/SDCARD/Emu/${EMU_NAME}/config.json"
 DEF_OPT="/mnt/SDCARD/Emu/.emu_setup/defaults/${EMU_NAME}.opt"

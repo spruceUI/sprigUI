@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /mnt/SDCARD/spruce/scripts/helperFunctions.sh
+. /mnt/SDCARD/sprig/helperFunctions.sh
 
 ICON_PATH="/mnt/SDCARD/Themes/SPRUCE/icons/app/gamelist.png"
 ROMS_DIR="/mnt/SDCARD/Roms"
