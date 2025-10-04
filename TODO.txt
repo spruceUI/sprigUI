@@ -17,3 +17,7 @@ Emu stuff:
 - test and/or compile cores
 
 - clean up overlays and filters
+
+- remove override logic; take advantage of Roms/deflaunch.json instead; OR, nuke deflaunch frequently
+
+- DS is broken I guess lol
