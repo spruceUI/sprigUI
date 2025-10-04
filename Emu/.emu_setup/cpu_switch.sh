@@ -1,7 +1,6 @@
 #!/bin/sh
 
 . /mnt/SDCARD/spruce/scripts/helperFunctions.sh
-[ "$PLATFORM" = "SmartPro" ] && BG="/mnt/SDCARD/spruce/imgs/bg_tree_wide.png" || BG="/mnt/SDCARD/spruce/imgs/bg_tree.png"
 EMU_NAME="$(echo "$1" | cut -d'/' -f5)"
 CONFIG="/mnt/SDCARD/Emu/${EMU_NAME}/config.json"
 DEF_OPT="/mnt/SDCARD/Emu/.emu_setup/defaults/${EMU_NAME}.opt"
@@ -26,42 +25,18 @@ fi
 
 . "$SYS_OPT"
 
-case "$EMU_NAME" in
-
-	"DC" | "SATURN" )
-		if [ "$MODE" = "performance" ]; then
-			NEW_MODE="overclock"
-			NEW_DISPLAY="Perf-(✓MAX)"
-
-		else # current mode is overclock
-			NEW_MODE="performance"
-			NEW_DISPLAY="(✓PERF)-Max"
-		fi
-	;;
-
-	*)
 		if [ "$MODE" = "smart" ]; then
 			NEW_MODE="performance"
-			NEW_DISPLAY="Smart-(✓PERF)-Max"
+			NEW_DISPLAY="Smart-(✓PERF)"
 
-		elif [ "$MODE" = "performance" ]; then
+		else # [ "$MODE" = "performance" ]; then
 			NEW_MODE="overclock"
-			NEW_DISPLAY="Smart-Perf-(✓MAX)"
-
-		else # current mode is overclock
-			NEW_MODE="smart"
-			NEW_DISPLAY="(✓SMART)-Perf-Max"
+			NEW_DISPLAY="(✓SMART)-Perf"
 		fi
-	;;
-
-esac
 
 log_message "cpu_switch.sh: changing cpu mode for $EMU_NAME from $MODE to $NEW_MODE"
-
-display -i "$BG" -t "CPU Mode changed to $NEW_MODE"
 
 sed -i "s|\"CPU:.*\"|\"CPU: $NEW_DISPLAY\"|g" "$CONFIG"
 sed -i "s|MODE=.*|MODE=\"$NEW_MODE\"|g" "$SYS_OPT"
 
-sleep 2
-display_kill
+sleep 1

@@ -18,7 +18,7 @@
       "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
     },
     {
-      "name": "CPU: (✓SMART)-Perf-Max",
+      "name": "CPU: (✓SMART)-Perf",
       "launch": "/mnt/SDCARD/Emu/.emu_setup/cpu_switch.sh"
     },
     {
