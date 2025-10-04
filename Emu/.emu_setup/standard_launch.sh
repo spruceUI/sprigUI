@@ -52,21 +52,14 @@ set_cpu_mode() {
 
 ##### EMULATOR LAUNCH FUNCTIONS #####
 
-run_ffplay() {
-	export HOME=$EMU_DIR
-	cd $EMU_DIR
-	if [ "$PLATFORM" = "A30" ]; then
-		export PATH="$EMU_DIR"/bin:"$PATH"
-		export LD_LIBRARY_PATH="$EMU_DIR"/libs:/usr/miyoo/lib:/usr/lib:"$LD_LIBRARY_PATH"
-		ffplay -vf transpose=2 -fs -i "$ROM_FILE" > ffplay.log 2>&1
-	else
-		export PATH="$EMU_DIR"/bin64:"$PATH"
-		export LD_LIBRARY_PATH="$LD_LIBRARY_PATH":"$EMU_DIR"/lib64
-		/mnt/SDCARD/spruce/bin64/gptokeyb -k "ffplay" -c "./bin64/ffplay.gptk" &
-		sleep 1
-		ffplay -x $DISPLAY_WIDTH -y $DISPLAY_HEIGHT -fs -i "$ROM_FILE" > ffplay.log 2>&1 # trimui devices crash after about 30 seconds when not outputting to a log???
-		kill -9 "$(pidof gptokeyb)"
-	fi
+	run_ffplay() {
+	mydir=`dirname "$0"`
+	export HOME=$mydir
+	export PATH="$mydir:$PATH"
+	export LD_LIBRARY_PATH="$mydir/libs:$LD_LIBRARY_PATH"
+
+	cd $mydir
+	ffplay -vf "hflip,vflip" -i "$1"
 }
 
 run_drastic() {
@@ -261,19 +254,8 @@ is_retroarch_port() {
     fi
 }
 
-set_port_mode() {
-    rm "/mnt/SDCARD/Persistent/portmaster/PortMaster/gamecontrollerdb.txt"
-    if [ "$PORT_CONTROL" = "X360" ]; then
-        cp "/mnt/SDCARD/Emu/PORTS/gamecontrollerdb_360.txt" "/mnt/SDCARD/Persistent/portmaster/PortMaster/gamecontrollerdb.txt"
-    else
-        cp "/mnt/SDCARD/Emu/PORTS/gamecontrollerdb_nintendo.txt" "/mnt/SDCARD/Persistent/portmaster/PortMaster/gamecontrollerdb.txt"
-    fi
-}
-
 run_port() {
 	if [ "$PLATFORM" = "Flip" ] || [ "$PLATFORM" = "Brick" ]; then
-        /mnt/SDCARD/spruce/flip/bind-new-libmali.sh
-        set_port_mode
 
         is_retroarch_port
         if [[ $? -eq 1 ]]; then
