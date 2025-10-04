@@ -69,13 +69,6 @@ run_ffplay() {
 	fi
 }
 
-function kill_runner() {
-    PID=`pidof runner`
-    if [ "$PID" != "" ]; then
-        kill -9 $PID
-    fi
-}
-
 run_drastic() {
 	CUST_LOGO=0
 	CUST_CPUCLOCK=1
@@ -142,33 +135,34 @@ run_drastic() {
 }
 
 run_openbor() {
-	export HOME=$EMU_DIR
-	cd $HOME
-	if [ "$PLATFORM" = "Brick" ]; then
-		./OpenBOR_Brick "$ROM_FILE"
-	elif [ "$PLATFORM" = "Flip" ]; then
-		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME
-		./OpenBOR_Flip "$ROM_FILE"
-	else # assume A30
-		export LD_LIBRARY_PATH=lib:/usr/miyoo/lib:/usr/lib
-		if [ "$GAME" = "Final Fight LNS.pak" ]; then
-			./OpenBOR_mod "$ROM_FILE"
-		else
-			./OpenBOR_new "$ROM_FILE"
-		fi
+	mydir=`dirname "$0"`
+	mypak=`basename "$1"`
+	fbset -g 640 480 640 960 32
+	export HOME=$mydir
+	export PATH=$mydir:$PATH
+	export LD_LIBRARY_PATH=$mydir/lib:$LD_LIBRARY_PATH
+	export SDL_VIDEODRIVER=mmiyoo
+	export SDL_AUDIODRIVER=mmiyoo
+	echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+
+	if [ -f /mnt/SDCARD/.tmp_update/script/stop_audioserver.sh ]; then
+		/mnt/SDCARD/.tmp_update/script/stop_audioserver.sh
+	else
+		killall audioserver
+		killall audioserver.mod
+	fi
+	
+	cd $mydir
+	if [ "$mypak" == "Final Fight LNS.pak" ]; then
+		./OpenBOR_mod "$1"
+	else
+		./OpenBOR_new "$1"
 	fi
 	sync
+	fbset -g 752 560 752 1120 32
 }
 
 run_pico8() {
-    # send signal USR2 to joystickinput to switch to KEYBOARD MODE
-	# this allows joystick to be used as DPAD in MainUI
-	killall -q -USR2 joystickinput
-
-	# set 64-bit wget for BBS
-	if ! [ "$PLATFORM" = "A30" ]; then
-		WGET_PATH="$HOME"/bin64:
-	fi
 
 	export HOME="$EMU_DIR"
 	export PATH=$WGET_PATH"$HOME"/bin:$PATH:"/mnt/SDCARD/BIOS"
@@ -201,9 +195,6 @@ run_pico8() {
 		$PICO8_BINARY -width $DISPLAY_WIDTH -height $DISPLAY_HEIGHT -scancodes -run "$ROM_FILE" $SCALING
 	fi
 	sync
-
-	# send signal USR1 to joystickinput to switch to ANALOG MODE
-	killall -q -USR1 joystickinput
 }
 
 load_pico8_control_profile() {
@@ -311,57 +302,16 @@ run_port() {
 
 run_retroarch() {
 
-	case "$PLATFORM" in
-		"Brick" | "SmartPro" )
-			export RA_BIN="ra64.trimui_$PLATFORM"
-			if [ "$CORE" = "uae4arm" ]; then
-				export LD_LIBRARY_PATH=$EMU_DIR:$LD_LIBRARY_PATH
-			elif [ "$CORE" = "genesis_plus_gx" ] && [ "$PLATFORM" = "SmartPro" ] && \
-				setting_get "genesis_plus_gx_wide"; then
-				CORE="genesis_plus_gx_wide"
-			fi
-			# TODO: remove this once profile is set up
-			export LD_LIBRARY_PATH=$EMU_DIR/lib64:$LD_LIBRARY_PATH
-		;;
-		"Flip" )
-			if [ "$CORE" = "yabasanshiro" ]; then
-				# "Error(s): /usr/miyoo/lib/libtmenu.so: undefined symbol: GetKeyShm" if you try to use non-Miyoo RA for this core
-				export RA_BIN="ra64.miyoo"
-			elif setting_get "expertRA" || [ "$CORE" = "km_parallel_n64_xtreme_amped_turbo" ]; then
-				export RA_BIN="retroarch-flip"
-			else
-				export RA_BIN="ra64.miyoo"
-			fi
-			if [ "$CORE" = "easyrpg" ]; then
-				export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$EMU_DIR/lib-Flip
-			elif [ "$CORE" = "yabasanshiro" ]; then
-				export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$EMU_DIR/lib64
-			fi
-		;;
-		"A30" )
-			# handle different version of ParaLLEl N64 core and flycast xtreme core for A30
-			if [ "$CORE" = "parallel_n64" ]; then
-				CORE="km_parallel_n64_xtreme_amped_turbo"
-			elif [ "$CORE" = "flycast_xtreme" ]; then
-				CORE="km_flycast_xtreme"
-			fi
-
-			if setting_get "expertRA" || [ "$CORE" = "km_parallel_n64_xtreme_amped_turbo" ]; then
-				export RA_BIN="retroarch"
-			else
-				export RA_BIN="ra32.miyoo"
-			fi
-		;;
-	esac
+	if setting_get "expertRA"; then
+		export RA_BIN="retroarch"
+	else
+		export RA_BIN="ra32.ss"
+	fi
 
 	RA_DIR="/mnt/SDCARD/RetroArch"
 	cd "$RA_DIR"
 
-	if [ "$PLATFORM" = "A30" ]; then
-		CORE_DIR="$RA_DIR/.retroarch/cores"
-	else # 64-bit device
-		CORE_DIR="$RA_DIR/.retroarch/cores64"
-	fi
+	CORE_DIR="$RA_DIR/.retroarch/cores"
 
 	if [ -f "$EMU_DIR/${CORE}_libretro.so" ]; then
 		CORE_PATH="$EMU_DIR/${CORE}_libretro.so"
