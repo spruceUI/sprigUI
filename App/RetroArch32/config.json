@@ -1,0 +1,7 @@
+{
+"label":"RetroArch32",
+"icon":"retroarch32.png",
+"iconsel":"retroarch_sel32.png",
+"launch":"launch.sh",
+"description":"Libretro Frontend for emulators"
+}

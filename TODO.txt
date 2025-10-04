@@ -1,0 +1,17 @@
+Emu stuff:
+
+- moving files over from stock
+ - standalone gambatte
+ - standalone picodrive
+ - openbor
+ - green (need whole new "system")
+ - pcsx standalone
+ - fake08 standalone
+
+- wiring up stuff in standard_launch.sh
+- tweaking .opt files
+- tweaking core swap, etc scripts
+- tweaking all config.json
+- pico 8 native from Onion?
+
+- clean up RA folder

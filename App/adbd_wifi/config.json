@@ -1,0 +1,7 @@
+{
+"label":"ADB Wifi Daemon(no trace)",
+"icon":"adb.png",
+"iconsel":"adb.png",
+"launch":"launch.sh",
+"description":"adb connect 192.168.x.x:5555"
+}
