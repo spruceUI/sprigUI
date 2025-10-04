@@ -3,7 +3,6 @@
   "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/wsc.png",
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/wsc.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/wsc.png",
-  "themecolor": "3C4593",
   "launch": "../.emu_setup/standard_launch.sh",
   "rompathlist": [
     {

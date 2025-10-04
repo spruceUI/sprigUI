@@ -3,7 +3,6 @@
   "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/neogeo.png",
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/neogeo.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/neogeo.png",
-  "themecolor": "FFD200",
   "launch": "../.emu_setup/standard_launch.sh",
   "rompathlist": [
     {

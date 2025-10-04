@@ -3,7 +3,6 @@
   "icontop": "/mnt/SDCARD/Themes/SPRUCE/icontop/ports.png",
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/ports.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/ports.png",
-  "themecolor": "",
   "launch": "../.emu_setup/standard_launch.sh",
   "rompathlist": [
     {
