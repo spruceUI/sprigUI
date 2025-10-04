@@ -2,7 +2,7 @@
 
 ##### DEFINE BASE VARIABLES #####
 
-. /mnt/SDCARD/spruce/sprig/helperFunctions.sh
+. /mnt/SDCARD/sprig/helperFunctions.sh
 
 log_message "-----Launching Emulator-----" -v
 log_message "trying: $0 $@" -v
@@ -284,12 +284,7 @@ run_port() {
 
 run_retroarch() {
 
-	if setting_get "expertRA"; then
-		export RA_BIN="retroarch"
-	else
-		export RA_BIN="ra32.ss"
-	fi
-
+	export RA_BIN="retroarch"
 	RA_DIR="/mnt/SDCARD/RetroArch"
 	cd "$RA_DIR"
 
@@ -301,9 +296,7 @@ run_retroarch() {
 		CORE_PATH="$CORE_DIR/${CORE}_libretro.so"
 	fi
 
-	#Swap below if debugging new cores
-	#HOME="$RA_DIR/" "$RA_DIR/$RA_BIN" -v --log-file /mnt/SDCARD/Saves/retroarch.log -L "$CORE_PATH" "$ROM_FILE"
-	HOME="$RA_DIR/" "$RA_DIR/$RA_BIN" -v -L "$CORE_PATH" "$ROM_FILE"
+	HOME="$RA_DIR/" "$RA_DIR/$RA_BIN" -v --log-file /mnt/SDCARD/Saves/retroarch.log -L "$CORE_PATH" "$ROM_FILE"
 }
 
 

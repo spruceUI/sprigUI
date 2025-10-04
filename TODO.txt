@@ -15,3 +15,5 @@ Emu stuff:
 - pico 8 native from Onion?
 
 - test and/or compile cores
+
+- clean up overlays and filters
