@@ -8,6 +8,7 @@ Emu stuff:
  - fake08 standalone
 
 - wiring up stuff in standard_launch.sh
+ - clean up drastic section... yucky code
 - tweaking .opt files
 - tweaking core swap, etc scripts
 - tweaking all config.json

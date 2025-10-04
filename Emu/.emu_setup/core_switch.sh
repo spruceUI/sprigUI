@@ -1,7 +1,6 @@
 #!/bin/sh
 
-. /mnt/SDCARD/spruce/scripts/helperFunctions.sh
-[ "$PLATFORM" = "SmartPro" ] && BG="/mnt/SDCARD/spruce/imgs/bg_tree_wide.png" || BG="/mnt/SDCARD/spruce/imgs/bg_tree.png"
+. /mnt/SDCARD/sprig/helperFunctions.sh
 EMU_NAME="$(echo "$1" | cut -d'/' -f5)"
 CONFIG="/mnt/SDCARD/Emu/${EMU_NAME}/config.json"
 DEF_OPT="/mnt/SDCARD/Emu/.emu_setup/defaults/${EMU_NAME}.opt"
@@ -79,17 +78,6 @@ case "$EMU_NAME" in
 		else # current core is fbneo
 			NEW_CORE="fbalpha2012"
 			NEW_DISPLAY="(✓FBALPHA2012)-fbneo"
-		fi
-	;;
-
-	"DC" )
-		if [ "$CORE" = "flycast" ]; then
-			NEW_CORE="flycast_xtreme"
-			NEW_DISPLAY="flycast_lr-(✓FLYCAST-ALT)"
-
-		else # current core is flycast_xtreme
-			NEW_CORE="flycast"
-			NEW_DISPLAY="(✓FLYCAST_LR)-flycast_alt"
 		fi
 	;;
 
@@ -191,36 +179,6 @@ case "$EMU_NAME" in
 		fi
 	;;
 
-	"N64" )
-		if [ "$CORE" = "mupen64plus" ]; then
-			NEW_CORE="km_ludicrousn64_2k22_xtreme_amped"
-			NEW_DISPLAY="(✓LUDICROUSN64)-parallel-mupen64plus"
-
-		elif [ "$CORE" = "km_ludicrousn64_2k22_xtreme_amped" ]; then
-			NEW_CORE="parallel_n64"
-			NEW_DISPLAY="ludicrousn64-(✓PARALLEL)-mupen64plus"
-
-		else # current core is parallel_n64
-			NEW_CORE="mupen64plus"
-			NEW_DISPLAY="ludicrousn64-parallel-(✓MUPEN64PLUS)"
-		fi
-	;;
-
-	"NDS" )
-		if [ "$CORE" = "drastic_trngaje" ]; then
-			NEW_CORE="drastic_steward"
-			NEW_DISPLAY="trngaje-(✓STEWARD)-original"
-		
-		elif [ "$CORE" = "drastic_steward" ]; then
-			NEW_CORE="drastic_original"
-			NEW_DISPLAY="trngaje-steward-(✓ORIGINAL)"
-
-		else # current core is drastic_original
-			NEW_CORE="drastic_trngaje"
-			NEW_DISPLAY="(✓TRNGAJE)-steward-original"
-		fi
-	;;
-
 	"NGP"* )
 		if [ "$CORE" = "mednafen_ngp" ]; then
 			NEW_CORE="race"
@@ -240,21 +198,6 @@ case "$EMU_NAME" in
 		else # current core is pcsx_rearmed
 			NEW_CORE="km_duckswanstation_xtreme_amped"
 			NEW_DISPLAY="pcsx_rearmed-(✓DUCKSWANSTATION)"
-		fi
-	;;
-
-	"SATURN" )
-		if [ "$CORE" = "sa_bios" ]; then
-			NEW_CORE="sa_hle"
-			NEW_DISPLAY="libretro-sa_bios-(✓SA_HLE)"
-
-		elif [ "$CORE" = "sa_hle" ]; then
-			NEW_CORE="yabasanshiro"
-			NEW_DISPLAY="(✓LIBRETRO)-sa_bios-sa_hle"
-
-		else # current core is yabasanshiro (libretro)
-			NEW_CORE="sa_bios"
-			NEW_DISPLAY="libretro-(✓SA_BIOS)-sa_hle"
 		fi
 	;;
 
@@ -296,10 +239,7 @@ esac
 
 log_message "core_switch.sh: changing core for $EMU_NAME from $CORE to $NEW_CORE"
 
-display -i "$BG" -t "Core changed to $NEW_CORE"
-
 sed -i "s|\"Emu Core:.*\"|\"Emu Core: $NEW_DISPLAY\"|g" "$CONFIG"
 sed -i "s|CORE=.*|CORE=\"$NEW_CORE\"|g" "$SYS_OPT"
 
-sleep 2
-display_kill
+sleep 1

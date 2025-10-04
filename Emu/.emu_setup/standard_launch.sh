@@ -77,89 +77,68 @@ function kill_runner() {
 }
 
 run_drastic() {
-	export HOME=$EMU_DIR
-	cd $EMU_DIR
+	CUST_LOGO=0
+	CUST_CPUCLOCK=1
+	USE_752x560_RES=0
 
-	if [ "$PLATFORM" = "A30" ]; then # only Steward is available; core switching does nothing
+	mydir=`dirname "$0"`
 
-		[ -d "$EMU_DIR/backup-32" ] && mv "$EMU_DIR/backup-32" "$EMU_DIR/backup"
-		# the SDL library is hard coded to open ttyS0 for joystick raw input 
-		# so we pause joystickinput and create soft link to serial port
-		killall -q -STOP joystickinput
-		ln -s /dev/ttyS2 /dev/ttyS0
-
-		cd $EMU_DIR
-		if [ ! -f "/tmp/.show_hotkeys" ]; then
-			touch /tmp/.show_hotkeys
-			LD_LIBRARY_PATH=libs2:/usr/miyoo/lib ./show_hotkeys
-		fi
-		
-		export LD_LIBRARY_PATH=libs:/usr/miyoo/lib:/usr/lib
-		export SDL_VIDEODRIVER=mmiyoo
-		export SDL_AUDIODRIVER=mmiyoo
-		export EGL_VIDEODRIVER=mmiyoo
-
-		if [ -f 'libs/libEGL.so' ]; then
-			rm -rf libs/libEGL.so
-			rm -rf libs/libGLESv1_CM.so
-			rm -rf libs/libGLESv2.so
-		fi
-		./drastic32 "$ROM_FILE"
-		# remove soft link and resume joystickinput
-		rm /dev/ttyS0
-		killall -q -CONT joystickinput
-		[ -d "$EMU_DIR/backup" ] && mv "$EMU_DIR/backup" "$EMU_DIR/backup-32"
-
-	else # 64-bit platform
-
-		[ -d "$EMU_DIR/backup-64" ] && mv "$EMU_DIR/backup-64" "$EMU_DIR/backup"
-		export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/lib64
-		
-		if [ "$PLATFORM" = "Brick" ]; then
-			if [ "$CORE" = "drastic_steward" ]; then
-				kill_runner
-				LD_LIBRARY_PATH=/usr/trimui/lib ./runner&
-				sleep 1
-				export SDL_VIDEODRIVER=NDS
-				./lib32_Brick/ld-linux-armhf.so.3 --library-path lib32_Brick ./drastic32 "$ROM_FILE" > /mnt/SDCARD/Saves/spruce/drastic-steward-brick.log 2>&1
-				sync
-				kill_runner
-			else 
-
-				##### TODO: HOOK UP TRNGAJE's DRASTIC FOR BRICK
-
-				./drastic64 "$ROM_FILE" > /mnt/SDCARD/Saves/spruce/drastic-og-brick.log 2>&1
-			fi
-
-		elif [ "$PLATFORM" = "SmartPro" ]; then
-
-			##### TODO: HOOK UP CORE SWITCH B/T TRNGAJE AND OG DRASTIC on SMART PRO; no Steward available
-
-			export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HOME/lib64_a133p"
-			export SDL_AUDIODRIVER=dsp
-			./drastic64 "$ROM_FILE" > /mnt/SDCARD/Saves/spruce/drastic-og-smartpro.log 2>&1
-
-		elif [ "$PLATFORM" = "Flip" ]; then
-
-			if [ -d /usr/l32 ] && [ "$CORE" = "drastic_steward" ]; then
-				export SDL_VIDEODRIVER=NDS
-				export LD_LIBRARY_PATH="$HOME/lib32_Flip:/usr/lib32:$LD_LIBRARY_PATH"
-				./drastic32 "$ROM_FILE" > /mnt/SDCARD/Saves/spruce/drastic-steward-flip.log 2>&1
-
-			elif [ "$CORE" = "drastic_trngaje" ]; then
-				export LD_LIBRARY_PATH="$HOME/lib64_Flip:$LD_LIBRARY_PATH"
-				mv ./drastic64 ./drastic
-				./drastic "$ROM_FILE" > /mnt/SDCARD/Saves/spruce/drastic-trngaje-flip.log 2>&1
-				mv ./drastic ./drastic64
-			else
-				# if overlay mount of /usr fails, fall back to original DraStic instead of Steward's
-				./drastic64 "$ROM_FILE" > /mnt/SDCARD/Saves/spruce/drastic-og-flip.log
-			fi
-		fi
-		
-		[ -d "$EMU_DIR/backup" ] && mv "$EMU_DIR/backup" "$EMU_DIR/backup-64"
+	cd $mydir
+	if [ ! -f "/tmp/.show_hotkeys" ]; then
+		touch /tmp/.show_hotkeys
+		LD_LIBRARY_PATH=./libs:/customer/lib:/config/lib ./show_hotkeys
 	fi
+
+	export HOME=$mydir
+	export PATH=$mydir:$PATH
+	export LD_LIBRARY_PATH=$mydir/libs:$LD_LIBRARY_PATH
+	export SDL_VIDEODRIVER=mmiyoo
+	export SDL_AUDIODRIVER=mmiyoo
+	export EGL_VIDEODRIVER=mmiyoo
+
+	if [ -f /mnt/SDCARD/.tmp_update/script/stop_audioserver.sh ]; then
+		/mnt/SDCARD/.tmp_update/script/stop_audioserver.sh
+	else
+		killall audioserver
+		killall audioserver.mod
+	fi
+
+	if [  -d "/customer/app/skin_large" ]; then
+		USE_752x560_RES=1
+	fi
+
+	if [ "$USE_752x560_RES" == "1" ]; then
+		fbset -g 752 560 752 1120 32
+	fi
+
+	cd $mydir
+	if [ "$CUST_LOGO" == "1" ]; then
+		./png2raw
+	fi
+
+	sv=`cat /proc/sys/vm/swappiness`
+
+	# 60 by default
+	echo 10 > /proc/sys/vm/swappiness
+
+	cd $mydir
+
+	if [ "$CUST_CPUCLOCK" == "1" ]; then
+		./cpuclock 1600
+	fi
+
+	./drastic "$ROM_FILE"
 	sync
+
+	echo $sv > /proc/sys/vm/swappiness
+
+	if [  -d "/customer/app/skin_large" ]; then
+		USE_752x560_RES=0
+	fi
+
+	if [ "$USE_752x560_RES" == "1" ]; then
+		fbset -g 640 480 640 960 32
+	fi
 }
 
 run_openbor() {
