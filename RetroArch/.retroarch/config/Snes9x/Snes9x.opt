@@ -1,4 +1,4 @@
-snes9x_aspect = "auto"
+snes9x_aspect = "4:3"
 snes9x_audio_interpolation = "gaussian"
 snes9x_blargg = "disabled"
 snes9x_block_invalid_vram_access = "disabled"
