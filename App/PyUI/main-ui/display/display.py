@@ -415,6 +415,7 @@ class Display:
     @classmethod
     def render_text(cls, text, x, y, color, purpose: FontPurpose, render_mode=RenderMode.TOP_LEFT_ALIGNED,
                     crop_w=None, crop_h=None, alpha=None):
+        text = Device.shrink_text_if_needed(text)
         loaded_font = cls.fonts[purpose]
         cache : CachedImageTexture = cls._text_texture_cache.get_texture(text, purpose, color)
         cached = True

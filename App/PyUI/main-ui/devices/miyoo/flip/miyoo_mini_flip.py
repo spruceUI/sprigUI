@@ -309,3 +309,6 @@ class MiyooMiniFlip(MiyooDevice):
 
     def supports_volume(self):
         return False
+            
+    def shrink_text_if_needed(self, text):
+        return text[:40]
