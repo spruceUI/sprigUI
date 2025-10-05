@@ -137,7 +137,7 @@ class KeyWatcherControllerMiyooMini(ControllerInterface):
         self.last_held_input = next(iter(self.held_controller_inputs), None)
 
         while self.last_held_input is None and (time.time() - start_time) < timeout:
-            time.sleep(0.032)  # 1/30 of a second delay
+            time.sleep(0.05)  # 1/20 of a second delay
             self.last_held_input = next(iter(self.held_controller_inputs), None)
 
         return self.last_held_input
