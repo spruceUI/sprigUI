@@ -265,3 +265,8 @@ class AbstractDevice(ABC):
     @abstractmethod
     def double_init_sdl_display(self):
         pass
+
+    @abstractmethod
+    def shrink_text_if_needed(self, text):
+        pass
+

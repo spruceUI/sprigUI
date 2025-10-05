@@ -309,3 +309,7 @@ class Device:
     @staticmethod
     def double_init_sdl_display():
         return Device._impl.double_init_sdl_display()
+
+    @staticmethod
+    def shrink_text_if_needed(text):
+        return Device._impl.shrink_text_if_needed(text)

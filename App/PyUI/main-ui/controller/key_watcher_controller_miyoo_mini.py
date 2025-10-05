@@ -131,9 +131,17 @@ class KeyWatcherControllerMiyooMini(ControllerInterface):
 
 
     def get_input(self, timeoutInMilliseconds):
-        self.last_held_input = next(iter(self.held_controller_inputs), None)
-        return self.last_held_input
+        start_time = time.time()
+        timeout = timeoutInMilliseconds / 1000.0
 
+        self.last_held_input = next(iter(self.held_controller_inputs), None)
+
+        while self.last_held_input is None and (time.time() - start_time) < timeout:
+            time.sleep(0.05)  # 1/20 of a second delay
+            self.last_held_input = next(iter(self.held_controller_inputs), None)
+
+        return self.last_held_input
+    
     def clear_input_queue(self):
         pass
 

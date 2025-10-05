@@ -315,3 +315,6 @@ class DeviceCommon(AbstractDevice):
 
     def supports_volume(self):
         return True
+    
+    def shrink_text_if_needed(self, text):
+        return text
