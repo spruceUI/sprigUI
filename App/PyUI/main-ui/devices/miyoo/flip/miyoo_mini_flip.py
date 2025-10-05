@@ -1,8 +1,10 @@
 from concurrent.futures import Future
 import fcntl
+import json
 from pathlib import Path
 import struct
 import subprocess
+import sys
 import threading
 import time
 from controller.controller_inputs import ControllerInput
@@ -30,7 +32,6 @@ class MiyooMiniFlip(MiyooDevice):
 
     def __init__(self):
         PyUiLogger.get_logger().info("Initializing Miyoo Mini Flip")        
-        
         self.sdl_button_to_input = {
             sdl2.SDL_CONTROLLER_BUTTON_A: ControllerInput.B,
             sdl2.SDL_CONTROLLER_BUTTON_B: ControllerInput.A,
@@ -60,7 +61,6 @@ class MiyooMiniFlip(MiyooDevice):
         self._set_brightness_to_config()
         self.ensure_wpa_supplicant_conf()
         self.init_gpio()
-        threading.Thread(target=self.monitor_wifi, daemon=True).start()
         #self.hardware_poller = MiyooFlipPoller(self)
         #threading.Thread(target=self.hardware_poller.continuously_monitor, daemon=True).start()
 
@@ -126,7 +126,6 @@ class MiyooMiniFlip(MiyooDevice):
 
         
         return KeyWatcherControllerMiyooMini(event_path="/dev/input/event0", key_mappings=key_mappings)
-
 
     def init_gpio(self):
         #self.init_sleep_gpio()
@@ -254,10 +253,18 @@ class MiyooMiniFlip(MiyooDevice):
     @throttle.limit_refresh(5)
     def get_charge_status(self):
         try:
-            with open("/sys/class/power_supply/ac/online", "r") as f:
-                ac_online = int(f.read().strip())
-                
-            if(ac_online):
+            # Run axp_test and parse JSON
+            result = subprocess.run(
+                ["/customer/app/axp_test"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                text=True,
+                timeout=2
+            )
+            data = json.loads(result.stdout.strip())
+            charging = int(data.get("charging", 0))
+            
+            if charging == 1:
                 return ChargeStatus.CHARGING
             else:
                 return ChargeStatus.DISCONNECTED
@@ -267,14 +274,59 @@ class MiyooMiniFlip(MiyooDevice):
     @throttle.limit_refresh(15)
     def get_battery_percent(self):
         try:
-            with open("/tmp/percBat", "r") as f:
-                return int(f.read().strip()) 
+            # Run axp_test and capture its JSON output
+            result = subprocess.run(
+                ["/customer/app/axp_test"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                text=True,
+                timeout=2
+            )
+            data = json.loads(result.stdout.strip())
+            return data.get("battery", 0)
         except Exception:
             return 0
     
+
+    def start_wifi_services(self):
+        try:
+            # Check if system already has an IP address
+            result = subprocess.run(
+                ["ip", "route", "get", "1"],
+                capture_output=True,
+                text=True
+            )
+
+            # Extract the last field (the IP) like `awk '{print $NF;exit}'`
+            parts = result.stdout.strip().split()
+            ip = parts[-1] if parts else ""
+
+            if not ip:
+                PyUiLogger.get_logger().info("Wifi is disabled - trying to enable it...")
+
+                subprocess.run(["insmod", "/mnt/SDCARD/8188fu.ko"])
+                subprocess.run(["ifconfig", "lo", "up"])
+                subprocess.run(["/customer/app/axp_test", "wifion"])
+                time.sleep(2)
+                subprocess.run(["ifconfig", "wlan0", "up"])
+                subprocess.run([
+                    "wpa_supplicant",
+                    "-B",
+                    "-D", "nl80211",
+                    "-i", "wlan0",
+                    "-c", "/appconfigs/wpa_supplicant.conf"
+                ])
+                subprocess.run(["udhcpc", "-i", "wlan0", "-s", "/etc/init.d/udhcpc.script"])
+                time.sleep(3)
+                os.system("clear")
+
+        except Exception as e:
+            PyUiLogger.get_logger().error(f"Error enabling WiFi: {e}")
+
+
     def set_wifi_power(self, value):
-        # Not implemented on A30
-        pass
+        if(0 == value):
+            ProcessRunner.run(["ifconfig", "wlan0", "down"])
 
     def get_bluetooth_scanner(self):
         return None

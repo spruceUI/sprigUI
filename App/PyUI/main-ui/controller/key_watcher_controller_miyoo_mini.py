@@ -123,7 +123,7 @@ class KeyWatcherControllerMiyooMini(ControllerInterface):
                                 self.held_controller_inputs.pop(mapped_event.controller_input, None)
                     else:
                         logger.error("No mapping for event: %s", key_event)
-                else:
+                elif(key_event.event_type != 0 or key_event.code !=0 or key_event.value != 0):
                     logger.debug("Unmapped key event: %s", key_event)
 
             except Exception as e:
