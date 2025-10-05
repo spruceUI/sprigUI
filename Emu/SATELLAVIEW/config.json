@@ -3,12 +3,6 @@
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/satella.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/satella.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompath": "../../Roms/SATELLAVIEW",
-  "imgpath": "../../Roms/SATELLAVIEW/Imgs",
-  "gamelist": "../../Roms/SATELLAVIEW/miyoogamelist.xml",
-  "useswap": 1,
-  "shortname": 0,
-  "hidebios": 1,
   "extlist": "zip|7z|bs|sfc|smc|swc|fig|st",
   "launchlist": [
 

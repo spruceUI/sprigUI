@@ -3,12 +3,6 @@
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/pico.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/pico.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompath": "../../Roms/FAKE08",
-  "imgpath": "../../Roms/FAKE08/Imgs",
-  "gamelist": "../../Roms/FAKE08/miyoogamelist.xml",
-  "useswap": 1,
-  "shortname": 0,
-  "hidebios": 0,
   "extlist": "p8|png",
   "launchlist": [
 

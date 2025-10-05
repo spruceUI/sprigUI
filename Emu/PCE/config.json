@@ -3,12 +3,6 @@
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/pce.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/pce.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompath": "../../Roms/PCE",
-  "imgpath": "../../Roms/PCE/Imgs",
-  "gamelist": "../../Roms/PCE/miyoogamelist.xml",
-  "useswap": 1,
-  "shortname": 0,
-  "hidebios": 0,
   "extlist": "pce|zip|7z|ccd|iso|img|chd|cue",
   "launchlist": [
 

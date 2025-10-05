@@ -3,12 +3,6 @@
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/ps.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/ps.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompath": "../../Roms/PS",
-  "imgpath": "../../Roms/PS/Imgs",
-  "gamelist": "../../Roms/PS/miyoogamelist.xml",
-  "useswap": 1,
-  "shortname": 0,
-  "hidebios": 1,
   "extlist": "m3u|chd|cue|img|mdf|pbp|PBP|toc|cbn",
   "launchlist": [
 

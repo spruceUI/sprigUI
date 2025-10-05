@@ -3,12 +3,6 @@
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/arcade.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/arcade.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompath": "../../Roms/FBNEO",
-  "imgpath": "../../Roms/FBNEO/Imgs",
-  "gamelist": "../../Roms/FBNEO/miyoogamelist.xml",
-  "useswap": 1,
-  "shortname": 1,
-  "hidebios": 1,
   "extlist": "zip",
   "launchlist": [
 

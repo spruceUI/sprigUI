@@ -3,12 +3,6 @@
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/atari.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/atari.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompath": "../../Roms/ATARI",
-  "imgpath": "../../Roms/ATARI/Imgs",
-  "gamelist": "../../Roms/ATARI/miyoogamelist.xml",
-  "useswap": 1,
-  "shortname": 0,
-  "hidebios": 1,
   "extlist": "a26|zip|7z|bin",
   "launchlist": [
 

@@ -3,12 +3,6 @@
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/openbor.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/openbor.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompath": "../../Roms/OpenBOR",
-  "imgpath": "../../Imgs/OpenBOR/Imgs",
-  "gamelist": "../../Roms/OpenBOR/miyoogamelist.xml",
-  "useswap": 1,
-  "shortname": 0,
-  "hidebios": 0,
   "extlist": "pak",
   "launchlist": [
 

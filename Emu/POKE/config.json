@@ -3,12 +3,6 @@
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/poke.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/poke.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompath": "../../Roms/POKE",
-  "imgpath": "../../Roms/POKE/Imgs",
-  "gamelist": "../../Roms/POKE/miyoogamelist.xml",
-  "useswap": 0,
-  "shortname": 0,
-  "hidebios": 1,
   "extlist": "min|zip|7z",
   "launchlist": [
 

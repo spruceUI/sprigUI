@@ -3,12 +3,6 @@
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/wolf.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/wolf.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompath": "../../Roms/WOLF",
-  "imgpath": "../../Roms/WOLF/Imgs",
-  "gamelist": "../../Roms/WOLF/miyoogamelist.xml",
-  "useswap": 0,
-  "shortname": 0,
-  "hidebios": 0,
   "extlist": "ecwolf|exe",
   "launchlist": [
 

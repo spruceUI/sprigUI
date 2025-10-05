@@ -3,12 +3,6 @@
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/arduboy.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/arduboy.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompath": "../../Roms/ARDUBOY",
-  "imgpath": "../../Roms/ARDUBOY/Imgs",
-  "gamelist": "../../Roms/ARDUBOY/miyoogamelist.xml",
-  "useswap": 0,
-  "shortname": 0,
-  "hidebios": 0,
   "extlist": "hex",
   "launchlist": [
 

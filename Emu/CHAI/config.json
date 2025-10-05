@@ -3,12 +3,6 @@
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/chai.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/chai.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompath": "../../Roms/CHAI",
-  "imgpath": "../../Roms/CHAI/Imgs",
-  "gamelist": "../../Roms/CHAI/miyoogamelist.xml",
-  "useswap": 1,
-  "shortname": 0,
-  "hidebios": 1,
   "extlist": "chailove",
   "launchlist": [
 

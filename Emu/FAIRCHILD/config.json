@@ -3,12 +3,6 @@
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/fairchild.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/fairchild.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompath": "../../Roms/FAIRCHILD",
-  "imgpath": "../../Roms/FAIRCHILD/Imgs",
-  "gamelist": "../../Roms/FAIRCHILD/miyoogamelist.xml",
-  "useswap": 0,
-  "shortname": 0,
-  "hidebios": 1,
   "extlist": "zip|bin|rom|chf",
   "launchlist": [
 

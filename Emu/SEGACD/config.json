@@ -3,12 +3,6 @@
   "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/segacd.png",
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/segacd.png",
   "launch": "../.emu_setup/standard_launch.sh",
-  "rompath": "../../Roms/SEGACD",
-  "imgpath": "../../Roms/SEGACD/Imgs",
-  "gamelist": "../../Roms/SEGACD/miyoogamelist.xml",
-  "useswap": 1,
-  "shortname": 0,
-  "hidebios": 1,
   "extlist": "chd|m3u|zip|7z|gen|smd|md|32x|cue|iso|sms|68k",
   "launchlist": [
 
