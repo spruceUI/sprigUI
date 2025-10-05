@@ -32,8 +32,7 @@ class ImageTextureCache:
         return self.cache.get(texture_id)
 
     def add_texture(self, texture_id, surface, texture):
-        #Always cache theme
-        if(Device.image_texture_caching_enabled() or "Theme" in texture_id):
+        if(Device.image_texture_caching_enabled()):
             self.cache[texture_id] = CachedImageTexture(surface,texture)
             return True
         else:

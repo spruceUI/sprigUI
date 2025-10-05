@@ -106,12 +106,12 @@ class MiyooMiniFlip(MiyooDevice):
         key_mappings[KeyEvent(1, 1, 0)] = [InputResult(ControllerInput.MENU, KeyState.RELEASE)]
         key_mappings[KeyEvent(1, 1, 1)] = [InputResult(ControllerInput.MENU, KeyState.PRESS)]  
 
-        key_mappings[KeyEvent(1, 14, 0)] = [InputResult(ControllerInput.L1, KeyState.RELEASE)]
-        key_mappings[KeyEvent(1, 14, 1)] = [InputResult(ControllerInput.L1, KeyState.PRESS)]  
+        key_mappings[KeyEvent(1, 15, 0)] = [InputResult(ControllerInput.L1, KeyState.RELEASE)]  
+        key_mappings[KeyEvent(1, 15, 1)] = [InputResult(ControllerInput.L1, KeyState.PRESS)]  
         key_mappings[KeyEvent(1, 20, 0)] = [InputResult(ControllerInput.L2, KeyState.RELEASE)]  
         key_mappings[KeyEvent(1, 20, 1)] = [InputResult(ControllerInput.L2, KeyState.PRESS)]  
-        key_mappings[KeyEvent(1, 15, 0)] = [InputResult(ControllerInput.R1, KeyState.RELEASE)]  
-        key_mappings[KeyEvent(1, 15, 1)] = [InputResult(ControllerInput.R1, KeyState.PRESS)]  
+        key_mappings[KeyEvent(1, 14, 0)] = [InputResult(ControllerInput.R1, KeyState.RELEASE)]
+        key_mappings[KeyEvent(1, 14, 1)] = [InputResult(ControllerInput.R1, KeyState.PRESS)]  
         key_mappings[KeyEvent(1, 18, 0)] = [InputResult(ControllerInput.R2, KeyState.RELEASE)]  
         key_mappings[KeyEvent(1, 18, 1)] = [InputResult(ControllerInput.R2, KeyState.PRESS)]  
 
