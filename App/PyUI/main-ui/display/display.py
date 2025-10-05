@@ -32,11 +32,8 @@ class ImageTextureCache:
         return self.cache.get(texture_id)
 
     def add_texture(self, texture_id, surface, texture):
-        if(Device.image_texture_caching_enabled()):
-            self.cache[texture_id] = CachedImageTexture(surface,texture)
-            return True
-        else:
-            return False
+        self.cache[texture_id] = CachedImageTexture(surface,texture)
+        return True
     
     def clear_cache(self):
         for entry in self.cache.values():
@@ -67,11 +64,8 @@ class TextTextureCache:
         return self.cache.get(TextTextureKey(texture_id, font, color))
 
     def add_texture(self, texture_id, font, color, surface, texture):
-        if(Device.text_texture_caching_enabled()):
-            self.cache[TextTextureKey(texture_id, font, color)] = CachedTextTexture(surface,texture)
-            return True
-        else:
-            return False
+        self.cache[TextTextureKey(texture_id, font, color)] = CachedTextTexture(surface,texture)
+        return True
     
     def clear_cache(self):
         for entry in self.cache.values():
@@ -431,14 +425,24 @@ class Display:
             sdl_color = sdl2.SDL_Color(color[0], color[1], color[2])
             surface = sdl2.sdlttf.TTF_RenderUTF8_Blended(loaded_font.font, text.encode('utf-8'), sdl_color)
             if not surface:
-                PyUiLogger.get_logger().error(f"Failed to render text surface for {text}: {sdl2.sdlttf.TTF_GetError().decode('utf-8')}")
-                return 0, 0
+                PyUiLogger.get_logger().error(f"Clearing cache")
+                cls._text_texture_cache.clear_cache()
+                cls._image_texture_cache.clear_cache()
+                surface = sdl2.sdlttf.TTF_RenderUTF8_Blended(loaded_font.font, text.encode('utf-8'), sdl_color)
+                if not surface:
+                    PyUiLogger.get_logger().error(f"Failed to render text surface for {text}: {sdl2.sdlttf.TTF_GetError().decode('utf-8')}")
+                    return 0, 0
 
             texture = sdl2.SDL_CreateTextureFromSurface(cls.renderer.renderer, surface)
             if not texture:
-                sdl2.SDL_FreeSurface(surface)
-                PyUiLogger.get_logger().error(f"Failed to create texture from surface {text}: {sdl2.sdlttf.TTF_GetError().decode('utf-8')}")
-                return 0, 0
+                PyUiLogger.get_logger().error(f"Clearing cache")
+                cls._text_texture_cache.clear_cache()
+                cls._image_texture_cache.clear_cache()
+                texture = sdl2.SDL_CreateTextureFromSurface(cls.renderer.renderer, surface)
+                if not texture:
+                    sdl2.SDL_FreeSurface(surface)
+                    PyUiLogger.get_logger().error(f"Failed to create texture from surface {text}: {sdl2.sdlttf.TTF_GetError().decode('utf-8')}")
+                    return 0, 0
 
             if(alpha is not None):
                 sdl2.SDL_SetTextureBlendMode(texture, sdl2.SDL_BLENDMODE_BLEND)
@@ -491,14 +495,26 @@ class Display:
         else:
             surface = sdl2.sdlimage.IMG_Load(image_path.encode('utf-8'))
             if not surface:
-                PyUiLogger.get_logger().error(f"Failed to load image: {image_path}")
-                return 0, 0
+                PyUiLogger.get_logger().error(f"Clearing cache")
+                cls._text_texture_cache.clear_cache()
+                cls._image_texture_cache.clear_cache()
+                surface = sdl2.sdlimage.IMG_Load(image_path.encode('utf-8'))
+                if not surface:
+                    PyUiLogger.get_logger().error(f"Failed to load image: {image_path}")
+                    return 0, 0
 
             texture = sdl2.SDL_CreateTextureFromSurface(cls.renderer.renderer, surface)
             if not texture:
-                sdl2.SDL_FreeSurface(surface)
-                PyUiLogger.get_logger().error("Failed to create texture from surface")
-                return 0, 0
+                PyUiLogger.get_logger().error(f"Clearing cache")
+                cls._text_texture_cache.clear_cache()
+                cls._image_texture_cache.clear_cache()
+                texture = sdl2.SDL_CreateTextureFromSurface(cls.renderer.renderer, surface)
+                if not texture:
+                    sdl2.SDL_FreeSurface(surface)
+                    PyUiLogger.get_logger().error("Failed to create texture from surface")
+                    cls._text_texture_cache.clear_cache()
+                    cls._image_texture_cache.clear_cache()
+                    return 0, 0
 
             sdl2.SDL_SetTextureBlendMode(texture, sdl2.SDL_BLENDMODE_BLEND)
             cached = cls._image_texture_cache.add_texture(image_path,surface, texture)

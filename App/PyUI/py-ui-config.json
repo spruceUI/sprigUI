@@ -4,5 +4,6 @@
     "turboDelayMs": 300,
     "enableButtonWatchers": false,
     "enableWifiMonitor": true,
-    "mainMenuTitle": "sprigUI"
+    "mainMenuTitle": "sprigUI",
+    "animationsEnabled": false
 }

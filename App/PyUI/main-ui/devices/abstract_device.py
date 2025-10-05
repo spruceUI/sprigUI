@@ -265,11 +265,3 @@ class AbstractDevice(ABC):
     @abstractmethod
     def double_init_sdl_display(self):
         pass
-
-    @abstractmethod
-    def image_texture_caching_enabled(self):
-        pass
-
-    @abstractmethod
-    def text_texture_caching_enabled(self):
-        pass

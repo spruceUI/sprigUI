@@ -306,12 +306,6 @@ class MiyooMiniFlip(MiyooDevice):
 
     def double_init_sdl_display(self):
         return True
-    
-    def image_texture_caching_enabled(self):
-        return False
-
-    def text_texture_caching_enabled(self):
-        return False
 
     def supports_volume(self):
         return False

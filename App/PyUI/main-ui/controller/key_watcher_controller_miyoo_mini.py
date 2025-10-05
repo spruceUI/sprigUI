@@ -119,10 +119,8 @@ class KeyWatcherControllerMiyooMini(ControllerInterface):
                         for mapped_event in mapped_events:
                             if mapped_event.key_state == KeyState.PRESS:
                                 self.held_controller_inputs[mapped_event.controller_input] = now
-                                logger.debug("Pressed: %s", mapped_event.controller_input)
                             elif mapped_event.key_state == KeyState.RELEASE:
                                 self.held_controller_inputs.pop(mapped_event.controller_input, None)
-                                logger.debug("Released: %s", mapped_event.controller_input)
                     else:
                         logger.error("No mapping for event: %s", key_event)
                 else:
