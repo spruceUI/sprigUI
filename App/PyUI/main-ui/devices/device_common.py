@@ -313,11 +313,5 @@ class DeviceCommon(AbstractDevice):
     def double_init_sdl_display(self):
         return False
 
-    def image_texture_caching_enabled(self):
-        return True
-
-    def text_texture_caching_enabled(self):
-        return True
-
     def supports_volume(self):
         return True
