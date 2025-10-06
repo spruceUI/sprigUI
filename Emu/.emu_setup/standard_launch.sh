@@ -103,7 +103,7 @@ run_drastic() {
 
 run_openbor() {
 	mydir=/mnt/SDCARD/Emu/OPENBOR
-	mypak=`basename "$ROM_FILE"
+	mypak=`basename "$ROM_FILE"`
 	fbset -g 640 480 640 960 32
 	export HOME=$mydir
 	export PATH=$mydir:$PATH

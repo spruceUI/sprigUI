@@ -353,8 +353,14 @@ class MiyooMiniFlip(MiyooDevice):
         config_volume = self.system_config.get_volume()
         self._set_volume(config_volume)
 
+
     def run_game(self, rom_info: RomInfo) -> subprocess.Popen:
-        return MiyooTrimCommon.run_game(self,rom_info,run_prefix="LD_PRELOAD=/mnt/SDCARD/miyoo/app/../lib/libpadsp.so ")
+        preload_path = "/mnt/SDCARD/miyoo/app/../lib/libpadsp.so"
+        if os.path.exists(preload_path):
+            run_prefix = f"LD_PRELOAD={preload_path} "
+        else:
+            run_prefix = "LD_PRELOAD=/customer/lib/libpadsp.so "
+        return MiyooTrimCommon.run_game(self, rom_info, run_prefix=run_prefix)
 
     def double_init_sdl_display(self):
         return True
