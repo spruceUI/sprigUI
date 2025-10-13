@@ -1,7 +1,9 @@
 
 
 import os
+import random
 from controller.controller_inputs import ControllerInput
+from devices.device import Device
 from display.on_screen_keyboard import OnScreenKeyboard
 from menus.games.collections.collections_management_menu import CollectionsManagementMenu
 from menus.games.utils.favorites_manager import FavoritesManager
@@ -26,6 +28,10 @@ class GameSelectMenuPopup:
     def collections_management_view(self, rom_info : RomInfo, input_value):
         CollectionsManagementMenu(rom_info).show_menu()
 
+    def launch_random_game(self, input_value, rom_list):
+        if(ControllerInput.A == input_value):
+            Device.run_game(random.choice(rom_list).get_value())
+
     def execute_game_search(self, game_system, input_value):
         from menus.games.search_games_for_system_menu import SearchGamesForSystemMenu
         search_txt = OnScreenKeyboard().get_input("Game Search:")
@@ -41,58 +47,74 @@ class GameSelectMenuPopup:
             Theme.set_game_selection_view_type(ViewType.TEXT_AND_IMAGE)
 
 
-    def run_game_select_popup_menu(self, rom_info : RomInfo, additional_popup_options = []):
+    def get_game_options(self, rom_info : RomInfo, additional_popup_options = [], rom_list= []):
         popup_options = []
         popup_options.extend(additional_popup_options)
         rom_name = os.path.basename(rom_info.rom_file_path)
         
-        popup_options.append(GridOrListEntry(
-            primary_text=f"{rom_info.game_system.display_name} Game Search",
-            image_path=Theme.settings(),
-            image_path_selected=Theme.settings_selected(),
-            description="",
-            icon=Theme.settings(),
-            value=lambda input_value, game_system=rom_info.game_system: self.execute_game_search(game_system, input_value)
-        ))
-
         if(FavoritesManager.is_favorite(rom_info)):        
             popup_options.append(GridOrListEntry(
-                primary_text="Remove Favorite",
+                primary_text="+/- Favorite",
                 image_path=Theme.settings(),
                 image_path_selected=Theme.settings_selected(),
-                description=f"Remove {rom_name} as a favorite",
-                icon=Theme.settings(),
+                description="",
+                icon=None,
                 value=lambda input_value, rom_info=rom_info: self.remove_favorite(rom_info, input_value)
             ))
         else:
             popup_options.append(GridOrListEntry(
-                primary_text="Add Favorite",
+                primary_text="+/- Favorite",
                 image_path=Theme.settings(),
                 image_path_selected=Theme.settings_selected(),
-                description=f"Add {rom_name} as a favorite",
-                icon=Theme.settings(),
+                description="",
+                icon=None,
                 value=lambda input_value, rom_info=rom_info: self.add_favorite(rom_info, input_value)
             ))
             
         
         popup_options.append(GridOrListEntry(
-            primary_text=f"Add/Remove from Collection",
+            primary_text=f"+/- Collection",
             image_path=Theme.settings(),
             image_path_selected=Theme.settings_selected(),
             description="",
-            icon=Theme.settings(),
+            icon=None,
             value=lambda input_value, rom_info=rom_info: self.collections_management_view(rom_info, input_value)
         ))
+
+        popup_options.append(GridOrListEntry(
+                primary_text="Launch Random Game",
+                image_path=Theme.settings(),
+                image_path_selected=Theme.settings_selected(),
+                description="",
+                icon=None,
+                value=lambda input_value, rom_list=rom_list: self.launch_random_game(input_value, rom_list)
+        ))
+
+        return popup_options
+
+
+    def run_game_select_popup_menu(self, rom_info : RomInfo, additional_popup_options = [], rom_list= []):
+        popup_options = []
+        popup_options.append(GridOrListEntry(
+            primary_text=f"{rom_info.game_system.display_name} Game Search",
+            image_path=Theme.settings(),
+            image_path_selected=Theme.settings_selected(),
+            description="",
+            icon=None,
+            value=lambda input_value, game_system=rom_info.game_system: self.execute_game_search(game_system, input_value)
+        ))
+
+
+        popup_options.extend(self.get_game_options(rom_info, additional_popup_options, rom_list)) 
 
         popup_options.append(GridOrListEntry(
             primary_text=f"Toggle View",
             image_path=Theme.settings(),
             image_path_selected=Theme.settings_selected(),
             description="",
-            icon=Theme.settings(),
+            icon=None,
             value=lambda input_value: self.toggle_view()
         ))
-
 
         popup_view = ViewCreator.create_view(
             view_type=ViewType.POPUP,
@@ -101,7 +123,6 @@ class GameSelectMenuPopup:
             selected_index=0,
             cols=Theme.popup_menu_cols(),
             rows=Theme.popup_menu_rows())
-                        
 
 
         while (popup_selection := popup_view.get_selection()):

@@ -6,6 +6,7 @@ from games.utils.game_system import GameSystem
 from games.utils.rom_utils import RomUtils
 from menus.games.file_based_game_system_config import FileBasedGameSystemConfig
 from utils.logger import PyUiLogger
+from utils.py_ui_config import PyUiConfig
 
 class MiyooTrimGameSystemUtils(GameSystemUtils):
     def __init__(self):
@@ -54,14 +55,43 @@ class MiyooTrimGameSystemUtils(GameSystemUtils):
                 #PyUiLogger().get_logger().info(f"{folder} contains a broken config.json : {e}")
                 pass
 
-            if(game_system_config is not None and self.contains_needed_files(game_system_config)):
-                display_name = game_system_config.get_label()
-                game_system = GameSystem(self.build_paths_array(folder),display_name, game_system_config)
-                if(self.rom_utils.has_roms(game_system)):
-                    active_systems.append(game_system)
+            if(game_system_config is not None and (self.contains_needed_files(game_system_config) or PyUiConfig.show_all_game_systems())):
+                folder_paths = self.build_paths_array(folder)
+                if(len(folder_paths) > 0):
+                    display_name = game_system_config.get_label()
+                    game_system = GameSystem(folder_paths,display_name, game_system_config)
+                    if(PyUiConfig.show_all_game_systems() or self.rom_utils.has_roms(game_system)):
+                        active_systems.append(game_system)
 
         # Step 4: Sort the list alphabetically
-        active_systems.sort(key=lambda system: system.display_name)
+        if("Alphabetical" == PyUiConfig.game_system_sort_mode()):        
+            active_systems.sort(key=lambda system: system.display_name)
+        elif("SortOrderKey" == PyUiConfig.game_system_sort_mode()):
+            active_systems.sort(key=lambda system: system.sort_order)
+        elif("Custom" == PyUiConfig.game_system_sort_mode()):
+            # Get priorities (1 = highest priority, 3 = lowest)
+            type_priority = PyUiConfig.game_system_sort_type_priority()
+            brand_priority = PyUiConfig.game_system_sort_brand_priority()
+            year_priority = PyUiConfig.game_system_sort_year_priority()
+            name_priority = PyUiConfig.game_system_sort_name_priority()
+
+            # Create a mapping from priority to the field accessor
+            priority_order = {
+                type_priority: lambda s: s.type,
+                brand_priority: lambda s: s.brand,
+                year_priority: lambda s: s.release_year,
+                name_priority: lambda s: s.display_name,
+            }
+
+            # Sort using a tuple key ordered by priority, then display_name
+            active_systems.sort(
+                key=lambda s: (
+                    priority_order[1](s),
+                    priority_order[2](s),
+                    priority_order[3](s),
+                    priority_order[4](s),
+                )
+            )
 
         # Step 5: Return the list
         return active_systems

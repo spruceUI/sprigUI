@@ -5,10 +5,11 @@ import shutil
 import sys
 import threading
 from devices.device import Device
-from devices.miyoo.flip.miyoo_mini_flip import MiyooMiniFlip
+from devices.miyoo.system_config import SystemConfig
 from menus.games.utils.collections_manager import CollectionsManager
 from menus.games.utils.favorites_manager import FavoritesManager
 from menus.games.utils.recents_manager import RecentsManager
+from menus.language.language import Language
 import sdl2
 import sdl2.ext
 
@@ -16,7 +17,6 @@ from menus.main_menu import MainMenu
 from controller.controller import Controller
 from display.display import Display
 from themes.theme import Theme
-from devices.miyoo.flip.miyoo_flip import MiyooFlip
 from utils.config_copier import ConfigCopier
 from utils.logger import PyUiLogger
 from utils.py_ui_config import PyUiConfig
@@ -43,8 +43,10 @@ def log_renderer_info():
 
 def initialize_device(device):
     if "MIYOO_FLIP" == device:
+        from devices.miyoo.flip.miyoo_flip import MiyooFlip
         Device.init(MiyooFlip())
     elif "MIYOO_MINI_FLIP" == device:
+        from devices.miyoo.mini_flip.miyoo_mini_flip import MiyooMiniFlip
         Device.init(MiyooMiniFlip())
     elif "TRIMUI_BRICK" == device:
         from devices.trimui.trim_ui_brick import TrimUIBrick
@@ -102,11 +104,12 @@ def main():
     verify_config_exists(args.pyUiConfig)
     PyUiConfig.init(args.pyUiConfig)
 
-    selected_theme = os.path.join(PyUiConfig.get("themeDir"), PyUiConfig.get("theme"))
-    PyUiLogger.get_logger().info(f"{selected_theme}")
 
     initialize_device(args.device)
     PyUiState.init(Device.get_state_path())
+
+    selected_theme = os.path.join(PyUiConfig.get("themeDir"), Device.get_system_config().get_theme())
+    PyUiLogger.get_logger().info(f"{selected_theme}")
 
     Theme.init(selected_theme, Device.screen_width(), Device.screen_height())
     Display.init()
@@ -115,6 +118,7 @@ def main():
     Display.clear_image_cache()
     Display.clear_text_cache()
     Controller.init()
+    Language.init()
     main_menu = MainMenu()
 
     start_background_threads()

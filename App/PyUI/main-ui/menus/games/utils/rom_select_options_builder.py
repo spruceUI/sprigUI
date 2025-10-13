@@ -62,6 +62,27 @@ class RomSelectOptionsBuilder:
         muos_image_path_sd1 = os.path.join("/mnt/mmc/MUOS/info/catalogue/", rom_info.game_system.game_system_config.system_name, "box", base_name + ".png")
         if os.path.exists(muos_image_path_sd1):
             return muos_image_path_sd1
+        
+        #ES format
+        imgs_folder_with_image_suffix = os.path.join(root_dir, "Imgs", base_name + "-image.png")
+        if os.path.exists(imgs_folder_with_image_suffix):
+            return imgs_folder_with_image_suffix
+
+        #ES format2
+        imgs_folder_equal_to_roms_path_with_thumb_suffix = os.path.join(root_dir, "Imgs", base_name + "-thumb.png")
+        if os.path.exists(imgs_folder_equal_to_roms_path_with_thumb_suffix):
+            return imgs_folder_equal_to_roms_path_with_thumb_suffix
+
+        #ES format same folder
+        imgs_folder_equal_to_roms_path_with_image_suffix = os.path.join(os.sep.join(imgs_older_equal_to_roms_parts[:-1]), base_name + "-image.png")
+        if os.path.exists(imgs_folder_equal_to_roms_path_with_image_suffix):
+            return imgs_folder_equal_to_roms_path_with_image_suffix
+        
+        #ES format2 same folder
+        imgs_folder_equal_to_roms_path_with_thumb_suffix = os.path.join(os.sep.join(imgs_older_equal_to_roms_parts[:-1]), base_name + "-thumb.png")
+        if os.path.exists(imgs_folder_equal_to_roms_path_with_thumb_suffix):
+            return imgs_folder_equal_to_roms_path_with_thumb_suffix
+
 
         return None
 
@@ -80,7 +101,7 @@ class RomSelectOptionsBuilder:
             return None
         
 
-    def build_rom_list(self, game_system,filter: Callable[[str], bool] = lambda a: True, subfolder = None) -> list[GridOrListEntry]:
+    def build_rom_list(self, game_system,filter: Callable[[str, str], bool] = lambda a,b: True, subfolder = None) -> list[GridOrListEntry]:
         file_rom_list = []
         folder_rom_list = []
         valid_files, valid_folders = self.rom_utils.get_roms(game_system, subfolder)
@@ -89,9 +110,9 @@ class RomSelectOptionsBuilder:
         miyoo_game_list = MiyooGameList(self.rom_utils.get_miyoo_games_file(game_system.folder_name))
         
         for rom_file_path in valid_files:
-            if(filter(rom_file_path)):
-                rom_file_name = os.path.basename(rom_file_path)
-                game_entry = miyoo_game_list.get_by_file_name(rom_file_name)
+            rom_file_name = os.path.basename(rom_file_path)
+            game_entry = miyoo_game_list.get_by_file_name(rom_file_name)
+            if(filter(rom_file_name, rom_file_path)):
                 if(game_entry is not None):
                     display_name = game_entry.name
                 else:
@@ -111,9 +132,9 @@ class RomSelectOptionsBuilder:
                 )
 
         for rom_file_path in valid_folders:
-            if(filter(rom_file_path)):
-                rom_info = RomInfo(game_system,rom_file_path)
-                rom_file_name = os.path.basename(rom_file_path)
+            rom_info = RomInfo(game_system,rom_file_path)
+            rom_file_name = os.path.basename(rom_file_path)
+            if(filter(rom_file_name, rom_file_path)):
 
                 folder_rom_list.append(
                     GridOrListEntry(

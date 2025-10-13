@@ -1,5 +1,6 @@
 import os
 from menus.games.file_based_game_system_config import FileBasedGameSystemConfig
+from utils.logger import PyUiLogger
 
 class GameSystem:
     def __init__(self, folder_paths, display_name, game_system_config : FileBasedGameSystemConfig):
@@ -9,7 +10,6 @@ class GameSystem:
 
     @property
     def folder_name(self):
-        #TODO how to handle, does it matter?
         return os.path.basename(self._folder_paths[0])
 
     @property
@@ -19,6 +19,22 @@ class GameSystem:
     @property
     def display_name(self):
         return self._display_name
+    
+    @property
+    def sort_order(self):
+        return self._game_system_config.get_sort_order()
+    
+    @property
+    def brand(self):
+        return self._game_system_config.get_brand()
+    
+    @property
+    def type(self):
+        return self._game_system_config.get_type()
+    
+    @property
+    def release_year(self):
+        return self._game_system_config.get_release_year()
         
     @property
     def game_system_config(self) -> FileBasedGameSystemConfig:
