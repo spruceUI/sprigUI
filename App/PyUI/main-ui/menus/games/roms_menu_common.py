@@ -116,16 +116,24 @@ class RomsMenuCommon(ABC):
     def get_additional_menu_options(self):
         return []
 
-    def _menu_pressed(self, selection):
-        self.popup_menu.run_game_select_popup_menu(selection, self.get_additional_menu_options())
+    def _menu_pressed(self, selection, rom_list):
+        self.popup_menu.run_game_select_popup_menu(selection, self.get_additional_menu_options(), rom_list)
+
+    def _get_menu_button_game_options(self, selection, rom_list):
+        return self.popup_menu.get_game_options(selection, self.get_additional_menu_options(), rom_list)
 
     def _run_rom_selection_for_rom_list(self, page_name, rom_list) :
         selected = Selection(None,None,0)
         view = None
         last_game_file_path, last_subfolder = PyUiState.get_last_game_selection(page_name)
 
-        if(last_subfolder != '' and getattr(self, 'subfolder', '') != last_subfolder and getattr(self, 'subfolder', '') != ''):
-            print(f"Subfolder does not match {last_subfolder} vs {getattr(self, 'subfolder', '') }")
+        if (
+            last_subfolder != '' and
+            getattr(self, 'subfolder', '') != last_subfolder and
+            getattr(self, 'subfolder', '') != '' and
+            os.path.isdir(last_subfolder)
+        ):
+            PyUiLogger.get_logger().info(f"Subfolder does not match {last_subfolder} vs {getattr(self, 'subfolder', '') }")
             rom_info_subfolder = RomInfo(game_system=rom_list[0].get_value().game_system,rom_file_path=last_subfolder)
             return_value = self._run_subfolder_menu(rom_info_subfolder)
             if(return_value is not None):
@@ -193,13 +201,14 @@ class RomsMenuCommon(ABC):
                         RecentsManager.add_game(selected.get_selection().get_value())
                         self.run_game(selected.get_selection().get_value())
                 elif(ControllerInput.X == selected.get_input()):
+                    gen_additional_game_options = lambda selected=selected.get_selection().get_value(), rom_list=rom_list, self=self: self._get_menu_button_game_options(selected, rom_list)
                     GameConfigMenu(selected.get_selection().get_value().game_system, 
-                                   selected.get_selection().get_value()).show_config()
+                                   selected.get_selection().get_value(), gen_additional_game_options).show_config()
                     # Regenerate as game config menu might've changed something
                     rom_list = self._get_rom_list()
                 elif(ControllerInput.MENU == selected.get_input()):
                     prev_view = Theme.get_game_selection_view_type()
-                    self._menu_pressed(selected.get_selection().get_value())
+                    self._menu_pressed(selected.get_selection().get_value(), rom_list)
                     # Regenerate as game config menu might've changed something
                     original_length = len(rom_list)
                     rom_list = self._get_rom_list()

@@ -127,6 +127,15 @@ class PyUiConfig:
         cls.save()
 
     @classmethod
+    def show_all_game_systems(cls):
+        return cls.get("showAllGameSystems",False)
+
+    @classmethod
+    def set_show_all_game_systems(cls, value):
+        cls._data["showAllGameSystems"] = value
+        cls.save()
+
+    @classmethod
     def show_am_pm(cls):
         return cls.get("showAmPm",True)
 
@@ -136,5 +145,60 @@ class PyUiConfig:
         cls.save()
 
     @classmethod
+    def game_system_sort_mode(cls):
+        return cls.get("gameSystemSortMode","Alphabetical")
+
+    @classmethod
+    def set_game_system_sort_mode(cls, value):
+        cls._data["gameSystemSortMode"] = value
+        cls.save()
+
+    @classmethod
+    def game_system_sort_type_priority(cls):
+        return cls.get("gameSystemSortTypePrio",1)
+
+    @classmethod
+    def set_game_system_sort_type_priority(cls, value):
+        cls._data["gameSystemSortTypePrio"] = value
+        cls.save()
+
+    @classmethod
+    def game_system_sort_brand_priority(cls):
+        return cls.get("gameSystemSortBrandPrio",2)
+
+    @classmethod
+    def set_game_system_sort_brand_priority(cls, value):
+        cls._data["gameSystemSortBrandPrio"] = value
+        cls.save()
+
+    @classmethod
+    def game_system_sort_year_priority(cls):
+        return cls.get("gameSystemSortYearPrio",3)
+    
+    @classmethod
+    def set_game_system_sort_year_priority(cls, value):
+        cls._data["gameSystemSortYearPrio"] = value
+        cls.save()
+
+    @classmethod
+    def game_system_sort_name_priority(cls):
+        return cls.get("gameSystemSortNamePrio",4)
+    
+    @classmethod
+    def set_game_system_sort_name_priority(cls, value):
+        cls._data["gameSystemSortNamePrio"] = value
+        cls.save()
+
+    @classmethod
     def animations_enabled(cls):
         return cls.get("animationsEnabled",True)
+
+    @classmethod
+    def get_language(cls):
+        return cls.get("language","English")
+
+    @classmethod
+    def set_language(cls, language):
+        cls._data["language"] = language
+        cls.save()
+
