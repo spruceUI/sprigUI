@@ -1,4 +1,9 @@
 #!/bin/sh
 
+if [ ! -e /tmp/adbd_run ]; then
+    touch -p /tmp/adbd_run
+    /mnt/SDCARD/App/adbd_wifi/launch.sh
+fi
+
 ./freemma
 /mnt/SDCARD/App/PyUI/launch.sh
