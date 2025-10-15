@@ -1,6 +1,6 @@
 Emu stuff:
 
-- moving files over from stock
+- moving files over from stock?
  - standalone gambatte
  - standalone picodrive
  - green (need whole new "system")
@@ -14,10 +14,6 @@ Emu stuff:
 - tweaking all config.json
 - pico 8 native from Onion?
 
-- test and/or compile cores
+- test cores
 
 - clean up overlays and filters
-
-- remove override logic; take advantage of Roms/deflaunch.json instead; OR, nuke deflaunch frequently
-
-- DS is broken I guess lol
