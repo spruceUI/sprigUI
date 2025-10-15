@@ -7,7 +7,7 @@ if ! pgrep adbd >/dev/null 2>&1; then
 fi
 
 if ! pgrep dropbearmulti >/dev/null 2>&1; then
-    /mnt/SDCARD/App/ssh/launch.sh
+    /mnt/SDCARD/App/SSH/launch.sh
 fi
 
 ./freemma
