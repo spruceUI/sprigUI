@@ -1,0 +1,310 @@
+#!/bin/sh
+
+#if ! [ -f /mnt/swapfile ] ; then
+#dd if=/dev/zero of=/mnt/swapfile bs=1M count=64
+#chmod 600 /mnt/swapfile
+#mkswap /mnt/swapfile
+#fi
+
+
+#if  [ -f /mnt/swapfile ] ; then
+#swapon /mnt/swapfile
+#fi
+
+#echo 0 > /sys/class/graphics/fbcon/cursor_blink                                 
+#echo 0 > /sys/class/vtconsole/vtcon1/bind
+
+#40->110
+#tinymix set 6 103 
+
+
+echo 3 > /proc/sys/kernel/printk
+
+chmod a+x /usr/bin/notify
+UPDATE_FILE_NAME=/tmp/.try_upgrade_file
+UPDATE_TMP_DIR=/mnt/SDCARD/.tmp_update
+UPDATE_LOG=/mnt/SDCARD/update.log
+CUSTOMER_DIR=/mnt/SDCARD/miyoo285/
+
+killprocess(){
+   pid=`ps | grep $1 | grep -v grep | cut -d' ' -f3`
+   kill -9 $pid
+}
+
+init_lcd(){
+   cat /proc/ls
+   if [ $1 -ne 0 ] ; then
+	sleep $1
+   fi 
+}
+
+runifnecessary(){
+    cnt=0
+    #a=`ps | grep $1 | grep -v grep`
+    a=`pgrep $1`
+    while [ "$a" == "" ] && [ $cnt -lt 8 ] ; do 
+	   echo try to run $2
+	   $2 $3 &
+           sleep 0.5
+	   cnt=`expr $cnt + 1`
+           a=`pgrep $1`
+    done
+}
+
+echo 12 > /sys/class/gpio/unexport
+
+#dump uboot env, not used anymore
+#chmod a+x /etc/fw_printenv
+#/etc/fw_printenv > /tmp/the_uboot_env
+
+#mv /mnt/SDCARD/update.scr /mnt/SDCARD/_update.scr
+
+if [ -f ${CUSTOMER_DIR}/exit_on_stage1 ] ; then
+    exit 0
+fi
+
+#audio enable gpio
+echo 44 > /sys/class/gpio/export 
+echo out > /sys/class/gpio/gpio44/direction
+echo 1 > /sys/class/gpio/gpio44/value
+
+#audio_all_test -O -i /customer/app/sound/change.wav -D 0 -V -30 &
+
+mkdir -p /var/run
+export LD_LIBRARY_PATH=/lib:/config/lib:/customer/lib
+/customer/app/axp_test poweron
+
+init_lcd 1
+
+if [ -f ${CUSTOMER_DIR}/exit_on_stage2 ] ; then
+    exit 0
+fi
+
+#wait for SDCARD mounted
+mounted=`cat /proc/mounts | grep SDCARD`
+cnt=0
+/customer/app/sdldisplay /customer/app/skin/icon-wait-tf-card_flipped.png
+while [ "$mounted" == "" ] && [ $cnt -lt 16 ] ; do
+   echo "wait for sdcard $cnt $mounted"
+   sleep 0.5
+   cnt=`expr $cnt + 1`
+   mounted=`cat /proc/mounts | grep SDCARD`
+done
+/customer/app/sdldisplay /customer/app/skin/app_loading_bg_flipped.png
+if [ "$mounted" != "" ] ; then
+   insmod /mnt/SDCARD/8188fu.ko
+   for f in `ls /mnt/SDCARD/boot/*.ko` ; do
+	insmod $f   
+   done
+fi
+
+networktime=`/customer/app/jsonval usenetworktime` 
+if [ "$networktime" != "0" ] ; then
+   /customer/ntpd.sh start
+fi 
+timezone=`/customer/app/jsonval timezone`
+if [ "$timezone" != "" ] && [ -d /mnt/SDCARD/miyoo285/zoneinfo ] ; then
+   ln -sf /mnt/SDCARD/miyoo285/zoneinfo/$timezone /tmp/localtime
+else
+   if ! [ -f /mnt/SDCARD/timezone ] ; then
+      ln -sf /mnt/SDCARD/miyoo285/zoneinfo/Asia/Shanghai /tmp/localtime
+   else
+      cp /mnt/SDCARD/timezone /tmp/localtime
+   fi
+fi
+
+ifconfig lo up
+
+while [ 1 ]; do
+  if [ -f $UPDATE_FILE_NAME ] ; then
+      upfile=`cat $UPDATE_FILE_NAME`
+      if [ -f ${upfile} ] ; then
+            echo start updating | tee $UPDATE_LOG
+	    updateui >> $UPDATE_LOG &
+            notify 0 extracting package
+            mkdir -p ${UPDATE_TMP_DIR}
+            total=`unzip -l ${upfile} | wc -l`            
+	    unzip -d ${UPDATE_TMP_DIR} ${upfile} | awk -v total="$total" -v out="/tmp/.update_msg" 'function bname(file,a,n){n=split(file,a,"/")
+;return a[n]}BEGIN{cnt=0}{printf "">out;cnt+=1;printf "%d extract %s\n",cnt*100/total,bname($2)>>out;close(out)}'
+           if [ -f ${UPDATE_TMP_DIR}/updater ] ; then
+	           chmod a+x ${UPDATE_TMP_DIR}/updater
+	           ${UPDATE_TMP_DIR}/updater | tee -a $UPDATE_LOG
+	           rm -rf ${UPDATE_TMP_DIR}
+	       else
+	           echo unzip return $? | tee $UPDATE_LOG
+           fi
+           kilall updateui
+      fi
+      rm -f $UPDATE_FILE_NAME
+      rm -f /tmp/state.json
+  elif [ -d ${UPDATE_TMP_DIR} ] ; then
+      if [ -f ${UPDATE_TMP_DIR}/runtime.sh ] ; then
+	  chmod a+x ${UPDATE_TMP_DIR}/runtime.sh    
+	  ${UPDATE_TMP_DIR}/runtime.sh
+      else
+          echo start updating again | tee $UPDATE_LOG
+          updateui >> $UPDATE_LOG &
+          chmod a+x ${UPDATE_TMP_DIR}/updater
+          ${UPDATE_TMP_DIR}/updater | tee -a $UPDATE_LOG
+          rm -f $UPDATE_FILE_NAME
+          rm -rf ${UPDATE_TMP_DIR}
+          rm -f /tmp/state.json
+          kilall updateui
+     fi
+  else
+      if [ -f ${CUSTOMER_DIR}/exit_on_stage3 ] ; then
+        exit 0
+      fi
+      a=`ps | grep dev/l | grep -v grep`                                                                             
+      if [ "$a" == "" ] ; then                                                                                        
+          init_lcd 1
+      fi
+
+      echo 600000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+
+      svrrunned=0
+      runsvr=`/customer/app/jsonval audiofix`        
+      if [ $? -ne 0 ] ; then
+          runsvr="1"
+      fi
+      defvol=`/customer/app/jsonval vol`
+      defvol=`expr 57 \* $defvol \/ 20 - 60`
+
+      SDRUNNED=0
+      if [ -d ${CUSTOMER_DIR} ]   ; then
+        export LD_LIBRARY_PATH=/lib:/config/lib:${CUSTOMER_DIR}/lib 
+        
+
+        echo LD_LIBRARY_PATH is ${LD_LIBRARY_PATH}
+        if [ "$runsvr" != "0" ] ; then
+            runifnecessary "audioserver" ${CUSTOMER_DIR}/app/audioserver $defvol
+            svrrunned=1
+            sleep 1 
+        fi
+
+        runifnecessary "keymon" ${CUSTOMER_DIR}/app/keymon 
+
+        if [ -f /mnt/SDCARD/.launch_last.sh ] ; then
+            /mnt/SDCARD/.launch_last.sh
+            rm /mnt/SDCARD/.launch_last.sh
+        fi
+
+
+        echo svrrunned is ${svrrunned} run sdcard app
+        cd ${CUSTOMER_DIR}/app/
+        if [ $svrrunned -eq 1 ] ; then
+            LD_PRELOAD="${CUSTOMER_DIR}/lib/libpadsp.so" ${CUSTOMER_DIR}/app/MainUI
+        else             
+            ${CUSTOMER_DIR}/app/MainUI
+        fi
+
+        if [ $? -eq 0 ] ; then
+            SDRUNNED=1
+        else
+            SDRUNNED=0
+        fi
+      fi
+      if [ ${SDRUNNED} -eq 0 ] ; then
+        export LD_LIBRARY_PATH=/lib:/config/lib:/customer/lib
+
+
+        if [ "$runsvr" != "0" ] ; then
+            runifnecessary "audioserver" /customer/app/audioserver $defvol
+            svrrunned=1
+            sleep 1 
+        fi
+
+
+        runifnecessary "keymon" keymon 
+
+        if [ -f /mnt/SDCARD/.launch_last.sh ] ; then
+            /mnt/SDCARD/.launch_last.sh
+            rm /mnt/SDCARD/.launch_last.sh
+        fi        
+
+        echo svrrunned is ${svrrunned} run internal app
+        cd /customer/app/
+        if [ $svrrunned -eq 1 ] ; then
+            LD_PRELOAD="/customer/lib/libpadsp.so" ./MainUI
+        else            
+            ./MainUI
+        fi        
+
+      fi #[ ${SDRUNNED} -eq 0 ] 
+
+      runsvr=`/customer/app/jsonval audiofix`        
+      if [ $? -ne 0 ] ; then
+          runsvr="1"
+      fi
+      defvol=`/customer/app/jsonval vol`
+      defvol=`expr 57 \* $defvol \/ 20 - 60`
+
+      if [ -f /tmp/no_audioserver ] ; then
+         touch /tmp/audioserver_quit
+      fi
+
+      if [ -f /tmp/audioserver_quit ] ; then
+         exist=`pgrep audioserver`
+         while [ "$exist" != "" ] ; do
+            #echo "wait for audioserver quit"
+            /customer/app/breakserver
+            sleep 0.5
+            exist=`pgrep audioserver`
+         done
+         rm -f /tmp/audioserver_quit
+      fi      
+      
+      if [ "$runsvr" != "0" ] && ! [ -f /tmp/no_audioserver ] ; then
+         echo run audioserver
+         if [ ${SDRUNNED} -eq 1 ] ; then
+            runifnecessary "audioserver" ${CUSTOMER_DIR}/app/audioserver $defvol
+         else
+            runifnecessary "audioserver" /customer/app/audioserver $defvol
+         fi
+      fi
+
+
+      #miyoo354 requires this to fix volume problem
+      if [ "$runsvr" == "0" ] ; then
+         /customer/app/tinymix set 6 100
+         vol=`/customer/app/jsonval vol`
+         vol=`expr 41 + 63 \* $vol \/ 20`
+         /customer/app/tinymix set 6 $vol
+      fi
+
+      /customer/app/sysmon freemma
+      if [ -f /tmp/.cmdenc ] ; then                                                                                   
+          /root/gameloader                                                                                             
+      elif [ -f /tmp/cmd_to_run.sh ] ; then                                                                           
+         chmod a+x /tmp/cmd_to_run.sh                                                                                 
+         /tmp/cmd_to_run.sh                                                                                           
+         rm /tmp/cmd_to_run.sh
+         cat /dev/zero > /dev/fb0
+         echo game finished         
+      fi
+
+      #miyoo354 requires this to fix volume problem
+      if [ "$runsvr" == "0" ] ; then
+         /customer/app/tinymix set 6 100
+         vol=`/customer/app/jsonval vol`
+         vol=`expr 41 + 63 \* $vol \/ 20`
+         /customer/app/tinymix set 6 $vol
+      fi
+
+      /customer/app/sysmon freemma 
+
+      rm /tmp/no_audioserver
+
+      #turn off motor in case app crash
+      echo 48 > /sys/class/gpio/export
+      echo out > /sys/class/gpio/gpio48/direction
+      echo 1 > /sys/class/gpio/gpio48/value      
+  fi
+
+
+  rm -f /mnt/SDCARD/.launch_last.sh
+  rm -f /mnt/SDCARD/.ra32save_last.state
+  rm -f /mnt/SDCARD/.ra32save_last.state.png  
+
+done
+
