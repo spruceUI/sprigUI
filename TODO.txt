@@ -18,6 +18,8 @@ Emu stuff:
 
 - clean up overlays and filters
 
+- setup webhook
+
 
 
 test
