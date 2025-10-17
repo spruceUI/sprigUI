@@ -45,7 +45,7 @@ import_launch_options() {
 
 set_cpu_mode() {
 	if [ "$MODE" != "overclock" ] && [ "$MODE" != "performance" ]; then
-		/mnt/SDCARD/sprig/enforceSmartCPU.sh &
+		/mnt/SDCARD/sprig/scripts/enforceSmartCPU.sh &
 	fi
 }
 
