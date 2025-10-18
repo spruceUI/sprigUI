@@ -22,10 +22,10 @@
     "Emulator": {
       "display": "Retroarch Core",
       "options": [
-        "CAP32",
+        "cap32",
         "crocods"
       ],
-      "selected": "CAP32",
+      "selected": "cap32",
       "overrides": {}
     }
   }

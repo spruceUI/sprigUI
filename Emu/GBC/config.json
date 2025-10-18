@@ -22,11 +22,11 @@
     "Emulator": {
       "display": "Retroarch Core",
       "options": [
-        "GAMBATTE",
+        "gambatte",
         "mgba",
         "tgbdual"
       ],
-      "selected": "GAMBATTE",
+      "selected": "gambatte",
       "overrides": {}
     }
   }

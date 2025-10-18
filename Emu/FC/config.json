@@ -22,11 +22,11 @@
     "Emulator": {
       "display": "Retroarch Core",
       "options": [
-        "FCEUMM",
+        "fceumm",
         "nestopia",
         "quicknes"
       ],
-      "selected": "FCEUMM",
+      "selected": "fceumm",
       "overrides": {}
     }
   }

@@ -43,10 +43,10 @@
     "Emulator": {
       "display": "Retroarch Core",
       "options": [
-        "MEDNAFEN",
+        "mednafen",
         "race"
       ],
-      "selected": "MEDNAFEN",
+      "selected": "mednafen",
       "overrides": {}
     }
   }

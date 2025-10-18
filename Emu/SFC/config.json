@@ -23,11 +23,11 @@
     "Emulator": {
       "display": "Retroarch Core",
       "options": [
-        "CHIMERASNES",
+        "chimerasnes",
         "supafaust",
         "snes9x"
       ],
-      "selected": "CHIMERASNES",
+      "selected": "chimerasnes",
       "overrides": {}
     }
   }

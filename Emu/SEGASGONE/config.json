@@ -22,11 +22,11 @@
     "Emulator": {
       "display": "Retroarch Core",
       "options": [
-        "GENESIS+GX",
+        "genesis+gx",
         "bluemsx",
         "gearsystem"
       ],
-      "selected": "GENESIS+GX",
+      "selected": "genesis+gx",
       "overrides": {}
     }
   }
