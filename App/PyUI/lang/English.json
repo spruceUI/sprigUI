@@ -1,0 +1,15 @@
+{
+    "Games" : "Games",
+    "Recents": "Recents",
+    "Apps": "Apps",
+    "Collections": "Collections",
+    "Favorites": "Favorites",
+    "Settings": "Settings",
+    "noEntriesFound": "No Entries Found",
+    "systemGameSearch": "$system Game Search",
+    "allSystemGameSearch": "All System Game Search",
+    "systemMenuSubOptions" : "$system Menu Sub Options",
+    "gameSearch": "Game Search:",
+    "exitPyUi": "Reload UI"
+    
+}
