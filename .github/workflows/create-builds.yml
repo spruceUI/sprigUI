@@ -58,7 +58,7 @@ jobs:
           echo "" >> release_notes.txt
           echo "Changes since last release:" >> release_notes.txt
 
-          LATEST_TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
+          LATEST_TAG=$(gh release list --limit 2 --json tagName --jq '.[1].tagName' 2>/dev/null || echo "")
 
           if git rev-parse "$LATEST_TAG" >/dev/null 2>&1; then
             git log "$LATEST_TAG"..HEAD --pretty=format:"- %s" >> release_notes.txt
