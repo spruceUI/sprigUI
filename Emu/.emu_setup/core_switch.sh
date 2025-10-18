@@ -70,7 +70,7 @@ case "$EMU_NAME" in
 		fi
 	;;
 
-	"CPS"* | "NEOGEO" )
+	"NEOGEO" )
 		if [ "$CORE" = "fbalpha2012" ]; then
 			NEW_CORE="fbneo"
 			NEW_DISPLAY="fbalpha2012-(✓FBNEO)"

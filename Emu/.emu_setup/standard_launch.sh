@@ -45,7 +45,7 @@ import_launch_options() {
 
 set_cpu_mode() {
 	if [ "$MODE" != "overclock" ] && [ "$MODE" != "performance" ]; then
-		/mnt/SDCARD/sprig/enforceSmartCPU.sh &
+		/mnt/SDCARD/sprig/scripts/enforceSmartCPU.sh &
 	fi
 }
 
@@ -53,13 +53,13 @@ set_cpu_mode() {
 ##### EMULATOR LAUNCH FUNCTIONS #####
 
 	run_ffplay() {
-	mydir=`dirname "$0"`
-	export HOME=$mydir
+	mydir="/mnt/SDCARD/Emu/MEDIA"
+	export HOME="$mydir"
 	export PATH="$mydir:$PATH"
 	export LD_LIBRARY_PATH="$mydir/libs:$LD_LIBRARY_PATH"
 
 	cd $mydir
-	ffplay -vf "hflip,vflip" -i "$1"
+	ffplay -vf "hflip,vflip" -i "$ROM_FILE"
 }
 
 run_drastic() {

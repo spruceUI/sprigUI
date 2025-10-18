@@ -1,4 +1,14 @@
 #!/bin/sh
 
+mount -o bind /mnt/SDCARD/sprig/etc/profile /etc/profile
+
+if ! pgrep adbd >/dev/null 2>&1; then
+    /mnt/SDCARD/App/adbd_wifi/launch.sh
+fi
+
+if ! pgrep dropbearmulti >/dev/null 2>&1; then
+    /mnt/SDCARD/App/SSH/launch.sh
+fi
+
 ./freemma
 /mnt/SDCARD/App/PyUI/launch.sh
