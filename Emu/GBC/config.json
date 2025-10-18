@@ -6,19 +6,6 @@
   "extlist": "gb|gbc|zip|7z|bin|dmg",
   "launchlist": [],
   "menuOptions": {
-    "Governor": {
-      "display": "CPU Mode",
-      "devices": [
-        "SPRIG_MIYOO_MINI_FLIP"
-      ],
-      "options": [
-        "Smart",
-        "Performance",
-        "Overclock"
-      ],
-      "selected": "Smart",
-      "overrides": {}
-    },
     "Emulator": {
       "display": "Retroarch Core",
       "options": [

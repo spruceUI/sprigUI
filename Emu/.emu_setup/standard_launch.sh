@@ -10,10 +10,10 @@ log_message "-----Launching Emulator-----"
 log_message "trying: $0 $@"
 
 export EMU_NAME="$(echo "$1" | cut -d'/' -f5)"
-export EMU_JSON_PATH="/mnt/SDCARD/Emu/$EMU_NAME/config.json"
+export EMU_DIR="/mnt/SDCARD/Emu/${EMU_NAME}"
+export EMU_JSON_PATH="${EMU_DIR}/config.json"
 export GAME="$(basename "$1")"
 export CORE="$(jq -r '.menuOptions.Emulator.selected' "$EMU_JSON_PATH")"
-export MODE="$(jq -r '.menuOptions.Governor.selected' "$EMU_JSON_PATH")"
 
 ##### GENERAL FUNCTIONS #####
 
@@ -74,7 +74,7 @@ use_default_emulator() {
 
 
 set_cpu_mode() {
-	if [ "$MODE" != "Overclock" ] && [ "$MODE" != "Performance" ]; then
+	if [ "$EMU_NAME" != "NDS" ]; then
 		/mnt/SDCARD/sprig/scripts/enforceSmartCPU.sh &
 	fi
 }
@@ -82,7 +82,7 @@ set_cpu_mode() {
 
 ##### EMULATOR LAUNCH FUNCTIONS #####
 
-	run_ffplay() {
+run_ffplay() {
 	mydir="/mnt/SDCARD/Emu/MEDIA"
 	export HOME="$mydir"
 	export PATH="$mydir:$PATH"
@@ -94,9 +94,7 @@ set_cpu_mode() {
 
 run_drastic() {
 
-	CUST_CPUCLOCK=1
 	mydir=/mnt/SDCARD/Emu/NDS
-
 	cd $mydir
 	if [ ! -f "/tmp/.show_hotkeys" ]; then
 		touch /tmp/.show_hotkeys
@@ -120,15 +118,12 @@ run_drastic() {
 
 	cd $mydir
 
-	if [ "$CUST_CPUCLOCK" == "1" ]; then
-		./cpuclock 1600
-	fi
+	./cpuclock 1600
 
 	./drastic "$ROM_FILE"
 	sync
 
 	echo $sv > /proc/sys/vm/swappiness
-	killall cpuclock
 }
 
 run_openbor() {
@@ -244,8 +239,6 @@ fi
 
 set_cpu_mode
 
-flag_add 'emulator_launched'
-
 # Sanitize the rom path
 ROM_FILE="$(echo "$1" | sed 's|/media/SDCARD0/|/mnt/SDCARD/|g')"
 export ROM_FILE="$(readlink -f "$ROM_FILE")"
@@ -274,5 +267,3 @@ esac
 
 kill -9 $(pgrep -f enforceSmartCPU.sh)
 log_message "-----Closing Emulator-----" -v
-
-auto_regen_tmp_update
