@@ -1,0 +1,90 @@
+name: Create Builds
+
+permissions:
+  contents: write
+  packages: write
+  
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build'
+        required: true
+        default: 'main'
+
+jobs:
+  build-zips:
+    runs-on: ubuntu-latest
+    outputs:
+      short_sha: ${{ steps.get_sha.outputs.short_sha }}
+      version_suffix: ${{ steps.set_version_suffix.outputs.version_suffix }}
+    steps:
+      - name: Install 7-Zip
+        run: sudo apt-get update && sudo apt-get install -y p7zip-full
+
+      - name: Check out specified branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Get short commit SHA
+        id: get_sha
+        run: echo "short_sha=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+      # New step to define VERSION_SUFFIX once and for all
+      - name: Set VERSION_SUFFIX
+        id: set_version_suffix
+        run: |
+          DATE=$(date +%F)
+          VERSION_SUFFIX=${DATE}-${{ steps.get_sha.outputs.short_sha }}
+          echo "version_suffix=$VERSION_SUFFIX" >> "$GITHUB_OUTPUT"
+
+      - name: Create 7z
+        run: |
+          7z a -t7z -mf=off sprig-v${{ steps.set_version_suffix.outputs.version_suffix }}.7z ./ \
+            -xr'!.git' \
+            -xr'!.github' \
+            -xr'!.gitignore' \
+            -xr'!.gitattributes' \
+            -xr'!.gitkeep'   
+
+            
+      - name: Install GitHub CLI
+        run: sudo apt-get install -y gh
+
+      - name: Generate release notes
+        run: |
+          echo "Automated nightly build from commit ${{ steps.get_sha.outputs.short_sha }}." > release_notes.txt
+          echo "" >> release_notes.txt
+          echo "Changes since last release:" >> release_notes.txt
+
+          LATEST_TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' 2>/dev/null || echo "")
+
+          if git rev-parse "$LATEST_TAG" >/dev/null 2>&1; then
+            git log "$LATEST_TAG"..HEAD --pretty=format:"- %s" >> release_notes.txt
+          else
+            git log --pretty=format:"- %s" >> release_notes.txt
+          fi
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME=sprig-${{ steps.set_version_suffix.outputs.version_suffix }}
+          SPRIG_FILE=sprig-v${{ steps.set_version_suffix.outputs.version_suffix }}.7z
+
+          gh release delete "$TAG_NAME" -y || true
+          gh release create "$TAG_NAME" "$SPRIG_FILE"\
+            --title "Nightly Build $TAG_NAME" \
+            --notes-file release_notes.txt 
+
+      - name: Prune old nightly builds (keep latest 10)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release list --limit 100 --json tagName,createdAt --jq \
+            '[.[] | select(.tagName | startswith("nightly-"))] | sort_by(.createdAt) | .[:-10] | .[].tagName' | \
+          while read tag; do
+            echo "Deleting old release: $tag"
+            gh release delete "$tag" -y
+          done
