@@ -23,7 +23,7 @@
       "display": "Retroarch Core",
       "options": [
         "handy",
-        "mednafen"
+        "mednafen_lynx"
       ],
       "selected": "handy",
       "overrides": {}

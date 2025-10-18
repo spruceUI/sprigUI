@@ -18,15 +18,6 @@
       ],
       "selected": "Smart",
       "overrides": {}
-    },
-    "Emulator": {
-      "display": "Retroarch Core",
-      "options": [
-        "fbalpha2012",
-        "fbneo"
-      ],
-      "selected": "fbalpha2012",
-      "overrides": {}
     }
   }
 }

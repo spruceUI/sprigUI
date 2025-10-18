@@ -23,7 +23,7 @@
       "display": "Retroarch Core",
       "options": [
         "picodrive",
-        "genesis+gx"
+        "genesis_plus_gx"
       ],
       "selected": "picodrive",
       "overrides": {}

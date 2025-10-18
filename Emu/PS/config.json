@@ -28,7 +28,7 @@
       "display": "Retroarch Core",
       "options": [
         "pcsx_rearmed",
-        "duckswanstation"
+        "km_duckswanstation_xtreme_amped"
       ],
       "selected": "pcsx_rearmed",
       "overrides": {}

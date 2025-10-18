@@ -48,7 +48,7 @@ use_default_emulator() {
 		"MSU1"|"SFC")		default_core="snes9x";;
 		"NEOCD")			default_core="neocd";;
 		"NGP"|"NGPC")		default_core="mednafen_ngp";;
-		"ODYSSEY"|"VIDEOPAC")	default_core="o2em";;
+		"ODYSSEY")			default_core="o2em";;
 		"PCE"|"PCECD")		default_core="mednafen_pce_fast";;
 		"POKE")				default_core="pokemini";;
 		"PS")				default_core="pcsx_rearmed";;

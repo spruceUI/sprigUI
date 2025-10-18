@@ -22,11 +22,11 @@
     "Emulator": {
       "display": "Retroarch Core",
       "options": [
-        "genesis+gx",
+        "genesis_plus_gx",
         "picodrive",
         "gearsystem"
       ],
-      "selected": "genesis+gx",
+      "selected": "genesis_plus_gx",
       "overrides": {}
     }
   }
