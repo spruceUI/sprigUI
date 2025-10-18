@@ -37,6 +37,7 @@ use_default_emulator() {
 		"FAKE08")			default_core="fake08";;
 		"FC"|"FDS")			default_core="fceumm";;
 		"FIFTYTWOHUNDRED")	default_core="a5200";;
+		"GAMETANK")			default_core="gametank";;
 		"GB"|"GBC")			default_core="gambatte";;
 		"GBA"|"SGB")		default_core="mgba";;
 		"GG"|"MS"|"MSUMD"|"SEGASGONE")	default_core="genesis_plus_gx";;
@@ -237,9 +238,10 @@ run_retroarch() {
 ##### MAIN EXECUTION #####
  ########################
 
-if [ -z "$CORE" ]; then
+if [ -z "$CORE" ] || [ "$CORE" = "null" ]; then
 	use_default_emulator
 fi
+
 set_cpu_mode
 
 flag_add 'emulator_launched'

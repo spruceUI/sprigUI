@@ -1,0 +1,23 @@
+{
+  "label": "GameTank",
+  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/gametank.png",
+  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/gametank.png",
+  "launch": "../.emu_setup/standard_launch.sh",
+  "extlist": "gtr",
+  "launchlist": [],
+  "menuOptions": {
+    "Governor": {
+      "display": "CPU Mode",
+      "devices": [
+        "SPRIG_MIYOO_MINI_FLIP"
+      ],
+      "options": [
+        "Smart",
+        "Performance",
+        "Overclock"
+      ],
+      "selected": "Smart",
+      "overrides": {}
+    }
+  }
+}
