@@ -12,8 +12,8 @@ log_message "trying: $0 $@"
 export EMU_NAME="$(echo "$1" | cut -d'/' -f5)"
 export EMU_JSON_PATH="/mnt/SDCARD/Emu/$EMU_NAME/config.json"
 export GAME="$(basename "$1")"
-export CORE="$(jq -r '.menuOptions.Emulator.selected' config.json)"
-export MODE="$(jq -r '.menuOptions.Governor.selected' config.json)"
+export CORE="$(jq -r '.menuOptions.Emulator.selected' "$EMU_JSON_PATH")"
+export MODE="$(jq -r '.menuOptions.Governor.selected' "$EMU_JSON_PATH")"
 
 ##### GENERAL FUNCTIONS #####
 

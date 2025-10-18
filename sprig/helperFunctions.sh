@@ -3,6 +3,7 @@
 
 ##########     FLAG HANDLING     ##########
 
+export PATH="/mnt/SDCARD/sprig/bin:/customer:$PATH"
 export FLAGS_DIR="/mnt/SDCARD/sprig/flags"
 
 # Add a flag
