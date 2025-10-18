@@ -45,7 +45,7 @@ def initialize_device(device):
     if "MIYOO_FLIP" == device:
         from devices.miyoo.flip.miyoo_flip import MiyooFlip
         Device.init(MiyooFlip())
-    elif "MIYOO_MINI_FLIP" == device:
+    elif "MIYOO_MINI_FLIP" == device or "SPRIG_MIYOO_MINI_FLIP" == device:
         from devices.miyoo.mini_flip.miyoo_mini_flip import MiyooMiniFlip
         Device.init(MiyooMiniFlip())
     elif "TRIMUI_BRICK" == device:
