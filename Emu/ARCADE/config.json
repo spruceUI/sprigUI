@@ -22,11 +22,11 @@
     "Emulator": {
       "display": "Retroarch Core",
       "options": [
-        "FBNEO",
+        "fbneo",
         "mame2003+",
         "fbalpha2012"
       ],
-      "selected": "FBNEO",
+      "selected": "fbneo",
       "overrides": {}
     }
   }

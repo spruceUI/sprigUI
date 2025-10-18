@@ -22,10 +22,10 @@
     "Emulator": {
       "display": "Retroarch Core",
       "options": [
-        "MGBA",
+        "mgba",
         "gpsp"
       ],
-      "selected": "MGBA",
+      "selected": "mgba",
       "overrides": {}
     }
   }
