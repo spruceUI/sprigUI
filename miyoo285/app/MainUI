@@ -10,5 +10,9 @@ if ! pgrep dropbearmulti >/dev/null 2>&1; then
     /mnt/SDCARD/App/SSH/launch.sh
 fi
 
+if ! pgrep -f "/mnt/SDCARD/sprig/scripts/powerbutton_watchdog.sh" >/dev/null; then
+    /mnt/SDCARD/sprig/scripts/powerbutton_watchdog.sh &
+fi
+
 ./freemma
 /mnt/SDCARD/App/PyUI/launch.sh
