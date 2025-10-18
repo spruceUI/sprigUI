@@ -4,24 +4,7 @@
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/tic.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "tic|zip|7z|fd|sap|k7|m7|rom",
-  "launchlist": [
-    {
-      "name": "Jump to random Tic-80 game",
-      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
-    },
-    {
-      "name": "CPU Mode: (✓SMART)-Performance-Overclock",
-      "launch": "/mnt/SDCARD/Emu/.emu_setup/cpu_switch.sh"
-    },
-    {
-      "name": "Save current launch settings as per-game override",
-      "launch": "/mnt/SDCARD/Emu/.emu_setup/set_override.sh"
-    },
-    {
-      "name": "Remove per-game launch setting override",
-      "launch": "/mnt/SDCARD/Emu/.emu_setup/remove_override.sh"
-    }
-  ],
+  "launchlist": [],
   "menuOptions": {
     "Governor": {
       "display": "CPU",

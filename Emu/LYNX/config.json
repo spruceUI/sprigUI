@@ -4,28 +4,7 @@
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/lynx.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "lnx|zip",
-  "launchlist": [
-    {
-      "name": "Jump to random Lynx game",
-      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
-    },
-    {
-      "name": "Emu Core: (✓HANDY)-mednafen",
-      "launch": "/mnt/SDCARD/Emu/.emu_setup/core_switch.sh"
-    },
-    {
-      "name": "CPU: (✓SMART)-Perf",
-      "launch": "/mnt/SDCARD/Emu/.emu_setup/cpu_switch.sh"
-    },
-    {
-      "name": "Save current launch settings as per-game override",
-      "launch": "/mnt/SDCARD/Emu/.emu_setup/set_override.sh"
-    },
-    {
-      "name": "Remove per-game launch setting override",
-      "launch": "/mnt/SDCARD/Emu/.emu_setup/remove_override.sh"
-    }
-  ],
+  "launchlist": [],
   "menuOptions": {
     "Governor": {
       "display": "CPU Mode",
