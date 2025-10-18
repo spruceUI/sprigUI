@@ -4,47 +4,76 @@
 
 . /mnt/SDCARD/sprig/helperFunctions.sh
 
-log_message "-----Launching Emulator-----" -v
-log_message "trying: $0 $@" -v
+set_performance
+
+log_message "-----Launching Emulator-----"
+log_message "trying: $0 $@"
 
 export EMU_NAME="$(echo "$1" | cut -d'/' -f5)"
+export EMU_JSON_PATH="/mnt/SDCARD/Emu/$EMU_NAME/config.json"
 export GAME="$(basename "$1")"
-export EMU_DIR="/mnt/SDCARD/Emu/${EMU_NAME}"
-export DEF_DIR="/mnt/SDCARD/Emu/.emu_setup/defaults"
-export OPT_DIR="/mnt/SDCARD/Emu/.emu_setup/options"
-export OVR_DIR="/mnt/SDCARD/Emu/.emu_setup/overrides"
-export DEF_FILE="$DEF_DIR/${EMU_NAME}.opt"
-export OPT_FILE="$OPT_DIR/${EMU_NAME}.opt"
-export OVR_FILE="$OVR_DIR/$EMU_NAME/$GAME.opt"
-export CUSTOM_DEF_FILE="$EMU_DIR/default.opt"
+export CORE="$(jq -r '.menuOptions.Emulator.selected' config.json)"
+export MODE="$(jq -r '.menuOptions.Governor.selected' config.json)"
 
 ##### GENERAL FUNCTIONS #####
 
-import_launch_options() {
-	if [ -f "$DEF_FILE" ]; then
-		. "$DEF_FILE"
-	elif [ -f "$CUSTOM_DEF_FILE" ]; then
-		. "$CUSTOM_DEF_FILE"
-	else
-		log_message "WARNING: Default .opt file not found for $EMU_NAME!" -v
-	fi
+use_default_emulator() {
 
-	if [ -f "$OPT_FILE" ]; then
-		. "$OPT_FILE"
-	else
-		log_message "WARNING: System .opt file not found for $EMU_NAME!" -v
-	fi
+	case "$EMU_NAME" in
+		"AMIGA")			default_core="uae4arm";;
+		"ARCADE"|"NEOGEO")	default_core="fbneo";;
+		"ARDUBOY")			default_core="ardens";;
+		"ATARI")			default_core="stella2014";;
+		"ATARIST")			default_core="hatari";;
+		"CHAI")				default_core="chailove";;
+		"COLECO"|"MSX")		default_core="bluemsx";;
+		"COMMODORE")		default_core="vice_x64";;
+		"CPC")				default_core="cap32";;
+		"DOOM")				default_core="prboom";;
+		"DOS")				default_core="dosbox_pure";;
+		"EASYRPG")			default_core="easyrpg";;
+		"EIGHTHUNDRED")		default_core="atari800";;
+		"FAIRCHILD")		default_core="freechaf";;
+		"FAKE08")			default_core="fake08";;
+		"FC"|"FDS")			default_core="fceumm";;
+		"FIFTYTWOHUNDRED")	default_core="a5200";;
+		"GB"|"GBC")			default_core="gambatte";;
+		"GBA"|"SGB")		default_core="mgba";;
+		"GG"|"MS"|"MSUMD"|"SEGASGONE")	default_core="genesis_plus_gx";;
+		"GW")				default_core="gw";;
+		"INTELLIVISION")	default_core="freeintv";;
+		"LYNX")				default_core="handy";;
+		"MD"|"SEGACD"|"THIRTYTWOX")	default_core="picodrive";;
+		"MEGADUCK")			default_core="sameduck";;
+		"MSU1"|"SFC")		default_core="snes9x";;
+		"NEOCD")			default_core="neocd";;
+		"NGP"|"NGPC")		default_core="mednafen_ngp";;
+		"ODYSSEY"|"VIDEOPAC")	default_core="o2em";;
+		"PCE"|"PCECD")		default_core="mednafen_pce_fast";;
+		"POKE")				default_core="pokemini";;
+		"PS")				default_core="pcsx_rearmed";;
+		"QUAKE")			default_core="tyrquake";;
+		"SEVENTYEIGHTHUNDRED")	default_core="prosystem";;
+		"SGFX")				default_core="mednafen_supergrafx";;
+		"SUPERVISION")		default_core="potator";;
+		"TIC")				default_core="tic80";;
+		"VB")				default_core="mednafen_vb";;
+		"VECTREX")			default_core="vecx";;
+		"VIC20")			default_core="vice_xvic";;
+		"WOLF")				default_core="ecwolf";;
+		"WS"|"WSC")			default_core="mednafen_wswan";;
+		"X68000")			default_core="px68k";;
+		"ZXS")				default_core="fuse";;
+		*)					default_core="";;
+	esac
 
-	if [ -f "$OVR_FILE" ]; then
-		. "$OVR_FILE";
-		log_message "Launch setting OVR_FILE detected @ $OVR_FILE" -v
-	else
-		log_message "No launch OVR_FILE detected. Using current system settings." -v
-	fi
+	export CORE="$default_core"
+	log_message "Using default core of $CORE to run $EMU_NAME"
 }
 
+
 set_cpu_mode() {
-	if [ "$MODE" != "overclock" ] && [ "$MODE" != "performance" ]; then
+	if [ "$MODE" != "Overclock" ] && [ "$MODE" != "Performance" ]; then
 		/mnt/SDCARD/sprig/scripts/enforceSmartCPU.sh &
 	fi
 }
@@ -164,22 +193,6 @@ load_pico8_control_profile() {
 	P8_DIR="/mnt/SDCARD/Emu/PICO8/.lexaloffle/pico-8"
 	CONTROL_PROFILE="$(setting_get "pico8_control_profile")"
 
-	case "$PLATFORM" in
-		"A30")
-			if [ "$CONTROL_PROFILE" = "Steward" ]; then
-				export LD_LIBRARY_PATH="$HOME"/lib-stew:$LD_LIBRARY_PATH
-			else
-				export LD_LIBRARY_PATH="$HOME"/lib-cine:$LD_LIBRARY_PATH
-			fi
-			;;
-		"Flip")
-			export LD_LIBRARY_PATH="$HOME"/lib-Flip:$LD_LIBRARY_PATH
-			;;
-		"Brick" | "SmartPro")
-			export LD_LIBRARY_PATH="$HOME"/lib-trimui:$LD_LIBRARY_PATH
-			;;
-	esac
-
 	case "$CONTROL_PROFILE" in
 		"Doubled") 
 			cp -f "$P8_DIR/sdl_controllers.facebuttons" "$P8_DIR/sdl_controllers.txt"
@@ -200,55 +213,6 @@ load_pico8_control_profile() {
 			cp -f "$P8_DIR/sdl_controllers.racing_reverse" "$P8_DIR/sdl_controllers.txt"
 			;;
 	esac
-}
-
-extract_game_dir(){
-    # long-term come up with better method.
-    # this is short term for testing
-    gamedir_line=$(grep "^GAMEDIR=" "$ROM_FILE")
-    # If gamedir_name ends with a slash, remove the slash
-    gamedir_line="${gamedir_line%/}"
-    # Extract everything after the last '/' in the GAMEDIR line and assign it to game_dir
-    game_dir="/mnt/SDCARD/Roms/PORTS/${gamedir_line##*/}"
-    # If game_dir ends with a quote, remove the quote
-    echo "${game_dir%\"}"
-}
-
-is_retroarch_port() {
-    # Check if the file contains "retroarch"
-    if grep -q "retroarch" "$ROM_FILE"; then
-        return 1;
-    else
-        return 0;
-    fi
-}
-
-run_port() {
-	if [ "$PLATFORM" = "Flip" ] || [ "$PLATFORM" = "Brick" ]; then
-
-        is_retroarch_port
-        if [[ $? -eq 1 ]]; then
-            PORTS_DIR=/mnt/SDCARD/Roms/PORTS
-            cd /mnt/SDCARD/RetroArch/
-            export HOME="/mnt/SDCARD/Saves/flip/home"
-            export LD_LIBRARY_PATH="/mnt/SDCARD/spruce/flip/lib/:/usr/lib:/mnt/SDCARD/spruce/flip/muOS/usr/lib/:/mnt/SDCARD/spruce/flip/muOS/lib/:/usr/lib32:/mnt/SDCARD/spruce/flip/lib32/:/mnt/SDCARD/spruce/flip/muOS/usr/lib32/:$LD_LIBRARY_PATH"
-            export PATH="/mnt/SDCARD/spruce/flip/bin/:$PATH"
-             "$ROM_FILE" &> /mnt/SDCARD/Saves/spruce/port.log
-        else
-            PORTS_DIR=/mnt/SDCARD/Roms/PORTS
-            cd $PORTS_DIR
-            export HOME="/mnt/SDCARD/Saves/flip/home"
-            export LD_LIBRARY_PATH="/mnt/SDCARD/spruce/flip/lib/:/usr/lib:/mnt/SDCARD/spruce/flip/muOS/usr/lib/:/mnt/SDCARD/spruce/flip/muOS/lib/:/usr/lib32:/mnt/SDCARD/spruce/flip/lib32/:/mnt/SDCARD/spruce/flip/muOS/usr/lib32/:$LD_LIBRARY_PATH"
-            export PATH="/mnt/SDCARD/spruce/flip/bin/:$PATH"
-            "$ROM_FILE" &> /mnt/SDCARD/Saves/spruce/port.log
-        fi
-        
-        /mnt/SDCARD/spruce/flip/unbind-new-libmali.sh
-    else
-        PORTS_DIR=/mnt/SDCARD/Roms/PORTS
-        cd $PORTS_DIR
-        /bin/sh "$ROM_FILE" 
-    fi
 }
 
 run_retroarch() {
@@ -273,7 +237,9 @@ run_retroarch() {
 ##### MAIN EXECUTION #####
  ########################
 
-import_launch_options
+if [ -z "$CORE" ]; then
+	use_default_emulator
+fi
 set_cpu_mode
 
 flag_add 'emulator_launched'
