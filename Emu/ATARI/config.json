@@ -4,35 +4,19 @@
   "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/atari.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "a26|zip|7z|bin",
-  "launchlist": [
-    {
-      "name": "Jump to random Atari 2600 game",
-      "launch": "/mnt/SDCARD/Emu/.emu_setup/aleatorio.sh"
-    },
-    {
-      "name": "CPU: (✓SMART)-Perf",
-      "launch": "/mnt/SDCARD/Emu/.emu_setup/cpu_switch.sh"
-    },
-    {
-      "name": "Save current launch settings as per-game override",
-      "launch": "/mnt/SDCARD/Emu/.emu_setup/set_override.sh"
-    },
-    {
-      "name": "Remove per-game launch setting override",
-      "launch": "/mnt/SDCARD/Emu/.emu_setup/remove_override.sh"
-    }
-  ],
+  "launchlist": [],
   "menuOptions": {
     "Governor": {
-      "display": "CPU",
+      "display": "CPU Mode",
       "devices": [
         "SPRIG_MIYOO_MINI_FLIP"
       ],
       "options": [
-        "SMART",
-        "Perf"
+        "Smart",
+        "Performance",
+        "Overclock"
       ],
-      "selected": "SMART",
+      "selected": "Smart",
       "overrides": {}
     }
   }

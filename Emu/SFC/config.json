@@ -29,15 +29,16 @@
   ],
   "menuOptions": {
     "Governor": {
-      "display": "CPU",
+      "display": "CPU Mode",
       "devices": [
         "SPRIG_MIYOO_MINI_FLIP"
       ],
       "options": [
-        "SMART",
-        "Perf"
+        "Smart",
+        "Performance",
+        "Overclock"
       ],
-      "selected": "SMART",
+      "selected": "Smart",
       "overrides": {}
     },
     "Emulator": {
