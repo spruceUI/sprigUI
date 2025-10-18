@@ -1,0 +1,67 @@
+{
+    "showBottomBar": true,
+    "name": "Alekfull-NX",
+    "author": "fagnerpc",
+    "description": "Alekfull-NX modified for the 640x480 devices",
+    "title": {
+        "font": "nunwen.ttf",
+        "size": 25,
+        "color": "#000000"
+    },
+    "hint": {
+        "font": "nunwen.ttf",
+        "size": 25,
+        "color": "#000000"
+    },
+    "currentpage": {
+        "font": "nunwen.ttf",
+        "size": 22,
+        "color": "#000000"
+    },
+    "total": {
+        "font": "nunwen.ttf",
+        "size": 22,
+        "color": "#000000"
+    },
+    "grid": {
+        "font": "nunwen.ttf",
+        "grid1x4": 25,
+        "grid3x4": 18,
+        "color": "#6e6f6d",
+        "selectedcolor": "#000000"
+    },
+    "list": {
+        "font": "nunwen.ttf",
+        "size": 24,
+        "color": "#000000",
+        "selectedcolor": "#FFFFFF"
+    },
+    "shadowed": {
+        "font": "nunwen.ttf",
+        "shadowedFontSize":40,
+        "shadowedFontBackdropSize":40,
+        "shadowedFontColor": "#FFFFFF",
+        "shadowedFontBackdropColor": "#000000",
+        "shadowedFontSmallSize":26,
+        "shadowedFontBackdropSmallSize":26,
+        "shadowedFontSmallColor": "#FFFFFF",
+        "shadowedFontBackdropSmallColor": "#000000"
+    },
+    "gameSelectionViewType": "GRID",
+    "systemSelectViewType": "FULLSCREEN_GRID",
+    "gameSelectImgWidth": 140,
+    "gameSelectImgHeight": 140,
+    "gridGameSelectImgWidth": 140,
+    "gridGameSelectImgHeight": 140,
+    "listGameSelectImgWidth": 294,
+    "listGameSelectImgHeight": 294,
+    "gameSelectShowTextGridMode": false,
+    "gameSelectShowSelectedBgGridMode": true,
+    "setTopBarTextToGameSelection": true,
+    "gridMultiRowSelBgResizePadWidth": 20,
+    "gridMultiRowSelBgResizePadHeight": 20,
+    "gridMultiRowExtraYPad": 17,
+    "gameSelectGridResizeType": "ZOOM",
+    "skipMainMenu": true,
+    "mainMenuColCount": 5
+}
