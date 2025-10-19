@@ -141,9 +141,9 @@ run_openbor() {
 	
 	cd $mydir
 	if [ "$mypak" == "Final Fight LNS.pak" ]; then
-		./OpenBOR_mod "$1"
+		./OpenBOR_mod "$ROM_FILE"
 	else
-		./OpenBOR_new "$1"
+		./OpenBOR_new "$ROM_FILE"
 	fi
 	sync
 	fbset -g 752 560 752 1120 32
