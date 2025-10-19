@@ -4,8 +4,8 @@
 
 DEVICE="/dev/input/event0"
 TARGET_SCRIPT="/mnt/SDCARD/sprig/scripts/save_poweroff.sh"
-HOLD_MIN=2   # minimum seconds to trigger
-HOLD_MAX=7   # maximum seconds to trigger
+HOLD_MIN=1   # minimum seconds to trigger
+HOLD_MAX=2   # maximum seconds to trigger
 
 # Start evtest in background and read its output line-by-line
 evtest "$DEVICE" 2>/dev/null | while read -r line; do

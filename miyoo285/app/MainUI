@@ -16,8 +16,8 @@ fi
 
 if [ -e /mnt/SDCARD/sprig/flags/lastgame.lock ]; then
     ./freemma
-    /mnt/SDCARD/sprig/flags/lastgame.lock
-    rm -f /mnt/SDCARD/sprig/flags/lastgame.lock
+    mv /mnt/SDCARD/sprig/flags/lastgame.lock /tmp/cmd_to_run.sh
+    /tmp/cmd_to_run.sh
 fi
 
 ./freemma
