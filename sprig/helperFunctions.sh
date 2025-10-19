@@ -100,7 +100,41 @@ log_precise() {
     printf '%s %s\n' "$timestamp" "$message" >>"$log_file"
 }
 
+rotate_logs() {
+    local log_dir="/mnt/SDCARD/Saves/sprig"
+    local log_target="$log_dir/sprig.log"
+    local max_log_files=5
 
+    # Create the log directory if it doesn't exist
+    if [ ! -d "$log_dir" ]; then
+        mkdir -p "$log_dir"
+    fi
+
+    # If sprig.log exists, move it to a temporary file
+    if [ -f "$log_target" ]; then
+        mv "$log_target" "$log_target.tmp"
+    fi
+
+    # Create a fresh spruce.log immediately
+    touch "$log_target"
+
+    # Perform log rotation in the background
+    (
+        # Rotate logs sprig5.log -> sprig4.log -> sprig3.log -> etc.
+        i=$((max_log_files - 1))
+        while [ $i -ge 1 ]; do
+            if [ -f "$log_dir/sprig${i}.log" ]; then
+                mv "$log_dir/sprig${i}.log" "$log_dir/sprig$((i+1)).log"
+            fi
+            i=$((i - 1))
+        done
+
+        # Move the temporary file to spruce1.log
+        if [ -f "$log_target.tmp" ]; then
+            mv "$log_target.tmp" "$log_dir/sprig1.log"
+        fi
+    ) &
+}
 
 ##########     SURVIVAL     ##########
 

@@ -5,6 +5,7 @@
 # set up auto resume
 if [ -e /tmp/cmd_to_run.sh ]; then
     cp /tmp/cmd_to_run.sh /mnt/SDCARD/sprig/flags/lastgame.lock
+    log_message "cmd_to_run copied to lastgame.lock to set up autoresume"
 fi
 
 # kill the loop first so mainui doesn't try to relaunch
