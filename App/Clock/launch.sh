@@ -1,9 +1,5 @@
 #!/bin/sh
-sysdir=/mnt/SDCARD/.tmp_update
-savedir=/mnt/SDCARD/Saves/CurrentProfile/saves
 
-cd $sysdir
+savedir=/mnt/SDCARD/Saves/sprig
 HOME=/mnt/SDCARD
-./bin/clock
-
-date +%s > $savedir/currentTime.txt
+./clock

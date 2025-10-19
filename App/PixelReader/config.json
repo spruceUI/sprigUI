@@ -1,6 +1,6 @@
 {
 	"label":	"Ebook Reader",
-	"icon":	"/mnt/SDCARD/Icons/Default/app/ereader.png",
+	"icon":	"ereader.png",
 	"launch":	"launch.sh",
 	"description":	"PixelReader v0.6"
 }

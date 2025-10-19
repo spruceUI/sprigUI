@@ -1,6 +1,0 @@
-{
-	"label":	"Random Game",
-	"icon":	"/mnt/SDCARD/Icons/Default/app/dice.png",
-	"launch":	"launch.sh",
-	"description":	"Launch random game (any system)"
-}
