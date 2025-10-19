@@ -19,7 +19,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
                 release_time=$(date +%s)
                 log_message "Power button released at $release_time"
                 duration=$((release_time - press_time))
-                if [ "$duration" -ge "$HOLD_MIN" ] && [ "$duration" -lt "$HOLD_MAX" ]; then
+                if [ "$duration" -ge "$HOLD_MIN" ] && [ "$duration" -le "$HOLD_MAX" ]; then
                     log_message "Power button held ${duration}s — running $TARGET_SCRIPT"
                     "$TARGET_SCRIPT" &
                 else
