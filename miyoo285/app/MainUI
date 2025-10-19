@@ -14,5 +14,11 @@ if ! pgrep -f "/mnt/SDCARD/sprig/scripts/powerbutton_watchdog.sh" >/dev/null; th
     /mnt/SDCARD/sprig/scripts/powerbutton_watchdog.sh &
 fi
 
+if [ -e /mnt/SDCARD/sprig/flags/lastgame.lock ]; then
+    ./freemma
+    /mnt/SDCARD/sprig/flags/lastgame.lock
+    rm -f /mnt/SDCARD/sprig/flags/lastgame.lock
+fi
+
 ./freemma
 /mnt/SDCARD/App/PyUI/launch.sh
