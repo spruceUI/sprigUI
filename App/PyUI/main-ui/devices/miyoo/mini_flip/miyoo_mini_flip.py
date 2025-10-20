@@ -339,7 +339,7 @@ class MiyooMiniFlip(MiyooDevice):
         
     @property
     def reboot_cmd(self):
-        return None
+        return "reboot"
 
     def get_wpa_supplicant_conf_path(self):
         return "/appconfigs/wpa_supplicant.conf"
@@ -423,4 +423,16 @@ class MiyooMiniFlip(MiyooDevice):
         return False
 
     def supports_analog_calibration(self):
+        return False
+
+    def supports_brightness_calibration(self):
+        return False
+
+    def supports_contrast_calibration(self):
+        return False
+
+    def supports_saturation_calibration(self):
+        return False
+
+    def supports_hue_calibration(self):
         return False
