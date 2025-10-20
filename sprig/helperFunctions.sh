@@ -220,3 +220,9 @@ set_performance() {
         flag_remove "setting_cpu"
     fi
 }
+
+##########     OTHER STUFF     ##########
+
+show() {
+    /customer/app/sdldisplay "$1"
+}
