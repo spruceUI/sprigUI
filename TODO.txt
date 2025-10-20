@@ -7,12 +7,17 @@ Before first release:
 5) Get PyUI to reflect system volume
 6) Fix or hide contrast, color temp, etc. in PyUI
 7) Test available cores for all systems... remove those that never work.
-8)
+8) Patch and include each of the following themes:
+    - SPRUCE
+    - ALEKFULL_NX
+    - Cosy by Kyle Bing
+    - Blue by HeyDW
+    - Pico-8 by 369px
+    - MinUInspired by tenlevels
 
 Decisions to make:
 1) Do we want to have ssh and adb start up every time for all users, or limit it to a developer mode type thing? Should we leave these as apps?
 2) Are we happy with the current Emu/Roms folder setup? Are there any more to combine or split out? Do we want the names to remain the same?
-3) Do we want to keep the three stock themes? If so, we need to patch them for PyUI.
 
 "Would be nice"s:
 1) Scraper app?
