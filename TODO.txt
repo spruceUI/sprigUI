@@ -18,4 +18,6 @@ Decisions to make:
 1) Scraper app?
 2) Reboot option in PyUI settings
 3) Implement emu core overrides into standard_launch.sh
-4) 
+4) dufs or sftpgo?
+5) syncthing?
+6) 
