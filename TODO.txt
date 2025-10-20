@@ -16,4 +16,6 @@ Decisions to make:
 
 "Would be nice"s:
 1) Scraper app?
-2)
+2) Reboot option in PyUI settings
+3) Implement emu core overrides into standard_launch.sh
+4) 
