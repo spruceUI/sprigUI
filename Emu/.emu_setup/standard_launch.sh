@@ -266,4 +266,7 @@ case $EMU_NAME in
 esac
 
 kill -9 $(pgrep -f enforceSmartCPU.sh)
+
+rm -f /tmp/cmd_to_run.sh # do this or else games will sometimes launch when you reload PyUI/change themes
+
 log_message "-----Closing Emulator-----" -v

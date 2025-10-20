@@ -12,7 +12,7 @@ Before first release:
 Decisions to make:
 1) Do we want to have ssh and adb start up every time for all users, or limit it to a developer mode type thing? Should we leave these as apps?
 2) Are we happy with the current Emu/Roms folder setup? Are there any more to combine or split out? Do we want the names to remain the same?
-3)
+3) Do we want to keep the three stock themes? If so, we need to patch them for PyUI.
 
 "Would be nice"s:
 1) Scraper app?
