@@ -164,6 +164,7 @@ run_pico8() {
 
 	export HOME="$EMU_DIR"
 	export PATH="$HOME"/bin:$PATH:"/mnt/SDCARD/BIOS"
+	export LD_LIBRARY_PATH="/mnt/SDCARD/App/PyUI/libs:$HOME/lib:$LD_LIBRARY_PATH"
 
 	cd "$HOME"
 
