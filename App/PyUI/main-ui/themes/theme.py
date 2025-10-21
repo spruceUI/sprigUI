@@ -950,3 +950,10 @@ class Theme():
             default_height = -1 * text_height        
 
         return cls._data.get("systemSelectGridImageYOffset", default_height)
+
+    @classmethod
+    def get_app_icon(cls, app_name):
+        app_icon_path = cls._icon("app",app_name)
+        PyUiLogger.get_logger().info(f"App icon path is {app_icon_path}")
+
+        return cls._icon("app",app_name)
