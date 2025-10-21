@@ -14,11 +14,8 @@ class FileWatcher():
                 if last_mtime is None:
                     last_mtime = mtime
                 elif mtime != last_mtime:
-                    PyUiLogger.get_logger().info(f"{path} change detected.")        
                     last_mtime = mtime
                     callback()
-                else:
-                    PyUiLogger.get_logger().info(f"{path} no change detected.")        
             except FileNotFoundError:
                 PyUiLogger.get_logger().warning(f"{path} not found for file watcher.")        
                 pass
