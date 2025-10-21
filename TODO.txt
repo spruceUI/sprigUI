@@ -20,7 +20,6 @@ Decisions to make:
 
 "Would be nice"s:
 1) Scraper app?
-2) Implement emu core overrides into standard_launch.sh
-3) dufs
-4) syncthing
-5)
+2) dufs
+3) syncthing
+4)

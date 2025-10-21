@@ -17,6 +17,13 @@ export CORE="$(jq -r '.menuOptions.Emulator.selected' "$EMU_JSON_PATH")"
 
 ##### GENERAL FUNCTIONS #####
 
+get_core_override() {
+	local core_override="$(jq -r --arg game "$GAME" '.menuOptions.Emulator.overrides[$game]' "$EMU_JSON_PATH")"
+	if [ -n "$core_override" ] && [ "$core_override" != "null" ]; then
+		export CORE=$core_override
+	fi
+}
+
 use_default_emulator() {
 
 	case "$EMU_NAME" in
@@ -240,6 +247,8 @@ run_retroarch() {
 if [ -z "$CORE" ] || [ "$CORE" = "null" ]; then
 	use_default_emulator
 fi
+
+get_core_override
 
 set_cpu_mode
 
