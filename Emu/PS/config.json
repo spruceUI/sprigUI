@@ -10,17 +10,7 @@
       "launch": "/mnt/SDCARD/Emu/.emu_setup/m3u_generator.sh"
     }
   ],
-  "menuOptions": {
-    "Emulator": {
-      "display": "Retroarch Core",
-      "options": [
-        "pcsx_rearmed",
-        "km_duckswanstation_xtreme_amped"
-      ],
-      "selected": "pcsx_rearmed",
-      "overrides": {}
-    }
-  },
+  "menuOptions": {},
   "sortOrder": 5200,
   "brand": "Sony",
   "type": "homeconsole",
