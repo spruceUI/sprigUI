@@ -149,6 +149,10 @@ run_openbor() {
 	fbset -g 752 560 752 1120 32
 }
 
+run_port() {
+	/bin/sh "$ROM_FILE"
+}
+
 run_pico8() {
 
 	export HOME="$EMU_DIR"

@@ -4,25 +4,23 @@ Before first release:
 2) Fix or hide media system
 3) Fix or hide ports system
 4) Something of a readme
-5) Get PyUI to reflect system volume
-6) Fix or hide contrast, color temp, etc. in PyUI
-7) Test available cores for all systems... remove those that never work.
-8) Patch and include each of the following themes:
+5) Test available cores for all systems... remove those that never work.
+6) Patch and include each of the following themes:
     - SPRUCE
     - ALEKFULL_NX
     - Cosy by Kyle Bing
     - Blue by HeyDW
     - Pico-8 by 369px
     - MinUInspired by tenlevels
+7)
 
 Decisions to make:
-1) Do we want to have ssh and adb start up every time for all users, or limit it to a developer mode type thing? Should we leave these as apps?
-2) Are we happy with the current Emu/Roms folder setup? Are there any more to combine or split out? Do we want the names to remain the same?
+1) Are we happy with the current Emu/Roms folder setup? Are there any more to combine or split out? Do we want the names to remain the same?
+2)
 
 "Would be nice"s:
 1) Scraper app?
-2) Reboot option in PyUI settings
-3) Implement emu core overrides into standard_launch.sh
-4) dufs or sftpgo?
-5) syncthing?
-6) 
+2) Implement emu core overrides into standard_launch.sh
+3) dufs
+4) syncthing
+5)

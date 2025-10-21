@@ -10,11 +10,11 @@ if [ ! -e /tmp/logs_rotated ]; then
 fi
 
 if ! pgrep adbd >/dev/null 2>&1; then
-    /mnt/SDCARD/App/adbd_wifi/launch.sh
+    /mnt/SDCARD/sprig/scripts/start_adbd.sh
 fi
 
 if ! pgrep dropbearmulti >/dev/null 2>&1; then
-    /mnt/SDCARD/App/SSH/launch.sh
+    /mnt/SDCARD/sprig/scripts/start_dropbear.sh
 fi
 
 if ! pgrep -f "/mnt/SDCARD/sprig/scripts/powerbutton_watchdog.sh" >/dev/null; then

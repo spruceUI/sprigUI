@@ -1,7 +1,0 @@
-{
-"label":"SSH",
-"icon":"SSH.png",
-"iconsel":"SSH.png",
-"launch":"launch.sh",
-"description":"ssh root@192.168.x.x"
-}

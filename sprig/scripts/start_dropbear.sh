@@ -2,7 +2,7 @@
 
 DROPBEAR_KEY_DIR="/mnt/SDCARD/sprig/etc/ssh"
 
-cd $(dirname "$0")
+cd /mnt/SDCARD/sprig/bin
 
 mkdir -p "$DROPBEAR_KEY_DIR"
 [ ! -f "$DROPBEAR_KEY_DIR/dropbear_rsa_host_key" ] && ./dropbearmulti dropbearkey -t rsa -f "$DROPBEAR_KEY_DIR/dropbear_rsa_host_key"
