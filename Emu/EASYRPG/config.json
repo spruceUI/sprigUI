@@ -6,7 +6,9 @@
   "subfolder_launch_file": "RPG_RT.ldb",
   "extlist": "zip|ldb|easyrpg",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 2100,
+  "brand": "modernengine",
+  "type": "fantasy",
+  "releaseYear": 2008
 }

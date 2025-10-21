@@ -6,7 +6,9 @@
   "ingamemenu": 1,
   "extlist": "sh",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 5000,
+  "brand": "Other",
+  "type": "other",
+  "releaseYear": 2000
 }

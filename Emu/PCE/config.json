@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "pce|zip|7z|ccd|iso|img|chd|cue",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 6600,
+  "brand": "NEC",
+  "type": "homeconsole",
+  "releaseYear": 1987
 }

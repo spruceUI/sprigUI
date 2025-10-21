@@ -15,5 +15,9 @@
       "selected": "handy",
       "overrides": {}
     }
-  }
+  },
+  "sortOrder": 900,
+  "brand": "Atari",
+  "type": "handheld",
+  "releaseYear": 1989
 }

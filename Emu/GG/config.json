@@ -29,5 +29,9 @@
       "selected": "genesis_plus_gx",
       "overrides": {}
     }
-  }
+  },
+  "sortOrder": 2600,
+  "brand": "Sega",
+  "type": "handheld",
+  "releaseYear": 1990
 }

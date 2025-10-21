@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "hex",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 400,
+  "brand": "other",
+  "type": "handheld",
+  "releaseYear": 2014
 }

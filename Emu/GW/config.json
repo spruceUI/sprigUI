@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "mgw|zip|7z",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 2500,
+  "brand": "Nintendo",
+  "type": "handheld",
+  "releaseYear": 1980
 }

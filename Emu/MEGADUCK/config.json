@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "bin|zip|7z",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 3400,
+  "brand": "Welback",
+  "type": "handheld",
+  "releaseYear": 1993
 }

@@ -20,5 +20,9 @@
       "selected": "picodrive",
       "overrides": {}
     }
-  }
+  },
+  "sortOrder": 5800,
+  "brand": "Sega",
+  "type": "homeconsole",
+  "releaseYear": 1991
 }

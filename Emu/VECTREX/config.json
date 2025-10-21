@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "vec|zip|7z",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 6900,
+  "brand": "General Consumer Electronics",
+  "type": "homeconsole",
+  "releaseYear": 1982
 }

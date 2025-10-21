@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "gtr",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 2650,
+  "brand": "other",
+  "type": "fantasy",
+  "releaseYear": 2023
 }

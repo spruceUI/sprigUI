@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "fbl|pak",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 5300,
+  "brand": "modernengine",
+  "type": "fantasy",
+  "releaseYear": 1996
 }

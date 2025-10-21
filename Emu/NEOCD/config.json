@@ -10,7 +10,9 @@
       "launch": "/mnt/SDCARD/Emu/.emu_setup/m3u_generator.sh"
     }
   ],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 4100,
+  "brand": "SNK",
+  "type": "homeconsole",
+  "releaseYear": 1994
 }

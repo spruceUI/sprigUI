@@ -18,7 +18,9 @@
       "launch": "import.sh"
     }
   ],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 4800,
+  "brand": "modernengine",
+  "type": "fantasy",
+  "releaseYear": 2015
 }

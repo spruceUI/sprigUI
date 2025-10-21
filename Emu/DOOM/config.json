@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "zip|wad|exe",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 2000,
+  "brand": "idSoftware",
+  "type": "modernengine",
+  "releaseYear": 1995
 }

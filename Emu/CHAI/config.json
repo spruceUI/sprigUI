@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "chailove",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 1200,
+  "brand": "modernengine",
+  "type": "Other",
+  "releaseYear": 2016
 }

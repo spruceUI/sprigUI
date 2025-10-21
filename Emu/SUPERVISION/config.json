@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "zip|7z|sv|bin",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 6500,
+  "brand": "Watara",
+  "type": "handheld",
+  "releaseYear": 1992
 }

@@ -5,5 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "nds|zip|7z|rar",
   "launchlist": [],
-  "menuOptions": {}
+  "menuOptions": {},
+  "sortOrder": 4000,
+  "brand": "Nintendo",
+  "type": "handheld",
+  "releaseYear": 2004
 }

@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "ecwolf|exe",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 7500,
+  "brand": "Other",
+  "type": "pc",
+  "releaseYear": 1992
 }

@@ -15,5 +15,9 @@
       "selected": "picodrive",
       "overrides": {}
     }
-  }
+  },
+  "sortOrder": 3000,
+  "brand": "Sega",
+  "type": "homeconsole",
+  "releaseYear": 1988
 }

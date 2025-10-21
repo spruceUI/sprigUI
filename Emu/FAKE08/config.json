@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "p8|png",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 2200,
+  "brand": "modernengine",
+  "type": "fantasy",
+  "releaseYear": 2013
 }

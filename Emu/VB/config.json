@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "vb|vboy|zip|7z",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 7200,
+  "brand": "Nintendo",
+  "type": "handheld",
+  "releaseYear": 1995
 }

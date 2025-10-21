@@ -20,5 +20,9 @@
       "selected": "pcsx_rearmed",
       "overrides": {}
     }
-  }
+  },
+  "sortOrder": 5200,
+  "brand": "Sony",
+  "type": "homeconsole",
+  "releaseYear": 1994
 }

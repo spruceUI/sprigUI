@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "ws|wsc|zip|7z|pc2",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 7400,
+  "brand": "Bandai",
+  "type": "handheld",
+  "releaseYear": 2000
 }

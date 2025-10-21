@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "bin|zip|7z",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 4600,
+  "brand": "Magnavox",
+  "type": "homeconsole",
+  "releaseYear": 1972
 }

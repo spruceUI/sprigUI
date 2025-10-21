@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "st|msa|stx|dim|ipf|zip|7z",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 1000,
+  "brand": "Atari",
+  "type": "homeconsole",
+  "releaseYear": 1985
 }

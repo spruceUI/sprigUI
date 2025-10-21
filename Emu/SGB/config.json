@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "gb|gbc|gba|zip|7z|bin",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 6100,
+  "brand": "Nintendo",
+  "type": "homeconsole",
+  "releaseYear": 1994
 }

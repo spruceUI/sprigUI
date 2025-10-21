@@ -16,5 +16,9 @@
       "selected": "genesis_plus_gx",
       "overrides": {}
     }
-  }
+  },
+  "sortOrder": 5900,
+  "brand": "Sega",
+  "type": "homeconsole",
+  "releaseYear": 1986
 }

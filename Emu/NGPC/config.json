@@ -36,5 +36,9 @@
       "selected": "mednafen_ngp",
       "overrides": {}
     }
-  }
+  },
+  "sortOrder": 4500,
+  "brand": "SNK",
+  "type": "handheld",
+  "releaseYear": 1999
 }

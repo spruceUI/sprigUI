@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "zip|bin|rom|chf",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 1300,
+  "brand": "Fairchild",
+  "type": "homeconsole",
+  "releaseYear": 1976
 }

@@ -15,5 +15,9 @@
       "selected": "cap32",
       "overrides": {}
     }
-  }
+  },
+  "sortOrder": 200,
+  "brand": "Amstrad",
+  "type": "pc",
+  "releaseYear": 1984
 }

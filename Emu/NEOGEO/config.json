@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "zip|7z",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 4200,
+  "brand": "SNK",
+  "type": "homeconsole",
+  "releaseYear": 1990
 }

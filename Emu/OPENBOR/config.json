@@ -5,7 +5,9 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "pak",
   "launchlist": [],
-  "menuOptions": {
-
-  }
+  "menuOptions": {},
+  "sortOrder": 4700,
+  "brand": "modernengine",
+  "type": "fantasy",
+  "releaseYear": 2005
 }

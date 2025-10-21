@@ -15,5 +15,9 @@
       "selected": "uae4arm",
       "overrides": {}
     }
-  }
+  },
+  "sortOrder": 100,
+  "brand": "Commodore",
+  "type": "pc",
+  "releaseYear": 1985
 }
