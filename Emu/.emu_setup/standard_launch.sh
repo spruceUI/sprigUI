@@ -163,34 +163,15 @@ run_port() {
 run_pico8() {
 
 	export HOME="$EMU_DIR"
-	export PATH=$WGET_PATH"$HOME"/bin:$PATH:"/mnt/SDCARD/BIOS"
-
-	if setting_get "pico8_stretch"; then
-		case "$PLATFORM" in
-			"A30") SCALING="-draw_rect 0,0,$DISPLAY_HEIGHT,$DISPLAY_WIDTH" ;; # handle A30's rotated screen
-			*) SCALING="-draw_rect 0,0,$DISPLAY_WIDTH,$DISPLAY_HEIGHT" ;;
-		esac
-	else
-		SCALING=""
-	fi
+	export PATH="$HOME"/bin:$PATH:"/mnt/SDCARD/BIOS"
 
 	cd "$HOME"
 
-	if [ "$PLATFORM" = "A30" ]; then
-		export SDL_VIDEODRIVER=mali
-		export SDL_JOYSTICKDRIVER=a30
-		PICO8_BINARY="pico8_dyn"
-		sed -i 's|^transform_screen 0$|transform_screen 135|' "$HOME/.lexaloffle/pico-8/config.txt"
-	else
-		PICO8_BINARY="pico8_64"
-		sed -i 's|^transform_screen 135$|transform_screen 0|' "$HOME/.lexaloffle/pico-8/config.txt"
-	fi
-
 	if [ "${GAME##*.}" = "splore" ]; then
-		check_and_connect_wifi
-		$PICO8_BINARY -splore -width $DISPLAY_WIDTH -height $DISPLAY_HEIGHT -root_path "/mnt/SDCARD/Roms/PICO8/" $SCALING
+		# check_and_connect_wifi
+		pico8_dyn -splore -width 752 -height 560 -root_path "/mnt/SDCARD/Roms/PICO8/" $SCALING
 	else
-		$PICO8_BINARY -width $DISPLAY_WIDTH -height $DISPLAY_HEIGHT -scancodes -run "$ROM_FILE" $SCALING
+		pico8_dyn -width $752 -height 560 -scancodes -run "$ROM_FILE" $SCALING
 	fi
 	sync
 }
