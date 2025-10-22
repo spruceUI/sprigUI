@@ -168,6 +168,11 @@ run_pico8() {
 
 	cd "$HOME"
 
+	export SDL_VIDEODRIVER=mmiyoo
+	export SDL_AUDIODRIVER=mmiyoo
+	export EGL_VIDEODRIVER=mmiyoo
+	export SDL_MMIYOO_DOUBLE_BUFFER=1
+
 	if [ "${GAME##*.}" = "splore" ]; then
 		# check_and_connect_wifi
 		pico8_dyn -splore -width 752 -height 560 -root_path "/mnt/SDCARD/Roms/PICO8/" $SCALING
@@ -249,7 +254,7 @@ case $EMU_NAME in
 		run_openbor
 		;;
 	"PICO8")
-		load_pico8_control_profile
+		# load_pico8_control_profile
 		run_pico8
 		;;
 	"PORTS")
