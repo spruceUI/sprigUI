@@ -1,0 +1,6 @@
+{
+  "label": "Check for Updates",
+  "icon": "updater.png",
+  "launch": "launch.sh",
+  "description": "Download and install updates over Wi-Fi"
+}
