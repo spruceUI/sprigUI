@@ -8,7 +8,7 @@ if [ ! -e /tmp/logs_rotated ]; then
     . /mnt/SDCARD/sprig/helperFunctions.sh
     rotate_logs
     log_message "sprigUI has entered the chat"
-    touch -p /tmp/logs_rotated
+    touch /tmp/logs_rotated
 fi
 
 if ! pgrep adbd >/dev/null 2>&1; then
