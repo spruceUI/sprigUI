@@ -2,6 +2,10 @@
 
 . /mnt/SDCARD/sprig/helperFunctions.sh
 
+export PATH="/mnt/SDCARD/sprig/bin:$PATH"
+export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH"
+
+
 # Change this to change which branch of the repo to download.
 BRANCH=main
 
@@ -43,7 +47,7 @@ is_branch_newer_than_device() {
 
     # get version file from target branch of sprigUI repo
     cd /tmp
-    if ! wget --tries=3 -O version "https://raw.githubusercontent.com/spruceUI/sprigUI/$BRANCH/sprig/version" ; then
+    if ! wget --tries=3 -O version https://raw.githubusercontent.com/spruceUI/sprigUI/$BRANCH/sprig/version ; then
         log_message "Unable to retrieve version file from $BRANCH branch of sprigUI repo. Aborting."
         return 1
     fi
@@ -85,7 +89,7 @@ is_branch_newer_than_device() {
 
 download_target_branch() {
     cd /mnt/SDCARD
-    if wget --tries=3 -O "$BRANCH.zip" "https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip" ; then
+    if wget --tries=3 -O "$BRANCH.zip" https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip ; then
         log_message "Successfully downloaded $BRANCH branch zip file."
         return 0
     else
@@ -97,7 +101,32 @@ download_target_branch() {
 }
 
 extract_archive() {
-    if unzip -o "/mnt/SDCARD/$BRANCH.zip" -d /mnt/SDCARD ; then
+
+    new_dir="sprigUI-$BRANCH"
+    new_ra_dir="$new_dir/RetroArch"
+    new_python3_dir="$new_dir/App/PyUI/python3.10"
+    new_themes_dir="$new_dir/Themes"
+
+    excluded_files="$new_dir/create_sprig_release.sh $new_dir/create_sprig_release.bat $new_dir/TODO.txt"
+
+    if [ "$OVERWRITE_RA_CONFIGS" = false ]; then
+        log_message "Will not overwrite RA configs."
+        excluded_files="$excluded_files $new_ra_dir/config $new_ra_dir/retroarchV4.cfg"
+    fi
+
+    if [ "$OVERWRITE_PYTHON3_DIR" = false ]; then
+        log_message "Will not overwrite Python3.10 directory."
+        excluded_files="$excluded_files $new_python3_dir"
+    fi
+
+    if [ "$OVERWRITE_THEMES_DIR" = false ]; then
+        log_message "Will not overwrite Themes directory."
+        excluded_files="$excluded_files $new_themes_dir"
+    fi
+    
+    log_message "Files to exclude from extraction of new version: $excluded_files"
+
+    if unzip -o "/mnt/SDCARD/$BRANCH.zip" -x $excluded_files -d /mnt/SDCARD ; then
         log_message "Archive extracted successfully."
         return 0
     else
@@ -129,34 +158,6 @@ preserve_user_emu_launch_settings() {
     done
 }
 
-prepare_new_version_for_transfer() {
-
-    log_message "Preparing new version files to replace existing installation"
-
-    new_dir="/mnt/SDCARD/sprigUI-$BRANCH"
-    new_ra_dir="$new_dir/RetroArch"
-    new_python3_dir="$new_dir/App/PyUI/python3.10"
-    new_themes_dir="$new_dir/Themes"
-
-    if [ "$OVERWRITE_RA_CONFIGS" = false ]; then
-        log_message "Will not overwrite RA configs."
-        rm -f "$new_ra_dir/retroarchV4.cfg"
-        rm -rf "$new_ra_dir/config"
-    fi
-
-    if [ "$OVERWRITE_PYTHON3_DIR" = false ]; then
-        log_message "Will not overwrite Python3.10 directory."
-        rm -rf "$new_python3_dir"
-    fi
-
-    if [ "$OVERWRITE_THEMES_DIR" = false ]; then
-        log_message "Will not overwrite Themes directory."
-        rm -rf "$new_themes_dir"
-    fi
-
-    rm -f "$new_dir/create_sprig_release.*" "$new_dir/main" "$new_dir/TODO.txt"
-}
-
 complete_installation() {
 
     log_message "Killing main execution loop, powerbutton watchdog, and SSH."
@@ -183,7 +184,6 @@ if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_tha
     
     if download_target_branch && extract_archive; then
         preserve_user_emu_launch_settings
-        prepare_new_version_for_transfer
         complete_installation
         sync
         reboot
