@@ -2,7 +2,7 @@
 
 . /mnt/SDCARD/sprig/helperFunctions.sh
 
-show /mnt/SDCARD/sprig/res/logo.jpg
+# show /mnt/SDCARD/sprig/res/logo.jpg
 
 does_device_have_sufficient_space() {
     FREE_SPACE="$(df -m /mnt/SDCARD | awk '{print $4}' | tail -n 1)"
@@ -38,12 +38,20 @@ is_main_branch_newer_than_device() {
     fi
 
     # put the contents of the two version files to compare into variables
-    main_branch_version="$(cat /tmp/version)"
-    device_version="$(cat /mnt/SDCARD/sprig/version)"
+    main_branch_version="$(tr -d ' \n\r' < /tmp/version)"
+    device_version="$(tr -d ' \n\r' < /mnt/SDCARD/sprig/version)"
 
     # split the versions into 3 numbers each for comparison
-    IFS=. read -r A_1 A_2 A_3 <<< "$main_branch_version"
-    IFS=. read -r B_1 B_2 B_3 <<< "$device_version"
+    A_1=$(echo "$main_branch_version" | cut -d. -f1)
+    A_2=$(echo "$main_branch_version" | cut -d. -f2)
+    A_3=$(echo "$main_branch_version" | cut -d. -f3)
+
+    B_1=$(echo "$device_version" | cut -d. -f1)
+    B_2=$(echo "$device_version" | cut -d. -f2)
+    B_3=$(echo "$device_version" | cut -d. -f3)
+
+    echo "A_1:'$A_1' A_2:'$A_2' A_3:'$A_3'"
+    echo "B_1:'$B_1' B_2:'$B_2' B_3:'$B_3'"
 
     # compare major, minor, and patch versions one by one. Return 0 if main branch version is newer.
     for i in 1 2 3; do
@@ -76,7 +84,7 @@ if does_device_have_sufficient_space && is_wifi_connected && is_main_branch_newe
         exit 1
     fi
 
-    if unzip -o /mnt/SDCARD/main.zip App/* Emu/.emu_setup/* miyoo285/* RetroArch/* sprig/* Themes/* LICENSE README.md -d /mnt/SDCARD ; then
+    if unzip -o /mnt/SDCARD/main.zip -x Emu create_sprig_release.bat create_sprig_release.sh main TODO.txt -d /mnt/SDCARD ; then
         log_message "Update successful! Rebooting."
         reboot
     else
