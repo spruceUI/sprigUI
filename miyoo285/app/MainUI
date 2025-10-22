@@ -1,6 +1,8 @@
 #!/bin/sh
 
-mount -o bind /mnt/SDCARD/sprig/etc/profile /etc/profile
+if ! mount | grep -q "/etc/profile"; then
+    mount -o bind /mnt/SDCARD/sprig/etc/profile /etc/profile
+fi
 
 if [ ! -e /tmp/logs_rotated ]; then
     . /mnt/SDCARD/sprig/helperFunctions.sh
