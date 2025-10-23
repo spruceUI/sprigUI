@@ -176,7 +176,7 @@ complete_installation() {
 ##### MAIN EXECUTION #####
 
 log_message "Starting OTA process. Checking space, wifi, and version."
-# show /mnt/SDCARD/sprig/res/logo.jpg      # this did funky stuff and stalled over adb.
+show /mnt/SDCARD/sprig/res/sprucetree.png
 
 if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_than_device; then
 

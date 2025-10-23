@@ -1,5 +1,7 @@
 #!/bin/sh
 
+/customer/app/sdldisplay /mnt/SDCARD/sprig/res/sprucetree.png
+
 DIR="$(dirname "$0")"
 cd "$DIR"
 

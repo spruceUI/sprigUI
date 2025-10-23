@@ -2,6 +2,7 @@
 
 . /mnt/SDCARD/sprig/helperFunctions.sh
 
+show /mnt/SDCARD/sprig/res/sprucetree.png
 log_message "Running BootLogo app."
 
 cd $(dirname "$0")

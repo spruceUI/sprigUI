@@ -2,6 +2,8 @@
 
 . /mnt/SDCARD/sprig/helperFunctions.sh
 
+show /mnt/SDCARD/sprig/res/sprucetree.png
+
 PREV_SELECTION_FILE="/mnt/SDCARD/App/RandomGame/prev_selection.txt"
 PREV5_FILE="/mnt/SDCARD/App/RandomGame/5_previous.txt"
 
