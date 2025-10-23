@@ -47,5 +47,6 @@
         "selectedcolor": "#000000"
     },
     "listFontSize": 24,
-    "mainMenuColCount": 4
+    "mainMenuColCount": 4,
+    "includeIndexText": false
 }
