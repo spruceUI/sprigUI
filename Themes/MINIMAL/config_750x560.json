@@ -1,0 +1,51 @@
+{
+    "showBottomBar": false,
+    "name": "Minimal",
+    "author": "@chrisbastion",
+    "description": "Minimal",
+    "mainMenuViewType": "TEXT_ONLY",
+    "systemSelectViewType": "TEXT_ONLY",
+    "appMenuViewType": "TEXT_ONLY",
+    "gameSelectionViewType": "TEXT_ONLY",
+    "showIndexText": false,
+    "batteryPercentage": {
+        "color": "#FFFFFF",
+        "font": "nunwen.ttf",
+        "size": 21
+    },
+    "title": {
+        "font": "nunwen.ttf",
+        "size": 29,
+        "color": "#FFFFFF"
+    },
+    "hint": {
+        "font": "nunwen.ttf",
+        "size": 29,
+        "color": "#FFFFFF"
+    },
+    "currentpage": {
+        "font": "nunwen.ttf",
+        "size": 25,
+        "color": "#FFFFFF"
+    },
+    "total": {
+        "font": "nunwen.ttf",
+        "size": 25,
+        "color": "#FFFFFF"
+    },
+    "grid": {
+        "font": "nunwen.ttf",
+        "grid1x4": 29,
+        "grid3x4": 21,
+        "color": "#FFFFFF",
+        "selectedcolor": "#000000"
+    },
+    "list": {
+        "font": "nunwen.ttf",
+        "size": 28,
+        "color": "#FFFFFF",
+        "selectedcolor": "#000000"
+    },
+    "listFontSize": 28,
+    "mainMenuColCount": 4
+}
