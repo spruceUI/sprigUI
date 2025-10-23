@@ -1,5 +1,5 @@
 {
-  "label": "Check for Updates",
+  "label": "sprigUI OTA Updater",
   "icon": "updater.png",
   "launch": "launch.sh",
   "description": "Download and install updates over Wi-Fi"

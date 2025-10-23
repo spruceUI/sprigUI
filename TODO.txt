@@ -5,14 +5,6 @@ Before first release:
 3) Fix or hide ports system
 4) Something of a readme
 5) Test available cores for all systems... remove those that never work.
-6) Patch and include each of the following themes:
-    - SPRUCE
-    - ALEKFULL_NX
-    - Cosy by Kyle Bing
-    - Blue by HeyDW
-    - Pico-8 by 369px
-    - MinUInspired by tenlevels
-7) Kill the LED
 
 Decisions to make:
 1) Are we happy with the current Emu/Roms folder setup? Are there any more to combine or split out? Do we want the names to remain the same?
