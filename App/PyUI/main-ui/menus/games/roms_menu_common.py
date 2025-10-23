@@ -85,9 +85,12 @@ class RomsMenuCommon(ABC):
             )
         return rom_list
 
+    def get_view_type(self):
+        return Theme.get_game_selection_view_type()
+
     def create_view(self, page_name, rom_list, selected):
         return ViewCreator.create_view(
-                        view_type=Theme.get_game_selection_view_type(),
+                        view_type=self.get_view_type(),
                         top_bar_text=page_name,
                         options=rom_list,
                         selected_index=selected.get_index(),

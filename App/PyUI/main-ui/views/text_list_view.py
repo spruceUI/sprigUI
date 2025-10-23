@@ -52,11 +52,6 @@ class TextListView(NonDescriptiveListView):
 
                 scroll_amt = self.scroll_text_amount
 
-                PyUiLogger.get_logger().info(f"scroll_string scroll_amt: {scroll_amt}")
-                PyUiLogger.get_logger().info(f"actual_index = : {actual_index}, selected = {self.selected}, self.prev_index={self.prev_index}")
-                diff = time.time() - self.selected_same_entry_time
-                PyUiLogger.get_logger().info(f"diff = : {diff}")
-
                 if(self.prev_index == actual_index):
                     scroll_amt = self.scroll_text_amount
                     if(time.time() - self.selected_same_entry_time > 1):
