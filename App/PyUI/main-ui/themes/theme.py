@@ -996,3 +996,7 @@ class Theme():
         PyUiLogger.get_logger().info(f"App icon path is {app_icon_path}")
 
         return cls._icon("app",app_name)
+
+    @classmethod
+    def include_index_text(cls):
+        return cls._data.get("includeIndexText", True)
