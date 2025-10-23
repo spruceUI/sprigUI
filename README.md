@@ -17,13 +17,20 @@ sprig is a custom operating system for the Miyoo Mini Flip, developed by the spr
 
 - Apps borrowed from our friends on the Onion and MinUI teams, including a file manager, ebook reader, bootlogo flasher, and more.
 
+- Custom power button behavior:
+    - Quick tap to sleep/wake.
+    - Hold 1-2 seconds for quick save and shutdown; game will autoresume on boot.
+    - Hold 3 seconds to force close a frozen app or emulator.
+    - Hold 10 seconds to hard shutdown a device as a last resort.
+
 - sprigUI automatically enables wireless ADB and SSH access on boot. You can connect to your device using these services by running the following commands from your computer.
     - ADB: `adb connect 192.168.x.x:5555`
     - SSH: `ssh root@192.168.x.x`
 
 ## Special Thanks
 
-- Miyoo for providing us with development units
-- OnionOS team for sharing their wealth of knowledge and a couple of apps
-- Shaun Inman of MinUI for the same
+- Miyoo for providing us with development units.
+- OnionOS team for sharing their wealth of knowledge and a couple of apps.
+- Shaun Inman of MinUI for the same.
+- XanXic for a lot of the helperFunction code from spruce that we implemented in sprig.
 - The thememaking community, including tenlevels, 369px, Kyle Bing, HeyDW, and fagnerpc.
