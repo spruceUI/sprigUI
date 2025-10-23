@@ -7,6 +7,7 @@ from display.display import Display
 from themes.theme import Theme
 from utils.logger import PyUiLogger
 from views.selection import Selection
+from views.text_utils import TextUtils
 from views.view import View
 
 
@@ -141,3 +142,11 @@ class ListView(View):
             if amount > 1:
                 self.current_top += amount
                 self.current_bottom += amount
+
+    def scroll_string(self,text, amt, text_available_width):
+        if(Theme.scroll_rom_selection_text()):
+            return TextUtils.scroll_string(text=text,
+                                    amt=amt,
+                                    text_available_width=text_available_width)
+        else:
+            return text
