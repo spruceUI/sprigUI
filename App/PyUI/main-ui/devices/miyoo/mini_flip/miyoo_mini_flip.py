@@ -370,8 +370,11 @@ class MiyooMiniFlip(MiyooDevice):
         return "/appconfigs/wpa_supplicant.conf"
 
     def get_volume(self):
-        return self.mainui_volume * 5
-
+        try:
+            return self.mainui_volume * 5
+        except:
+            return 0
+        
     def _set_volume_raw(self, value: int, add: int = 0) -> int:
         try:
             fd = os.open("/dev/mi_ao", os.O_RDWR)
