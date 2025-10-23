@@ -6,5 +6,5 @@
     "enableWifiMonitor": true,
     "mainMenuTitle": "sprigUI",
     "animationsEnabled": false,
-    "include_stock_os_launch_option": false
+    "includeStockOsLaunchOption": false
 }
