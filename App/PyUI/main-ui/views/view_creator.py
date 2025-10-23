@@ -44,7 +44,8 @@ class ViewCreator:
                     carousel_selected_entry_width_percent=None,
                     carousel_shrink_further_away=None,
                     carousel_sides_hang_off_edge=None,
-                    missing_image_path=None) -> object:
+                    missing_image_path=None,
+                    allow_scrolling_text=False) -> object:
         
         if(len(options) == 0):
             return EmptyView()
@@ -143,7 +144,8 @@ class ViewCreator:
                     selected_index=selected_index,
                     show_icons=ImageListView.DONT_SHOW_ICONS,
                     image_render_mode=RenderMode.MIDDLE_RIGHT_ALIGNED,
-                    selected_bg=Theme.get_list_small_selected_bg()
+                    selected_bg=Theme.get_list_small_selected_bg(),
+                    allow_scrolling=allow_scrolling_text
                 )
 
             case ViewType.POPUP:

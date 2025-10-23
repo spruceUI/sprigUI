@@ -106,7 +106,8 @@ class RomsMenuCommon(ABC):
                         carousel_selected_entry_width_percent=Theme.get_carousel_game_select_primary_img_width(),
                         carousel_shrink_further_away=Theme.get_carousel_game_select_shrink_further_away(),
                         carousel_sides_hang_off_edge=Theme.get_carousel_game_select_sides_hang_off(),
-                        missing_image_path=Theme.get_missing_image_path()
+                        missing_image_path=Theme.get_missing_image_path(),
+                        allow_scrolling_text=True # roms select is allowed to scroll
                         )
 
     def _run_rom_selection(self, page_name) :
