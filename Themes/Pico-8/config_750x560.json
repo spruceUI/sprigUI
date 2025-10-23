@@ -1,0 +1,44 @@
+{
+    "showBottomBar": true,
+    "name": "PICO-8",
+    "author": "369px",
+    "description": "A Pico8 inspired pixel art theme",
+    "batteryPercentage": {
+        "color": "#7E2553",
+        "font": "p8-upper-smaller2.ttf",
+        "size": 28
+    },
+    "title": {
+        "font": "p8-upper369.ttf",
+        "size": 38,
+        "color": "#FFCCAA"
+    },
+    "hint": {
+        "font": "p8-upper-smaller2.ttf",
+        "size": 26,
+        "color": "#7e2553"
+    },
+    "currentpage": {
+        "font": "p8-upper-smaller2.ttf",
+        "size": 38,
+        "color": "#FFCCAA"
+    },
+    "total": {
+        "font": "p8-upper-smaller2.ttf",
+        "size": 37,
+        "color": "#7E2553"
+    },
+    "grid": {
+        "font": "p8-upper369.ttf",
+        "color": "#111D35",
+        "selectedcolor": "#FFF1E8"
+    },
+    "list": {
+        "font": "p8-upper-smaller2.ttf",
+        "size": 25,
+        "color": "#FFF1E8",
+        "selectedcolor": "#ffccaa"
+    },
+    "recentsEnabled": false,
+    "topBarInitialXOffset": 55
+}

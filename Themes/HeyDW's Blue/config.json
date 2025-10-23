@@ -1,0 +1,52 @@
+{
+    "showBottomBar": true,
+    "name": "Blue HeyDW",
+    "hideIconTitle": false,
+    "batteryPercentage": {
+        "visible": true,
+        "font": "NotoSans_Condensed-SemiBold.ttf",
+        "size": 22,
+        "color": "#FFFFFFB",
+        "offsetX": 0,
+        "offsetY": 0
+    },
+    "author": "HeyDW",
+    "description": "Blue",
+    "hideLabels": {
+        "icons": false,
+        "hints": false
+    },
+    "frame": {
+        "border-left": 0,
+        "border-right": 0
+    },
+    "title": {
+        "font": "NotoSans_Condensed-SemiBold.ttf",
+        "size": 30,
+        "color": "#FFFFFF"
+    },
+    "hint": {
+        "font": "NotoSans_Condensed-SemiBold.ttf",
+        "size": 24,
+        "color": "#999999"
+    },
+    "currentpage": {
+        "color": "#FFFFFF"
+    },
+    "total": {
+        "color": "#90909B"
+    },
+    "grid": {
+        "font": "NotoSans_Condensed-SemiBold.ttf",
+        "grid1x4": 25,
+        "grid3x4": 18,
+        "color": "#FFFFFF",
+        "selectedcolor": "#FFFFFF"
+    },
+    "list": {
+        "font": "NotoSans_Condensed-SemiBold.ttf",
+        "size": 24,
+        "color": "#FFFFFF"
+    },
+    "recentsEnabled": false
+}
