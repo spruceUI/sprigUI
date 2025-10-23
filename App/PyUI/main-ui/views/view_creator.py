@@ -50,6 +50,9 @@ class ViewCreator:
         if(len(options) == 0):
             return EmptyView()
 
+        if(ViewType.POPUP == view_type and not Device.supports_popup_menu()):
+            view_type = ViewType.TEXT_ONLY
+
         match view_type:
             case ViewType.ICON_AND_DESC:
                 selected_bg = Theme.get_list_small_selected_bg()

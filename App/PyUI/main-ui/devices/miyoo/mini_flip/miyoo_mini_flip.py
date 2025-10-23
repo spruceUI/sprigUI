@@ -467,3 +467,6 @@ class MiyooMiniFlip(MiyooDevice):
 
     def supports_hue_calibration(self):
         return False
+    
+    def supports_popup_menu(self):
+        return False
