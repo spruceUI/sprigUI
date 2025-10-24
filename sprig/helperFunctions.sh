@@ -226,3 +226,7 @@ set_performance() {
 show() {
     /customer/app/sdldisplay "$1"
 }
+
+vibrate() {
+    /mnt/SDCARD/sprig/scripts/vibrate.sh "$1" &
+}
