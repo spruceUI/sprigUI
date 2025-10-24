@@ -8,12 +8,24 @@ GAMESWITCHER_SCRIPT="/mnt/SDCARD/sprig/scripts/gameswitcher.sh"
 HOLD_MIN=1   # minimum seconds to trigger
 HOLD_MAX=2   # maximum seconds to trigger
 
+vibe_timer() {
+    sleep "$HOLD_MIN"
+
+    if [ "$1" = "pwrbtn" ] && [ -f /tmp/pwrbtn ]; then
+        vibrate 0.1
+    elif [ "$1" = "menubtn" ] && [ -f /tmp/menubtn ]; then
+        vibrate 0.01 5
+    fi
+}
+
 # Start evtest in background and read its output line-by-line
 evtest "$DEVICE" 2>/dev/null | while read -r line; do
     case "$line" in
         *"code 116 (KEY_POWER), value 1"*)
             power_btn_press_time=$(date +%s)
             log_message "Power button pressed at $power_btn_press_time"
+            touch /tmp/pwrbtn
+            vibe_timer "pwrbtn" &
             ;;
         *"code 116 (KEY_POWER), value 0"*)
             if [ -n "$power_btn_press_time" ]; then
@@ -27,11 +39,14 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
                     log_message "Power button held ${duration}s — ignored (outside range ${HOLD_MIN}-${HOLD_MAX}s)"
                 fi
                 power_btn_press_time=""
+                rm -f /tmp/pwrbtn
             fi
             ;;
         *"code 1 (KEY_ESC), value 1"*)
             menu_btn_press_time=$(date +%s)
             log_message "Menu button pressed at $menu_btn_press_time"
+            touch  /tmp/menubtn
+            vibe_timer "menubtn" &
             ;;
         *"code 1 (KEY_ESC), value 0"*)
             log_message "Menu button released at $menu_btn_press_time"
@@ -46,6 +61,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
                     log_message "Menu button held ${duration}s — ignored (not held for at least ${HOLD_MIN})"
                 fi
                 menu_btn_press_time=""
+                rm -f /tmp/menubtn
             fi
             ;;
     esac
