@@ -36,7 +36,16 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
             power_btn_press_time=$(date +%s)
             log_message "Power button pressed at $power_btn_press_time"
             touch /tmp/pwrbtn
-            trigger_vibrate "pwrbtn" &
+
+            # Launch background timer that waits HOLD_MIN seconds, then triggers the action
+            (
+                sleep "$HOLD_MIN"
+                # Check if the pwrbtn file still exists (i.e., not released)
+                if [ -f /tmp/pwrbtn ]; then
+                    trigger_vibrate "pwrbtn" &
+                fi
+            ) &
+
             ;;
         *"code 116 (KEY_POWER), value 0"*)
             if [ -n "$power_btn_press_time" ]; then
@@ -59,7 +68,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
                 log_message "Menu button pressed at $menu_btn_press_time"
                 touch /tmp/menubtn
 
-                # Launch background timer that waits HOLD_MIN seconds, then triggers the action
+                # Launch background timer that waits required seconds, then triggers the action
                 (
                     menu_hold_time=$(get_config_value '.menuOptions."Game Switcher Settings".menuHoldTime.selected' 2)
                     sleep "$menu_hold_time"
