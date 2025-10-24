@@ -19,8 +19,8 @@ if ! pgrep dropbearmulti >/dev/null 2>&1; then
     /mnt/SDCARD/sprig/scripts/start_dropbear.sh
 fi
 
-if ! pgrep -f "/mnt/SDCARD/sprig/scripts/powerbutton_watchdog.sh" >/dev/null; then
-    /mnt/SDCARD/sprig/scripts/powerbutton_watchdog.sh &
+if ! pgrep -f "/mnt/SDCARD/sprig/scripts/button_watchdog.sh" >/dev/null; then
+    /mnt/SDCARD/sprig/scripts/button_watchdog.sh &
 fi
 
 # auto resume last app or game
