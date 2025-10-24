@@ -211,6 +211,7 @@ class MainMenu:
                     if(ControllerInput.A == selected.get_input()): 
                         self.launch_selection(selected.get_selection().get_value())
                     elif(ControllerInput.MENU == selected.get_input()):
+                        PyUiLogger.get_logger().info(f"Launching Main Menu Popup")  
                         self.popup_menu.run_popup_menu_selection()
 
                     if(selected.get_input() is not None):

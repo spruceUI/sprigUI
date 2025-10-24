@@ -55,8 +55,8 @@ class Controller:
 
     @staticmethod
     def clear_last_input():
-        #if(Controller.last_controller_input is not None):
-        #    PyUiLogger.get_logger().info(f"Clearing last input")
+        if(Controller.last_controller_input is not None):
+            PyUiLogger.get_logger().info(f"Clearing last input")
         Controller.last_controller_input = None
         Controller.controller_interface.clear_input()
 
@@ -126,6 +126,7 @@ class Controller:
                 if Controller.last_controller_input is not None:
                     if Controller.last_controller_input == ControllerInput.MENU:
                         if not Controller.is_check_for_hotkey and not Controller.check_for_hotkey():
+                            Controller.set_last_input(ControllerInput.MENU)
                             break  # Treat MENU as valid input
                         else:
                             was_hotkey = True
@@ -134,6 +135,8 @@ class Controller:
                     else:
                         break  # Valid non-hotkey input
 
+
+
         # Wait if the input is being held down (anti-repeat logic)
         while Controller.still_held_down() and (time.time() - start_time < Controller.hold_delay):
             Controller.controller_interface.force_refresh()
@@ -141,8 +144,8 @@ class Controller:
 
         if Controller.still_held_down():
             if(ControllerInput.MENU == Controller.last_input()):
-                was_hotkey = True
-                if(not Controller.check_for_hotkey() and not Controller.gs_triggered and Controller.allow_pyui_game_switcher()):
+                was_hotkey = Controller.check_for_hotkey()
+                if(not was_hotkey and not Controller.gs_triggered and Controller.allow_pyui_game_switcher()):
                     Controller.gs_triggered = True
                     PyUiLogger.get_logger().info(f"GS Triggered")
                     from menus.games.recents_menu_gs import RecentsMenuGS
@@ -157,7 +160,7 @@ class Controller:
 
         Controller.last_input_time = time.time()
         #if(Controller.last_controller_input is not None):
-        #    PyUiLogger.get_logger().info(f"last_controller_input is: {Controller.last_controller_input}")
+        #    PyUiLogger.get_logger().info(f"returning last_controller_input as: {Controller.last_controller_input}")
 
         return Controller.last_controller_input is not None and not was_hotkey
 
