@@ -1,15 +1,17 @@
 #!/bin/sh
 
-JSON_FILE="/mnt/SDCARD/Saves/mini-flip-system.json"
-KEY="gameSwitcherEnabled"
+. /mnt/SDCARD/sprig/helperFunctions.sh
 
-# Get the value of game_switcher_enabled (empty if missing)
-value=$(grep -o "\"$KEY\"[[:space:]]*:[[:space:]]*[^,}]*" "$JSON_FILE" 2>/dev/null | head -n 1 | cut -d':' -f2 | tr -d '[:space:]"')
+game_switcher_enabled="$(get_pyui_config_value '.gameSwitcherEnabled' "True")"
 
 # If the key is missing or explicitly set to true, proceed
-if [ -z "$value" ] || [ "$value" = "true" ]; then
+if [ -z "$game_switcher_enabled" ] || [ "$game_switcher_enabled" = "true" ]; then
 	if pgrep "retroarch" >/dev/null; then
-		/mnt/SDCARD/sprig/scripts/vibrate.sh 0.4
+		do_vibrate="$(get_config_value '.menuOptions."Game Switcher Settings".menuShouldVibrate.selected' "True")"
+		# Only vibrate if enabled
+		if [ "$do_vibrate" = "True" ]; then
+			vibrate 0.4
+		fi
 		touch /mnt/SDCARD/App/PyUI/pyui_gs_trigger
 		killall -q -15 retroarch
 	fi
