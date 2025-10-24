@@ -166,7 +166,7 @@ preserve_user_emu_launch_settings() {
 complete_installation() {
 
     log_message "Killing main execution loop, powerbutton watchdog, and SSH."
-    killall -9 main powerbutton_watchdog.sh dropbearmulti # adbd    ### Keep adbd on for testing
+    killall -9 main button_watchdog.sh dropbearmulti # adbd    ### Keep adbd on for testing
     umount /etc/profile >/dev/null 2>&1
 
     log_message "Copying new sprigUI version over old version."
