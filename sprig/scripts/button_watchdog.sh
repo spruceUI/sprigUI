@@ -20,13 +20,11 @@ if [ ! -d /sys/class/gpio/gpio48 ]; then
     echo 48 > /sys/class/gpio/export 2>/dev/null
 fi
 
-vibe_timer() {
+trigger_vibrate() {
     sleep "$HOLD_MIN"
 
     if [ "$1" = "pwrbtn" ] && [ -f /tmp/pwrbtn ]; then
         vibrate 0.1
-    elif [ "$1" = "menubtn" ] && [ -f /tmp/menubtn ]; then
-        vibrate 0.01 5
     fi
 }
 
@@ -37,7 +35,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
             power_btn_press_time=$(date +%s)
             log_message "Power button pressed at $power_btn_press_time"
             touch /tmp/pwrbtn
-            vibe_timer "pwrbtn" &
+            trigger_vibrate "pwrbtn" &
             ;;
         *"code 116 (KEY_POWER), value 0"*)
             if [ -n "$power_btn_press_time" ]; then
@@ -55,25 +53,31 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
             fi
             ;;
         *"code 1 (KEY_ESC), value 1"*)
-            menu_btn_press_time=$(date +%s)
-            log_message "Menu button pressed at $menu_btn_press_time"
-            touch  /tmp/menubtn
-            vibe_timer "menubtn" &
+            if [ -z "$menu_hold_pid" ]; then
+                menu_btn_press_time=$(date +%s)
+                log_message "Menu button pressed at $menu_btn_press_time"
+                touch /tmp/menubtn
+
+                # Launch background timer that waits HOLD_MIN seconds, then triggers the action
+                (
+                    sleep "$HOLD_MIN"
+                    # Check if the menubtn file still exists (i.e., not released)
+                    if [ -f /tmp/menubtn ]; then
+                        log_message "Menu button held for $HOLD_MIN seconds — running $GAMESWITCHER_SCRIPT"
+                        "$GAMESWITCHER_SCRIPT" &
+                    fi
+                ) &
+                menu_hold_pid=$!
+            fi
             ;;
         *"code 1 (KEY_ESC), value 0"*)
-            log_message "Menu button released at $menu_btn_press_time"
-            if [ -n "$menu_btn_press_time" ]; then
-                release_time=$(date +%s)
-                log_message "Menu button released at $release_time"
-                duration=$((release_time - menu_btn_press_time))
-                if [ "$duration" -ge "$HOLD_MIN" ]; then
-                    log_message "Menu button held ${duration}s — running $GAMESWITCHER_SCRIPT"
-                    "$GAMESWITCHER_SCRIPT" &
-                else
-                    log_message "Menu button held ${duration}s — ignored (not held for at least ${HOLD_MIN})"
-                fi
-                menu_btn_press_time=""
-                rm -f /tmp/menubtn
+            log_message "Menu button released at $(date +%s)"
+            rm -f /tmp/menubtn
+            # Kill background hold timer if still running
+            if [ -n "$menu_hold_pid" ]; then
+                kill "$menu_hold_pid" 2>/dev/null
+                wait "$menu_hold_pid" 2>/dev/null
+                menu_hold_pid=""
             fi
             ;;
     esac
