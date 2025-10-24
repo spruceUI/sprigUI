@@ -8,6 +8,18 @@ GAMESWITCHER_SCRIPT="/mnt/SDCARD/sprig/scripts/gameswitcher.sh"
 HOLD_MIN=1   # minimum seconds to trigger
 HOLD_MAX=2   # maximum seconds to trigger
 
+# Wait until input is ready
+log_message "Waiting for $DEVICE..."
+for i in $(seq 1 25); do
+    [ -e "$DEVICE" ] && break
+    sleep 0.2
+done
+
+# Pre-export GPIO
+if [ ! -d /sys/class/gpio/gpio48 ]; then
+    echo 48 > /sys/class/gpio/export 2>/dev/null
+fi
+
 vibe_timer() {
     sleep "$HOLD_MIN"
 
