@@ -2,6 +2,7 @@
 from devices.device import Device
 from display.resize_type import ResizeType
 from menus.games.recents_menu import RecentsMenu
+from themes.theme import Theme
 from views.view_type import ViewType
 
 
@@ -10,13 +11,13 @@ class RecentsMenuGS(RecentsMenu):
         super().__init__()
 
     def get_view_type(self):
-        return ViewType.FULLSCREEN_GRID
+        return Theme.get_view_type_for_game_switcher()
     
     def full_screen_grid_resize_type(self):
-        return ResizeType.FIT
+        return Theme.get_resize_type_for_game_switcher()
 
     def get_set_top_bar_text_to_game_selection(self):
-        return True
+        return Theme.get_set_top_bar_text_to_game_selection_for_game_switcher()
     
     def run_rom_selection(self) :
         return self._run_rom_selection("Game Switcher")
