@@ -18,6 +18,7 @@ from menus.main_menu import MainMenu
 from controller.controller import Controller
 from display.display import Display
 from themes.theme import Theme
+from utils.cfw_system_config import CfwSystemConfig
 from utils.config_copier import ConfigCopier
 from utils.logger import PyUiLogger
 from utils.py_ui_config import PyUiConfig
@@ -30,6 +31,7 @@ def parse_arguments():
     parser.add_argument('-logDir', type=str, default='/mnt/SDCARD/pyui/logs/', help='Directory to store logs')
     parser.add_argument('-pyUiConfig', type=str, default='/mnt/SDCARD/Saves/pyui-config.json', help='Location of PyUI config')
     parser.add_argument('-device', type=str, default='MIYOO_FLIP', help='The device type (MIYOO_FLIP or TRIMUI_BRICK)')
+    parser.add_argument('-cfwConfig', type=str, default=None, help='Path to the systems json config')
     return parser.parse_args()
 
 def log_renderer_info():
@@ -105,7 +107,7 @@ def main():
 
     verify_config_exists(args.pyUiConfig)
     PyUiConfig.init(args.pyUiConfig)
-
+    CfwSystemConfig.init(args.cfwConfig)
 
     initialize_device(args.device)
     PyUiState.init(Device.get_state_path())
