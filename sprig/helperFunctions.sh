@@ -228,5 +228,5 @@ show() {
 }
 
 vibrate() {
-    /mnt/SDCARD/sprig/scripts/vibrate.sh "$1" &
+    /mnt/SDCARD/sprig/scripts/vibrate.sh "$@" &
 }
