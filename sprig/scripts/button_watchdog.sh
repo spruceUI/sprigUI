@@ -8,6 +8,7 @@ GAMESWITCHER_SCRIPT="/mnt/SDCARD/sprig/scripts/gameswitcher.sh"
 HOLD_MIN=1   # minimum seconds to trigger
 HOLD_MAX=2   # maximum seconds to trigger
 
+
 # Wait until input is ready
 log_message "Waiting for $DEVICE..."
 for i in $(seq 1 25); do
@@ -60,7 +61,8 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
 
                 # Launch background timer that waits HOLD_MIN seconds, then triggers the action
                 (
-                    sleep "$HOLD_MIN"
+                    menu_hold_time=$(get_config_value '.menuOptions."Game Switcher Settings".menuHoldTime.selected' 2)
+                    sleep "$menu_hold_time"
                     # Check if the menubtn file still exists (i.e., not released)
                     if [ -f /tmp/menubtn ]; then
                         log_message "Menu button held for $HOLD_MIN seconds — running $GAMESWITCHER_SCRIPT"

@@ -230,3 +230,19 @@ show() {
 vibrate() {
     /mnt/SDCARD/sprig/scripts/vibrate.sh "$@" &
 }
+
+get_config_value() {
+    local key="$1"
+    local default="$2"
+    local file="/mnt/SDCARD/Saves/sprig/sprig-config.json"
+
+    jq -r "${key} // \"$default\"" "$file"
+}
+
+get_pyui_config_value() {
+    local key="$1"
+    local default="$2"
+    local file="/mnt/SDCARD/Saves/mini-flip-system.json"
+
+    jq -r "${key} // \"$default\"" "$file"
+}
