@@ -146,8 +146,6 @@ preserve_user_emu_launch_settings() {
 
         [ -f "$new_json" ] || continue    # Skip if new config doesn’t exist
 
-
-
         if jq -e '.menuOptions.Emulator' "$new_json" >/dev/null; then
             selected_core="$(jq -r '.menuOptions.Emulator.selected' "$configjson")"
             overrides="$(jq '.menuOptions.Emulator.overrides' "$configjson")"
@@ -190,12 +188,16 @@ if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_tha
     log_message "All checks passed. Proceeding to download $BRANCH branch of sprigUI repo."
     
     if download_target_branch && extract_archive; then
-        if [ "$OVERWRITE_EMU_DIR" = false ]; then preserve_user_emu_launch_settings; fi
+        if [ "$OVERWRITE_EMU_DIR" = false ]; then
+            preserve_user_emu_launch_settings
+        else
+            log_message "Emulator options and overrides will be reset to default."
+        fi
         complete_installation
         sync
         reboot
     else
-        exit 1
+        exit 2
     fi
 
 else
