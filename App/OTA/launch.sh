@@ -14,6 +14,7 @@ BRANCH=main
 SPACE_REQUIRED=800
 
 # Will not copy certain files and folders into place if set to false.
+OVERWRITE_EMU_DIR=false
 OVERWRITE_RA_CONFIGS=false
 OVERWRITE_PYTHON3_DIR=false
 OVERWRITE_THEMES_DIR=true
@@ -145,16 +146,22 @@ preserve_user_emu_launch_settings() {
 
         [ -f "$new_json" ] || continue    # Skip if new config doesn’t exist
 
-        selected_core="$(jq -r '.menuOptions.Emulator.selected' $configjson)"
-        overrides="$(jq '.menuOptions.Emulator.overrides' $configjson)"
 
-        tmpfile="$(mktemp)"
-        jq \
-            --arg selected "$selected_core" \
-            --argjson overrides "$overrides" \
-            '.menuOptions.Emulator.selected = $selected
-             | .menuOptions.Emulator.overrides = $overrides' \
-            "$new_json" > "$tmpfile" && mv -f "$tmpfile" "$new_json"
+
+        if jq -e '.menuOptions.Emulator' "$new_json" >/dev/null; then
+            selected_core="$(jq -r '.menuOptions.Emulator.selected' "$configjson")"
+            overrides="$(jq '.menuOptions.Emulator.overrides' "$configjson")"
+            [ "$overrides" = "null" ] && overrides='{}'
+            log_message "$emu_name: selected core: $selected_core"
+            log_message "$emu_name: overrides section: $overrides"
+            tmpfile="$(mktemp)"
+            jq \
+                --arg selected "$selected_core" \
+                --argjson overrides "$overrides" \
+                '.menuOptions.Emulator.selected = $selected
+                | .menuOptions.Emulator.overrides = $overrides' \
+                "$new_json" > "$tmpfile" && mv -f "$tmpfile" "$new_json"
+        fi
     done
 }
 
@@ -183,7 +190,7 @@ if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_tha
     log_message "All checks passed. Proceeding to download $BRANCH branch of sprigUI repo."
     
     if download_target_branch && extract_archive; then
-        preserve_user_emu_launch_settings
+        if [ "$OVERWRITE_EMU_DIR" = false ]; then preserve_user_emu_launch_settings; fi
         complete_installation
         sync
         reboot
