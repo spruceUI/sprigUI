@@ -211,8 +211,8 @@ complete_installation() {
     log_message "Copying new sprigUI version into place."
     cp -rf /mnt/SDCARD/sprigUI-"$BRANCH"/* /mnt/SDCARD
 
-    log_message "Installation complete. Cleaning up. (~2min)"
-    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Cleaning up temporary files " -msgDisplayTimeMs 1 &
+    log_message "Installation complete. Cleaning up."
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Cleaning up temporary files (~2min)" -msgDisplayTimeMs 1 &
     rm -rf "/mnt/SDCARD/$BRANCH.zip" "/mnt/SDCARD/sprigUI-$BRANCH"
 
     log_message "Update finished. Syncing and rebooting! happy gaming.........."
