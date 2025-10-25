@@ -246,12 +246,10 @@ if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_tha
         reboot
     else
         sleep 5
-        stop_pyui_message_writer
         exit 2
     fi
 
 else
     sleep 5
-    stop_pyui_message_writer
     exit 1
 fi

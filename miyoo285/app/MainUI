@@ -11,6 +11,12 @@ if [ ! -e /tmp/logs_rotated ]; then
     touch /tmp/logs_rotated
 fi
 
+# stop pyui real time message writer if left open.
+if [ -e /proc/$$/fd/3 ]; then
+    echo "EXIT_APP" >&3
+    exec 3>&-
+fi
+
 if ! pgrep adbd >/dev/null 2>&1; then
     /mnt/SDCARD/sprig/scripts/start_adbd.sh
 fi

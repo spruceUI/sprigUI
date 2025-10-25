@@ -247,9 +247,11 @@ start_pyui_message_writer(){
     exec 3> $PYUI_PIPE
 }
 
-stop_pyui_message_writer(){
-    echo "EXIT_APP" >&3
-    exec 3>&-
+stop_pyui_message_writer() {
+    if [ -e /proc/$$/fd/3 ]; then
+        echo "EXIT_APP" >&3
+        exec 3>&-
+    fi
 }
 
 display_message(){
