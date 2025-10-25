@@ -3,7 +3,7 @@
 . /mnt/SDCARD/sprig/helperFunctions.sh
 
 export PATH="/mnt/SDCARD/sprig/bin:$PATH"
-export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH:/mnt/SDCARD/App/PyUI/libs/:/config/lib/:/customer/lib"
 
 ##### VARIABLES #####
 
@@ -189,6 +189,13 @@ preserve_user_emu_launch_settings() {
     done
 }
 
+preserve_sprig_config_settings() {
+    log_and_display_message "Preserving sprig config settings."
+
+    existing_config="/mnt/SDCARD/Saves/sprig/sprig-config.json"
+    new_config="/mnt/SDCARD/sprigUI-$BRANCH/Saves/sprig/sprig-config.json"
+}
+
 complete_installation() {
 
     log_and_display_message "Killing main execution loop, powerbutton watchdog, and SSH."
@@ -222,6 +229,7 @@ if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_tha
     log_and_display_message "All checks passed. Proceeding to download $BRANCH branch of sprigUI repo."
     
     if download_target_branch && extract_archive; then
+        preserve_sprig_config_settings
         if [ "$OVERWRITE_EMU_DIR" = false ]; then
             preserve_user_emu_launch_settings
         else
