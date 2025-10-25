@@ -98,7 +98,6 @@ def verify_config_exists(config_path):
     ConfigCopier.ensure_config(config_path, source)
 
 def check_for_msg_display(args):
-    PyUiLogger.get_logger().error(f"args.msgDisplay = {args.msgDisplay}")
     if(args.msgDisplay):
         duration = 2000
         if(args.msgDisplayTimeMs):
@@ -118,12 +117,15 @@ def check_for_msg_display_realtime(args):
     if(args.msgDisplayRealtime):
         try:
             for line in sys.stdin:
+                PyUiLogger.get_logger().info(f"Waiting on next message")
                 message = line.strip()
+                PyUiLogger.get_logger().info(f"Received Message : {message}")
                 if message == "EXIT_APP":
                     break
                 Display.display_message(message)
         except Exception as e:
             PyUiLogger.get_logger().error("Error processing messages: ", exc_info=True)
+        PyUiLogger.get_logger().info(f"Exitting...")
         sys.exit(0)
 
 def main():
