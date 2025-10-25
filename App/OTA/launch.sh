@@ -46,10 +46,10 @@ fi
 
 does_device_have_sufficient_space() {
     FREE_SPACE="$(df -m /mnt/SDCARD | awk '{print $4}' | tail -n 1)"
-    log_and_display_message "Free space on SDCARD: $FREE_SPACE MiB"
-    log_and_display_message "Space required for safe update: $SPACE_REQUIRED MiB"
+    log_message "Free space on SDCARD: $FREE_SPACE MiB"
+    log_message "Space required for safe update: $SPACE_REQUIRED MiB"
     if [ "$FREE_SPACE" -ge "$SPACE_REQUIRED" ]; then
-        log_and_display_message "SD card has sufficient space. Continuing."
+        log_message "SD card has sufficient space. Continuing."
         return 0
     else
         log_and_display_message "SD card does not have $SPACE_REQUIRED MiB free. Aborting."
@@ -59,7 +59,7 @@ does_device_have_sufficient_space() {
 
 is_wifi_connected() {
     if ping -c 3 -W 2 1.1.1.1 > /dev/null 2>&1; then
-        log_and_display_message "Cloudflare ping successful; device is online."
+        log_message "Cloudflare ping successful; device is online."
         return 0
     else
         log_and_display_message "Cloudflare ping failed; device is offline. Aborting."
@@ -82,8 +82,8 @@ is_branch_newer_than_device() {
 
     [ -z "$device_version" ] && device_version="0.0.0"  # allow OTA if version file missing
 
-    log_and_display_message "$BRANCH branch is on version $branch_version."
-    log_and_display_message "Current installation is on version $device_version."
+    log_message "$BRANCH branch is on version $branch_version."
+    log_message "Current installation is on version $device_version."
 
     # split the versions into 3 numbers each for comparison
     A_1=$(echo "$branch_version" | cut -d. -f1)
@@ -99,7 +99,7 @@ is_branch_newer_than_device() {
         eval A=\$A_$i
         eval B=\$B_$i
         if [ "$A" -gt "$B" ]; then 
-            log_and_display_message "Branch version is newer. Proceeding with update."
+            log_message "Branch version is newer. Proceeding with update."
             return 0
         elif [ "$A" -lt "$B" ]; then
             log_and_display_message "Device is on newer version than $BRANCH branch. Aborting."
@@ -113,9 +113,10 @@ is_branch_newer_than_device() {
 
 download_target_branch() {
     cd /mnt/SDCARD
-    log_and_display_message "Update found, beginning download. (~5min)"
+    log_and_display_message "Update found. Downloading! (~5min)"
     if wget --tries=3 -O "$BRANCH.zip" https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip ; then
         log_and_display_message "Successfully downloaded $BRANCH branch zip file."
+        sleep 5
         return 0
     else
         log_and_display_message "Failed to download $BRANCH branch zip file. Aborting."
@@ -127,7 +128,7 @@ download_target_branch() {
 
 extract_archive() {
 
-    log_and_display_message "Download finished, beginning extraction (~4min)" 
+    log_and_display_message "Download finished. Extracting! (~4min)" 
 
     new_dir="sprigUI-$BRANCH"
     new_ra_dir="$new_dir/RetroArch"
@@ -137,24 +138,25 @@ extract_archive() {
     excluded_files="$new_dir/create_sprig_release.sh $new_dir/create_sprig_release.bat $new_dir/TODO.txt"
 
     if [ "$OVERWRITE_RA_CONFIGS" = false ]; then
-        log_and_display_message "Will not overwrite RA configs."
+        log_message "Will not overwrite RA configs."
         excluded_files="$excluded_files $new_ra_dir/config $new_ra_dir/retroarchV4.cfg"
     fi
 
     if [ "$OVERWRITE_PYTHON3_DIR" = false ]; then
-        log_and_display_message "Will not overwrite Python3.10 directory."
+        log_message "Will not overwrite Python3.10 directory."
         excluded_files="$excluded_files $new_python3_dir"
     fi
 
     if [ "$OVERWRITE_THEMES_DIR" = false ]; then
-        log_and_display_message "Will not overwrite Themes directory."
+        log_message "Will not overwrite Themes directory."
         excluded_files="$excluded_files $new_themes_dir"
     fi
     
-    log_and_display_message "Files to exclude from extraction of new version: $excluded_files"
+    log_message "Files to exclude from extraction of new version: $excluded_files"
 
     if unzip -o "/mnt/SDCARD/$BRANCH.zip" -x $excluded_files -d /mnt/SDCARD ; then
         log_and_display_message "Archive extracted successfully."
+        sleep 5
         return 0
     else
         log_and_display_message "Archive extraction failed. Aborting."
@@ -176,8 +178,8 @@ preserve_user_emu_launch_settings() {
             selected_core="$(jq -r '.menuOptions.Emulator.selected' "$configjson")"
             overrides="$(jq '.menuOptions.Emulator.overrides' "$configjson")"
             [ "$overrides" = "null" ] && overrides='{}'
-            log_and_display_message "$emu_name: selected core: $selected_core"
-            log_and_display_message "$emu_name: overrides section: $overrides"
+            log_message "$emu_name: selected core: $selected_core"
+            log_message "$emu_name: overrides section: $overrides"
             tmpfile="$(mktemp)"
             jq \
                 --arg selected "$selected_core" \
@@ -191,14 +193,14 @@ preserve_user_emu_launch_settings() {
 
 complete_installation() {
 
-    log_and_display_message "Killing main execution loop, powerbutton watchdog, and SSH."
+    log_message "Killing main execution loop, powerbutton watchdog, and SSH."
     killall -9 main button_watchdog.sh dropbearmulti # adbd    ### Keep adbd on for testing
     umount /etc/profile >/dev/null 2>&1
 
     if [ "$DELETE_BEFORE_COPY" = true ]; then
         for dir in App Emu miyoo285 RetroArch sprig Themes RApp; do
             rm -rf /mnt/SDCARD/$dir
-            log_and_display_message "Deleted old $dir directory."
+            log_message "Deleted old $dir directory."
         done
     fi
 
@@ -220,24 +222,27 @@ display_message "Starting OTA process. Checking space, wifi, and version"
 if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_than_device; then
 
     log_and_display_message "All checks passed. Proceeding to download $BRANCH branch of sprigUI repo."
+    sleep 5
     
     if download_target_branch && extract_archive; then
         if [ "$OVERWRITE_EMU_DIR" = false ]; then
             preserve_user_emu_launch_settings
         else
             log_and_display_message "Emulator options and overrides will be reset to default."
+            sleep 5
         fi
         complete_installation
         sync
-        log_and_display_message "Update finished, rebooting"
-
+        sleep 5
         reboot
     else
+        sleep 5
         stop_pyui_message_writer
         exit 2
     fi
 
 else
+    sleep 5
     stop_pyui_message_writer
     exit 1
 fi
