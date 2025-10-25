@@ -27,6 +27,9 @@ sprig is a custom operating system for the Miyoo Mini Flip, developed by the spr
     - ADB: `adb connect 192.168.x.x:5555`
     - SSH: `ssh root@192.168.x.x`
 
+## Required Firmware
+https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0
+
 ## Special Thanks
 
 - Miyoo for providing us with development units.
