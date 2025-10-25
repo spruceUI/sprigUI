@@ -19,5 +19,3 @@ rm /mnt/SDCARD/App/PyUI/run.txt
     -pyUiConfig "/mnt/SDCARD/App/PyUI/py-ui-config.json" \
     -cfwConfig "/mnt/SDCARD/Saves/sprig/sprig-config.json" \
     "$@" >> /mnt/SDCARD/App/PyUI/run.txt 2>&1
-
-../../miyoo285/app/freemma

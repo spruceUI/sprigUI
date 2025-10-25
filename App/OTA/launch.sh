@@ -116,6 +116,7 @@ is_branch_newer_than_device() {
 
 download_target_branch() {
     cd /mnt/SDCARD
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Update found, beginning download." -msgDisplayTimeMs 1 &
     if wget --tries=3 -O "$BRANCH.zip" https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip ; then
         log_message "Successfully downloaded $BRANCH branch zip file."
         return 0
@@ -129,6 +130,8 @@ download_target_branch() {
 }
 
 extract_archive() {
+
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Download finished, beginning extraction" -msgDisplayTimeMs 1 &
 
     new_dir="sprigUI-$BRANCH"
     new_ra_dir="$new_dir/RetroArch"
@@ -231,6 +234,8 @@ if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_tha
         fi
         complete_installation
         sync
+        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Update finished, rebooting" -msgDisplayTimeMs 1 &
+
         reboot
     else
         exit 2
