@@ -32,6 +32,8 @@ def parse_arguments():
     parser.add_argument('-pyUiConfig', type=str, default='/mnt/SDCARD/Saves/pyui-config.json', help='Location of PyUI config')
     parser.add_argument('-device', type=str, default='MIYOO_FLIP', help='The device type (MIYOO_FLIP or TRIMUI_BRICK)')
     parser.add_argument('-cfwConfig', type=str, default=None, help='Path to the systems json config')
+    parser.add_argument('-msgDisplay', type=str, default=None, help='A message to display and then exit')
+    parser.add_argument('-msgDisplayTimeMs', type=str, default=None, help='How long to display the message')
     return parser.parse_args()
 
 def log_renderer_info():
@@ -94,6 +96,23 @@ def verify_config_exists(config_path):
 
     ConfigCopier.ensure_config(config_path, source)
 
+def check_for_msg_display(args):
+    PyUiLogger.get_logger().error(f"args.msgDisplay = {args.msgDisplay}")
+    if(args.msgDisplay):
+        duration = 2000
+        if(args.msgDisplayTimeMs):
+            try:
+                duration = int(args.msgDisplayTimeMs)
+            except Exception as e:
+                PyUiLogger.get_logger().error(f"Error during pre UI tasks: ", exc_info=True)
+
+        try:
+            Display.display_message(args.msgDisplay, duration)
+        except Exception as e:
+            PyUiLogger.get_logger().error(f"Error during pre UI tasks: ", exc_info=True)
+
+        sys.exit(0)
+
 
 def main():
     args = parse_arguments()
@@ -123,6 +142,9 @@ def main():
     Display.clear_text_cache()
     Controller.init()
     Language.init()
+
+    check_for_msg_display(args)
+
     main_menu = MainMenu()
 
     start_background_threads()

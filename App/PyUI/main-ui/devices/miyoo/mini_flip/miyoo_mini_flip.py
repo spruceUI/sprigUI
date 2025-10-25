@@ -295,10 +295,10 @@ class MiyooMiniFlip(MiyooDevice):
             data = json.loads(result.stdout.strip())
             charging = int(data.get("charging", 0))
             
-            if charging == 1:
-                return ChargeStatus.CHARGING
-            else:
+            if charging == 0:
                 return ChargeStatus.DISCONNECTED
+            else:
+                return ChargeStatus.CHARGING
         except Exception:
             return ChargeStatus.DISCONNECTED
 
@@ -444,9 +444,12 @@ class MiyooMiniFlip(MiyooDevice):
     def double_init_sdl_display(self):
         return True
             
-    def shrink_text_if_needed(self, text):
-        return text[:30]
-    
+    def max_texture_width(self):
+        return 800
+            
+    def get_guaranteed_safe_max_text_char_count(self):
+        return 35
+
     def supports_volume(self):
         return True #can read but not write
 
