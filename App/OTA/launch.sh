@@ -53,7 +53,6 @@ does_device_have_sufficient_space() {
         return 0
     else
         log_and_display_message "SD card does not have $SPACE_REQUIRED MiB free. Aborting."
-        display_message "SD card does not have $SPACE_REQUIRED MiB free. Aborting"
         return 1
     fi
 }
@@ -64,7 +63,6 @@ is_wifi_connected() {
         return 0
     else
         log_and_display_message "Cloudflare ping failed; device is offline. Aborting."
-        display_message "Cloudflare ping failed; device is offline. Aborting."
         return 1
     fi
 }
@@ -75,7 +73,6 @@ is_branch_newer_than_device() {
     cd /tmp
     if ! wget --tries=3 -O version https://raw.githubusercontent.com/spruceUI/sprigUI/$BRANCH/sprig/version ; then
         log_and_display_message "Unable to retrieve version file from $BRANCH branch of sprigUI repo. Aborting."
-        display_message "Unable to retrieve version file from $BRANCH branch of sprigUI repo. Aborting."
         return 1
     fi
 
@@ -106,19 +103,17 @@ is_branch_newer_than_device() {
             return 0
         elif [ "$A" -lt "$B" ]; then
             log_and_display_message "Device is on newer version than $BRANCH branch. Aborting."
-            display_message "Device is on newer version than $BRANCH branch. Aborting."
             return 1
         # else continue to next field in the version number
         fi
     done
     log_and_display_message "Device is on same version as $BRANCH branch. No update needed. Aborting."
-    display_message "Device is on same version as $BRANCH branch. No update needed. Aborting."
     return 1
 }
 
 download_target_branch() {
     cd /mnt/SDCARD
-    display_message "Update found, beginning download. (~5min)" -msgDisplayTimeMs 1 &
+    log_and_display_message "Update found, beginning download. (~5min)"
     if wget --tries=3 -O "$BRANCH.zip" https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip ; then
         log_and_display_message "Successfully downloaded $BRANCH branch zip file."
         return 0
@@ -126,14 +121,13 @@ download_target_branch() {
         log_and_display_message "Failed to download $BRANCH branch zip file. Aborting."
         rm -f "/mnt/SDCARD/$BRANCH.zip"
         rm -rf "/mnt/SDCARD/sprigUI-$BRANCH"
-        display_message "Failed to download $BRANCH branch zip file. Aborting."
         return 1
     fi
 }
 
 extract_archive() {
 
-    display_message "Download finished, beginning extraction (~4min)" -msgDisplayTimeMs 1 &
+    log_and_display_message "Download finished, beginning extraction (~4min)" 
 
     new_dir="sprigUI-$BRANCH"
     new_ra_dir="$new_dir/RetroArch"
@@ -164,7 +158,6 @@ extract_archive() {
         return 0
     else
         log_and_display_message "Archive extraction failed. Aborting."
-        display_message "Archive extraction failed. Aborting."
         return 1
     fi
 }
@@ -209,22 +202,19 @@ complete_installation() {
         done
     fi
 
-    display_message "Copying new sprigUI version into place (~5min)" -msgDisplayTimeMs 1 &
-    log_and_display_message "Copying new sprigUI version into place."
+    log_and_display_message "Copying new sprigUI version into place (~5min)"
     cp -rf /mnt/SDCARD/sprigUI-"$BRANCH"/* /mnt/SDCARD
 
-    log_and_display_message "Installation complete. Cleaning up."
-    display_message "Cleaning up temporary files (~2min)" -msgDisplayTimeMs 1 &
+    log_and_display_message "Installation complete. Cleaning up temporary files (~2min)"
     rm -rf "/mnt/SDCARD/$BRANCH.zip" "/mnt/SDCARD/sprigUI-$BRANCH"
 
     log_and_display_message "Update finished. Syncing and rebooting! happy gaming.........."
-    display_message "Update finished. Syncing and rebooting! happy gaming.........."
 }
 
 ##### MAIN EXECUTION #####
 
 log_and_display_message "Starting OTA process. Checking space, wifi, and version."
-display_message "Starting OTA process. Checking space, wifi, and version" -msgDisplayTimeMs 1000
+display_message "Starting OTA process. Checking space, wifi, and version"
 # show /mnt/SDCARD/sprig/res/sprucetree.png
 
 if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_than_device; then
@@ -239,7 +229,7 @@ if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_tha
         fi
         complete_installation
         sync
-        display_message "Update finished, rebooting" -msgDisplayTimeMs 1 &
+        log_and_display_message "Update finished, rebooting"
 
         reboot
     else
