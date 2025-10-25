@@ -51,6 +51,7 @@ does_device_have_sufficient_space() {
         return 0
     else
         log_message "SD card does not have $SPACE_REQUIRED MiB free. Aborting."
+        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "SD card does not have $SPACE_REQUIRED MiB free. Aborting" -msgDisplayTimeMs 3000
         return 1
     fi
 }
@@ -61,6 +62,7 @@ is_wifi_connected() {
         return 0
     else
         log_message "Cloudflare ping failed; device is offline. Aborting."
+        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Cloudflare ping failed; device is offline. Aborting." -msgDisplayTimeMs 3000
         return 1
     fi
 }
@@ -71,6 +73,7 @@ is_branch_newer_than_device() {
     cd /tmp
     if ! wget --tries=3 -O version https://raw.githubusercontent.com/spruceUI/sprigUI/$BRANCH/sprig/version ; then
         log_message "Unable to retrieve version file from $BRANCH branch of sprigUI repo. Aborting."
+        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Unable to retrieve version file from $BRANCH branch of sprigUI repo. Aborting." -msgDisplayTimeMs 3000
         return 1
     fi
 
@@ -101,11 +104,13 @@ is_branch_newer_than_device() {
             return 0
         elif [ "$A" -lt "$B" ]; then
             log_message "Device is on newer version than $BRANCH branch. Aborting."
+            /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Device is on newer version than $BRANCH branch. Aborting." -msgDisplayTimeMs 3000
             return 1
         # else continue to next field in the version number
         fi
     done
     log_message "Device is on same version as $BRANCH branch. No update needed. Aborting."
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Device is on same version as $BRANCH branch. No update needed. Aborting." -msgDisplayTimeMs 3000
     return 1
 }
 
@@ -118,6 +123,7 @@ download_target_branch() {
         log_message "Failed to download $BRANCH branch zip file. Aborting."
         rm -f "/mnt/SDCARD/$BRANCH.zip"
         rm -rf "/mnt/SDCARD/sprigUI-$BRANCH"
+        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Failed to download $BRANCH branch zip file. Aborting." -msgDisplayTimeMs 3000
         return 1
     fi
 }
@@ -153,6 +159,7 @@ extract_archive() {
         return 0
     else
         log_message "Archive extraction failed. Aborting."
+        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Archive extraction failed. Aborting." -msgDisplayTimeMs 3000
         return 1
     fi
 }
@@ -204,6 +211,7 @@ complete_installation() {
     rm -rf "/mnt/SDCARD/$BRANCH.zip" "/mnt/SDCARD/sprigUI-$BRANCH"
 
     log_message "Update finished. Syncing and rebooting! happy gaming.........."
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Update finished. Syncing and rebooting! happy gaming.........." -msgDisplayTimeMs 3000
 }
 
 ##### MAIN EXECUTION #####
