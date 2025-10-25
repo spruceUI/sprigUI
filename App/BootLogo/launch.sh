@@ -2,14 +2,16 @@
 
 . /mnt/SDCARD/sprig/helperFunctions.sh
 
-show /mnt/SDCARD/sprig/res/sprucetree.png
-log_message "Running BootLogo app."
+start_pyui_message_writer
+sleep 1
+log_and_display_message "Flashing bootlogo! Please do not power off."
+sleep 3
 
 cd $(dirname "$0")
 
 SUPPORTED_VERSION="202304280000" # there is no 202304280000 firmware, it's when I updated this pak originally
 if [ $MIYOO_VERSION -gt $SUPPORTED_VERSION ]; then
-	echo "Unknown firmware version. YOLOOOOOOOO."
+	log_message "Unknown firmware version. YOLOOOOOOOO."
 	# exit 1
 fi
 
@@ -18,17 +20,20 @@ fi
 if [ -f ./logo.jpg ]; then
 	cp ./logo.jpg ./image1.jpg
 else
-	log_message "no logo.jpg found. Aborted."
+	log_and_display_message "No logo.jpg found. Aborted."
+	sleep 5
 	exit 1
 fi
 
 if ! ./logomake.elf; then
-	log_message "Preparing bootlogo failed. Aborted."
+	log_and_display_message "Preparing bootlogo failed. Aborted."
+	sleep 5
 	exit 1
 fi
 
 if ! ./logowrite.elf; then
-	log_message "Flashing bootlogo failed. Aborted."
+	log_and_display_message "Flashing bootlogo failed. Aborted."
+	sleep 5
 	exit 1
 fi
 
@@ -39,8 +44,7 @@ rm image2.jpg
 rm image3.jpg
 rm logo.img
 
-log_message "Done."
+log_and_display_message "Done."
+sleep 3
+stop_pyui_message_writer
 
-# self-destruct
-# DIR=$(dirname "$0")
-# mv $DIR $DIR.disabled

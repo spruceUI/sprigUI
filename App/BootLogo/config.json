@@ -1,6 +1,6 @@
 {
-  "#label": "Boot Logo",
+  "label": "Boot Logo",
   "icon": "bootlogo.png",
   "launch": "launch.sh",
-  "description": "Swap the boot logo at start up"
+  "description": "Swap the boot logo at startup"
 }
