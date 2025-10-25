@@ -116,7 +116,7 @@ is_branch_newer_than_device() {
 
 download_target_branch() {
     cd /mnt/SDCARD
-    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Update found, beginning download." -msgDisplayTimeMs 1 &
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Update found, beginning download. (~5min)" -msgDisplayTimeMs 1 &
     if wget --tries=3 -O "$BRANCH.zip" https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip ; then
         log_message "Successfully downloaded $BRANCH branch zip file."
         return 0
@@ -131,7 +131,7 @@ download_target_branch() {
 
 extract_archive() {
 
-    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Download finished, beginning extraction" -msgDisplayTimeMs 1 &
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Download finished, beginning extraction (~4min)" -msgDisplayTimeMs 1 &
 
     new_dir="sprigUI-$BRANCH"
     new_ra_dir="$new_dir/RetroArch"
@@ -207,10 +207,12 @@ complete_installation() {
         done
     fi
 
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Copying new sprigUI version into place (~5min)" -msgDisplayTimeMs 1 &
     log_message "Copying new sprigUI version into place."
     cp -rf /mnt/SDCARD/sprigUI-"$BRANCH"/* /mnt/SDCARD
 
-    log_message "Installation complete. Cleaning up."
+    log_message "Installation complete. Cleaning up. (~2min)"
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Cleaning up temporary files " -msgDisplayTimeMs 1 &
     rm -rf "/mnt/SDCARD/$BRANCH.zip" "/mnt/SDCARD/sprigUI-$BRANCH"
 
     log_message "Update finished. Syncing and rebooting! happy gaming.........."
@@ -220,7 +222,8 @@ complete_installation() {
 ##### MAIN EXECUTION #####
 
 log_message "Starting OTA process. Checking space, wifi, and version."
-show /mnt/SDCARD/sprig/res/sprucetree.png
+/mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Starting OTA process. Checking space, wifi, and version" -msgDisplayTimeMs 1000
+# show /mnt/SDCARD/sprig/res/sprucetree.png
 
 if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_than_device; then
 
