@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# Gain access to these functions in your script by adding the following line at the top:
+# . /mnt/SDCARD/sprig/helperFunctions.sh
 
 ##########     FLAG HANDLING     ##########
 
@@ -136,35 +138,6 @@ rotate_logs() {
     ) &
 }
 
-##########     SURVIVAL     ##########
-
-auto_regen_tmp_update() {
-    tmp_dir="/mnt/SDCARD/.tmp_update"
-    updater="/mnt/SDCARD/sprig/.tmp_update/runtime.sh"
-    if ! flag_check "tmp_update_repair_attempted"; then
-        [ ! -d "$tmp_dir" ] && mkdir "$tmp_dir" && flag_add "tmp_update_repair_attempted" && log_message ".tmp_update folder repair attempted. Adding tmp_update_repair_attempted flag."
-        [ ! -f "$tmp_dir/updater" ] && cp "$updater" "$tmp_dir/updater"
-    fi
-}
-
-read_only_check() {
-    log_message "Performing read-only check"
-    SD_or_sd=$(mount | grep -q SDCARD && echo "SDCARD" || echo "sdcard")
-    log_message "Device uses /mnt/$SD_or_sd for its SD card path" -v
-    MNT_LINE=$(mount | grep "$SD_or_sd")
-    if [ -n "$MNT_LINE" ]; then
-        log_message "mount line for SD card: $MNT_LINE" -v
-        MNT_STATUS=$(echo "$MNT_LINE" | cut -d'(' -f2 | cut -d',' -f1)
-        if [ "$MNT_STATUS" = "ro" ] && [ -n "$SD_DEV" ]; then
-            log_message "SD card is mounted as RO. Attempting to remount."
-            mount -o remount,rw "$SD_DEV" /mnt/"$SD_or_sd"
-        else
-            log_message "SD card is not read-only."
-        fi
-    fi
-}
-
-
 
 ##########     CPU MANAGEMENT     ##########
 
@@ -222,6 +195,24 @@ set_performance() {
 }
 
 ##########     OTHER STUFF     ##########
+
+
+read_only_check() {
+    log_message "Performing read-only check"
+    SD_or_sd=$(mount | grep -q SDCARD && echo "SDCARD" || echo "sdcard")
+    log_message "Device uses /mnt/$SD_or_sd for its SD card path" -v
+    MNT_LINE=$(mount | grep "$SD_or_sd")
+    if [ -n "$MNT_LINE" ]; then
+        log_message "mount line for SD card: $MNT_LINE" -v
+        MNT_STATUS=$(echo "$MNT_LINE" | cut -d'(' -f2 | cut -d',' -f1)
+        if [ "$MNT_STATUS" = "ro" ] && [ -n "$SD_DEV" ]; then
+            log_message "SD card is mounted as RO. Attempting to remount."
+            mount -o remount,rw "$SD_DEV" /mnt/"$SD_or_sd"
+        else
+            log_message "SD card is not read-only."
+        fi
+    fi
+}
 
 show() {
     /customer/app/sdldisplay "$1"
