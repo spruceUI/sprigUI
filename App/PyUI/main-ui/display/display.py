@@ -935,8 +935,8 @@ class Display:
         starting_height = Device.screen_height()//2 - (len(split_message) * height_per_line)//2
 
         for i, line in enumerate(split_message):
-            rended_text_w, rendered_text_h = Display.render_text_centered(f"{line}",Device.screen_width()//2, starting_height + i * height_per_line,
-                                         Theme.text_color_selected(FontPurpose.LIST), purpose=FontPurpose.LIST)
+            Display.render_text_centered(f"{line}",Device.screen_width()//2, starting_height + i * height_per_line,
+                                         Theme.text_color(FontPurpose.LIST), purpose=FontPurpose.LIST)
 
         Display.present()
         # Sleep for the specified duration in milliseconds
