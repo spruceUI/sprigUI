@@ -26,6 +26,8 @@ OVERWRITE_THEMES_DIR=true
 DELETE_BEFORE_COPY=false
 
 
+start_pyui_message_writer
+
 ##########################################################
 
 if flag_check "developer"; then BRANCH=Development ; fi
@@ -44,25 +46,23 @@ fi
 
 does_device_have_sufficient_space() {
     FREE_SPACE="$(df -m /mnt/SDCARD | awk '{print $4}' | tail -n 1)"
-    log_message "Free space on SDCARD: $FREE_SPACE MiB"
-    log_message "Space required for safe update: $SPACE_REQUIRED MiB"
+    log_and_display_message "Free space on SDCARD: $FREE_SPACE MiB"
+    log_and_display_message "Space required for safe update: $SPACE_REQUIRED MiB"
     if [ "$FREE_SPACE" -ge "$SPACE_REQUIRED" ]; then
-        log_message "SD card has sufficient space. Continuing."
+        log_and_display_message "SD card has sufficient space. Continuing."
         return 0
     else
-        log_message "SD card does not have $SPACE_REQUIRED MiB free. Aborting."
-        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "SD card does not have $SPACE_REQUIRED MiB free. Aborting" -msgDisplayTimeMs 3000
+        log_and_display_message "SD card does not have $SPACE_REQUIRED MiB free. Aborting."
         return 1
     fi
 }
 
 is_wifi_connected() {
     if ping -c 3 -W 2 1.1.1.1 > /dev/null 2>&1; then
-        log_message "Cloudflare ping successful; device is online."
+        log_and_display_message "Cloudflare ping successful; device is online."
         return 0
     else
-        log_message "Cloudflare ping failed; device is offline. Aborting."
-        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Cloudflare ping failed; device is offline. Aborting." -msgDisplayTimeMs 3000
+        log_and_display_message "Cloudflare ping failed; device is offline. Aborting."
         return 1
     fi
 }
@@ -72,8 +72,7 @@ is_branch_newer_than_device() {
     # get version file from target branch of sprigUI repo
     cd /tmp
     if ! wget --tries=3 -O version https://raw.githubusercontent.com/spruceUI/sprigUI/$BRANCH/sprig/version ; then
-        log_message "Unable to retrieve version file from $BRANCH branch of sprigUI repo. Aborting."
-        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Unable to retrieve version file from $BRANCH branch of sprigUI repo. Aborting." -msgDisplayTimeMs 3000
+        log_and_display_message "Unable to retrieve version file from $BRANCH branch of sprigUI repo. Aborting."
         return 1
     fi
 
@@ -83,8 +82,8 @@ is_branch_newer_than_device() {
 
     [ -z "$device_version" ] && device_version="0.0.0"  # allow OTA if version file missing
 
-    log_message "$BRANCH branch is on version $branch_version."
-    log_message "Current installation is on version $device_version."
+    log_and_display_message "$BRANCH branch is on version $branch_version."
+    log_and_display_message "Current installation is on version $device_version."
 
     # split the versions into 3 numbers each for comparison
     A_1=$(echo "$branch_version" | cut -d. -f1)
@@ -100,38 +99,35 @@ is_branch_newer_than_device() {
         eval A=\$A_$i
         eval B=\$B_$i
         if [ "$A" -gt "$B" ]; then 
-            log_message "Branch version is newer. Proceeding with update."
+            log_and_display_message "Branch version is newer. Proceeding with update."
             return 0
         elif [ "$A" -lt "$B" ]; then
-            log_message "Device is on newer version than $BRANCH branch. Aborting."
-            /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Device is on newer version than $BRANCH branch. Aborting." -msgDisplayTimeMs 3000
+            log_and_display_message "Device is on newer version than $BRANCH branch. Aborting."
             return 1
         # else continue to next field in the version number
         fi
     done
-    log_message "Device is on same version as $BRANCH branch. No update needed. Aborting."
-    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Device is on same version as $BRANCH branch. No update needed. Aborting." -msgDisplayTimeMs 3000
+    log_and_display_message "Device is on same version as $BRANCH branch. No update needed. Aborting."
     return 1
 }
 
 download_target_branch() {
     cd /mnt/SDCARD
-    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Update found, beginning download. (~5min)" -msgDisplayTimeMs 1 &
+    log_and_display_message "Update found, beginning download. (~5min)"
     if wget --tries=3 -O "$BRANCH.zip" https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip ; then
-        log_message "Successfully downloaded $BRANCH branch zip file."
+        log_and_display_message "Successfully downloaded $BRANCH branch zip file."
         return 0
     else
-        log_message "Failed to download $BRANCH branch zip file. Aborting."
+        log_and_display_message "Failed to download $BRANCH branch zip file. Aborting."
         rm -f "/mnt/SDCARD/$BRANCH.zip"
         rm -rf "/mnt/SDCARD/sprigUI-$BRANCH"
-        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Failed to download $BRANCH branch zip file. Aborting." -msgDisplayTimeMs 3000
         return 1
     fi
 }
 
 extract_archive() {
 
-    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Download finished, beginning extraction (~4min)" -msgDisplayTimeMs 1 &
+    log_and_display_message "Download finished, beginning extraction (~4min)" 
 
     new_dir="sprigUI-$BRANCH"
     new_ra_dir="$new_dir/RetroArch"
@@ -141,34 +137,33 @@ extract_archive() {
     excluded_files="$new_dir/create_sprig_release.sh $new_dir/create_sprig_release.bat $new_dir/TODO.txt"
 
     if [ "$OVERWRITE_RA_CONFIGS" = false ]; then
-        log_message "Will not overwrite RA configs."
+        log_and_display_message "Will not overwrite RA configs."
         excluded_files="$excluded_files $new_ra_dir/config $new_ra_dir/retroarchV4.cfg"
     fi
 
     if [ "$OVERWRITE_PYTHON3_DIR" = false ]; then
-        log_message "Will not overwrite Python3.10 directory."
+        log_and_display_message "Will not overwrite Python3.10 directory."
         excluded_files="$excluded_files $new_python3_dir"
     fi
 
     if [ "$OVERWRITE_THEMES_DIR" = false ]; then
-        log_message "Will not overwrite Themes directory."
+        log_and_display_message "Will not overwrite Themes directory."
         excluded_files="$excluded_files $new_themes_dir"
     fi
     
-    log_message "Files to exclude from extraction of new version: $excluded_files"
+    log_and_display_message "Files to exclude from extraction of new version: $excluded_files"
 
     if unzip -o "/mnt/SDCARD/$BRANCH.zip" -x $excluded_files -d /mnt/SDCARD ; then
-        log_message "Archive extracted successfully."
+        log_and_display_message "Archive extracted successfully."
         return 0
     else
-        log_message "Archive extraction failed. Aborting."
-        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Archive extraction failed. Aborting." -msgDisplayTimeMs 3000
+        log_and_display_message "Archive extraction failed. Aborting."
         return 1
     fi
 }
 
 preserve_user_emu_launch_settings() {
-    log_message "Preserving user emu launch settings."
+    log_and_display_message "Preserving user emu launch settings."
     for configjson in /mnt/SDCARD/Emu/*/config.json ; do
 
         emu_dir="$(dirname "$configjson")"
@@ -181,8 +176,8 @@ preserve_user_emu_launch_settings() {
             selected_core="$(jq -r '.menuOptions.Emulator.selected' "$configjson")"
             overrides="$(jq '.menuOptions.Emulator.overrides' "$configjson")"
             [ "$overrides" = "null" ] && overrides='{}'
-            log_message "$emu_name: selected core: $selected_core"
-            log_message "$emu_name: overrides section: $overrides"
+            log_and_display_message "$emu_name: selected core: $selected_core"
+            log_and_display_message "$emu_name: overrides section: $overrides"
             tmpfile="$(mktemp)"
             jq \
                 --arg selected "$selected_core" \
@@ -196,54 +191,53 @@ preserve_user_emu_launch_settings() {
 
 complete_installation() {
 
-    log_message "Killing main execution loop, powerbutton watchdog, and SSH."
+    log_and_display_message "Killing main execution loop, powerbutton watchdog, and SSH."
     killall -9 main button_watchdog.sh dropbearmulti # adbd    ### Keep adbd on for testing
     umount /etc/profile >/dev/null 2>&1
 
     if [ "$DELETE_BEFORE_COPY" = true ]; then
         for dir in App Emu miyoo285 RetroArch sprig Themes RApp; do
             rm -rf /mnt/SDCARD/$dir
-            log_message "Deleted old $dir directory."
+            log_and_display_message "Deleted old $dir directory."
         done
     fi
 
-    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Copying new sprigUI version into place (~5min)" -msgDisplayTimeMs 1 &
-    log_message "Copying new sprigUI version into place."
+    log_and_display_message "Copying new sprigUI version into place (~5min)"
     cp -rf /mnt/SDCARD/sprigUI-"$BRANCH"/* /mnt/SDCARD
 
-    log_message "Installation complete. Cleaning up."
-    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Cleaning up temporary files (~2min)" -msgDisplayTimeMs 1 &
+    log_and_display_message "Installation complete. Cleaning up temporary files (~2min)"
     rm -rf "/mnt/SDCARD/$BRANCH.zip" "/mnt/SDCARD/sprigUI-$BRANCH"
 
-    log_message "Update finished. Syncing and rebooting! happy gaming.........."
-    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Update finished. Syncing and rebooting! happy gaming.........." -msgDisplayTimeMs 3000
+    log_and_display_message "Update finished. Syncing and rebooting! happy gaming.........."
 }
 
 ##### MAIN EXECUTION #####
 
-log_message "Starting OTA process. Checking space, wifi, and version."
-/mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Starting OTA process. Checking space, wifi, and version" -msgDisplayTimeMs 1000
+log_and_display_message "Starting OTA process. Checking space, wifi, and version."
+display_message "Starting OTA process. Checking space, wifi, and version"
 # show /mnt/SDCARD/sprig/res/sprucetree.png
 
 if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_than_device; then
 
-    log_message "All checks passed. Proceeding to download $BRANCH branch of sprigUI repo."
+    log_and_display_message "All checks passed. Proceeding to download $BRANCH branch of sprigUI repo."
     
     if download_target_branch && extract_archive; then
         if [ "$OVERWRITE_EMU_DIR" = false ]; then
             preserve_user_emu_launch_settings
         else
-            log_message "Emulator options and overrides will be reset to default."
+            log_and_display_message "Emulator options and overrides will be reset to default."
         fi
         complete_installation
         sync
-        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Update finished, rebooting" -msgDisplayTimeMs 1 &
+        log_and_display_message "Update finished, rebooting"
 
         reboot
     else
+        stop_pyui_message_writer
         exit 2
     fi
 
 else
+    stop_pyui_message_writer
     exit 1
 fi
