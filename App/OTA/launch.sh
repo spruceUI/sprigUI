@@ -5,19 +5,40 @@
 export PATH="/mnt/SDCARD/sprig/bin:$PATH"
 export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH"
 
+##### VARIABLES #####
 
-# Change this to change which branch of the repo to download.
+# Tweak these variables to change specific behaviors of the OTA process.
+
+# Change this to change which branch of the repo to download. 'developer.lock' overrides this to the "Development" branch.
 BRANCH=main
 
 # This controls how many MiB of free space we want to require on the SDCARD. It should be greater than
 # the size of the zipfile plus the size of the contents thereof.
 SPACE_REQUIRED=800
 
-# Will not copy certain files and folders into place if set to false.
+# Will not copy certain files and folders into place if set to false. DELETE_BEFORE_COPY overrides these all to true.
 OVERWRITE_EMU_DIR=false
 OVERWRITE_RA_CONFIGS=false
 OVERWRITE_PYTHON3_DIR=false
 OVERWRITE_THEMES_DIR=true
+
+# If true, delete current contents of SDCARD aside from Roms, BIOS, and Saves, to ensure full fresh install.
+DELETE_BEFORE_COPY=false
+
+
+##########################################################
+
+if flag_check "developer"; then BRANCH=Development ; fi
+
+if [ "$DELETE_BEFORE_COPY" = true ]; then
+    OVERWRITE_EMU_DIR=true
+    OVERWRITE_RA_CONFIGS=true
+    OVERWRITE_PYTHON3_DIR=true
+    OVERWRITE_THEMES_DIR=true
+fi
+
+##########################################################
+
 
 ##### FUNCTION DEFINITIONS #####
 
@@ -169,7 +190,14 @@ complete_installation() {
     killall -9 main button_watchdog.sh dropbearmulti # adbd    ### Keep adbd on for testing
     umount /etc/profile >/dev/null 2>&1
 
-    log_message "Copying new sprigUI version over old version."
+    if [ "$DELETE_BEFORE_COPY" = true ]; then
+        for dir in App Emu miyoo285 RetroArch sprig Themes RApp; do
+            rm -rf /mnt/SDCARD/$dir
+            log_message "Deleted old $dir directory."
+        done
+    fi
+
+    log_message "Copying new sprigUI version into place."
     cp -rf /mnt/SDCARD/sprigUI-"$BRANCH"/* /mnt/SDCARD
 
     log_message "Installation complete. Cleaning up."
