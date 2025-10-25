@@ -246,3 +246,26 @@ get_pyui_config_value() {
 
     jq -r "${key} // \"$default\"" "$file"
 }
+
+PYUI_PIPE=/tmp/pyui_pipe
+
+start_pyui_message_writer(){
+    rm $PYUI_PIPE
+    [ -p $PYUI_PIPE ] || mkfifo $PYUI_PIPE
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplayRealtime True < $PYUI_PIPE &
+    exec 3> $PYUI_PIPE
+}
+
+stop_pyui_message_writer(){
+    echo "EXIT_APP" >&3
+    exec 3>&-
+}
+
+display_message(){
+    echo $1 >&3
+}
+
+log_and_display_message(){
+    log_message $1
+    display_message $1
+}
