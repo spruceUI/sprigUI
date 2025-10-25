@@ -51,6 +51,7 @@ does_device_have_sufficient_space() {
         return 0
     else
         log_message "SD card does not have $SPACE_REQUIRED MiB free. Aborting."
+        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "SD card does not have $SPACE_REQUIRED MiB free. Aborting" -msgDisplayTimeMs 3000
         return 1
     fi
 }
@@ -61,6 +62,7 @@ is_wifi_connected() {
         return 0
     else
         log_message "Cloudflare ping failed; device is offline. Aborting."
+        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Cloudflare ping failed; device is offline. Aborting." -msgDisplayTimeMs 3000
         return 1
     fi
 }
@@ -71,6 +73,7 @@ is_branch_newer_than_device() {
     cd /tmp
     if ! wget --tries=3 -O version https://raw.githubusercontent.com/spruceUI/sprigUI/$BRANCH/sprig/version ; then
         log_message "Unable to retrieve version file from $BRANCH branch of sprigUI repo. Aborting."
+        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Unable to retrieve version file from $BRANCH branch of sprigUI repo. Aborting." -msgDisplayTimeMs 3000
         return 1
     fi
 
@@ -101,16 +104,19 @@ is_branch_newer_than_device() {
             return 0
         elif [ "$A" -lt "$B" ]; then
             log_message "Device is on newer version than $BRANCH branch. Aborting."
+            /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Device is on newer version than $BRANCH branch. Aborting." -msgDisplayTimeMs 3000
             return 1
         # else continue to next field in the version number
         fi
     done
     log_message "Device is on same version as $BRANCH branch. No update needed. Aborting."
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Device is on same version as $BRANCH branch. No update needed. Aborting." -msgDisplayTimeMs 3000
     return 1
 }
 
 download_target_branch() {
     cd /mnt/SDCARD
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Update found, beginning download. (~5min)" -msgDisplayTimeMs 1 &
     if wget --tries=3 -O "$BRANCH.zip" https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip ; then
         log_message "Successfully downloaded $BRANCH branch zip file."
         return 0
@@ -118,11 +124,14 @@ download_target_branch() {
         log_message "Failed to download $BRANCH branch zip file. Aborting."
         rm -f "/mnt/SDCARD/$BRANCH.zip"
         rm -rf "/mnt/SDCARD/sprigUI-$BRANCH"
+        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Failed to download $BRANCH branch zip file. Aborting." -msgDisplayTimeMs 3000
         return 1
     fi
 }
 
 extract_archive() {
+
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Download finished, beginning extraction (~4min)" -msgDisplayTimeMs 1 &
 
     new_dir="sprigUI-$BRANCH"
     new_ra_dir="$new_dir/RetroArch"
@@ -153,6 +162,7 @@ extract_archive() {
         return 0
     else
         log_message "Archive extraction failed. Aborting."
+        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Archive extraction failed. Aborting." -msgDisplayTimeMs 3000
         return 1
     fi
 }
@@ -197,19 +207,23 @@ complete_installation() {
         done
     fi
 
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Copying new sprigUI version into place (~5min)" -msgDisplayTimeMs 1 &
     log_message "Copying new sprigUI version into place."
     cp -rf /mnt/SDCARD/sprigUI-"$BRANCH"/* /mnt/SDCARD
 
     log_message "Installation complete. Cleaning up."
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Cleaning up temporary files (~2min)" -msgDisplayTimeMs 1 &
     rm -rf "/mnt/SDCARD/$BRANCH.zip" "/mnt/SDCARD/sprigUI-$BRANCH"
 
     log_message "Update finished. Syncing and rebooting! happy gaming.........."
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Update finished. Syncing and rebooting! happy gaming.........." -msgDisplayTimeMs 3000
 }
 
 ##### MAIN EXECUTION #####
 
 log_message "Starting OTA process. Checking space, wifi, and version."
-show /mnt/SDCARD/sprig/res/sprucetree.png
+/mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Starting OTA process. Checking space, wifi, and version" -msgDisplayTimeMs 1000
+# show /mnt/SDCARD/sprig/res/sprucetree.png
 
 if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_than_device; then
 
@@ -223,6 +237,8 @@ if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_tha
         fi
         complete_installation
         sync
+        /mnt/SDCARD/App/PyUI/launch.sh -msgDisplay "Update finished, rebooting" -msgDisplayTimeMs 1 &
+
         reboot
     else
         exit 2

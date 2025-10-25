@@ -32,6 +32,9 @@ def parse_arguments():
     parser.add_argument('-pyUiConfig', type=str, default='/mnt/SDCARD/Saves/pyui-config.json', help='Location of PyUI config')
     parser.add_argument('-device', type=str, default='MIYOO_FLIP', help='The device type (MIYOO_FLIP or TRIMUI_BRICK)')
     parser.add_argument('-cfwConfig', type=str, default=None, help='Path to the systems json config')
+    parser.add_argument('-msgDisplay', type=str, default=None, help='A message to display and then exit')
+    parser.add_argument('-msgDisplayTimeMs', type=str, default=None, help='How long to display the message')
+    parser.add_argument('-msgDisplayRealtime', type=str, default=None, help='Reads from stdin to display messages')
     return parser.parse_args()
 
 def log_renderer_info():
@@ -94,6 +97,36 @@ def verify_config_exists(config_path):
 
     ConfigCopier.ensure_config(config_path, source)
 
+def check_for_msg_display(args):
+    if(args.msgDisplay):
+        duration = 2000
+        if(args.msgDisplayTimeMs):
+            try:
+                duration = int(args.msgDisplayTimeMs)
+            except Exception as e:
+                PyUiLogger.get_logger().error(f"Error parsing message duration: ", exc_info=True)
+
+        try:
+            Display.display_message(args.msgDisplay, duration)
+        except Exception as e:
+            PyUiLogger.get_logger().error(f"Error displaying message: ", exc_info=True)
+
+        sys.exit(0)
+
+def check_for_msg_display_realtime(args):
+    if(args.msgDisplayRealtime):
+        try:
+            for line in sys.stdin:
+                PyUiLogger.get_logger().info(f"Waiting on next message")
+                message = line.strip()
+                PyUiLogger.get_logger().info(f"Received Message : {message}")
+                if message == "EXIT_APP":
+                    break
+                Display.display_message(message)
+        except Exception as e:
+            PyUiLogger.get_logger().error("Error processing messages: ", exc_info=True)
+        PyUiLogger.get_logger().info(f"Exitting...")
+        sys.exit(0)
 
 def main():
     args = parse_arguments()
@@ -123,6 +156,10 @@ def main():
     Display.clear_text_cache()
     Controller.init()
     Language.init()
+
+    check_for_msg_display(args)
+    check_for_msg_display_realtime(args)
+    
     main_menu = MainMenu()
 
     start_background_threads()
