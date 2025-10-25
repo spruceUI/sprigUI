@@ -137,21 +137,21 @@ extract_archive() {
     excluded_files="$new_dir/create_sprig_release.sh $new_dir/create_sprig_release.bat $new_dir/TODO.txt"
 
     if [ "$OVERWRITE_RA_CONFIGS" = false ]; then
-        log_and_display_message "Will not overwrite RA configs."
+        log_message "Will not overwrite RA configs."
         excluded_files="$excluded_files $new_ra_dir/config $new_ra_dir/retroarchV4.cfg"
     fi
 
     if [ "$OVERWRITE_PYTHON3_DIR" = false ]; then
-        log_and_display_message "Will not overwrite Python3.10 directory."
+        log_message "Will not overwrite Python3.10 directory."
         excluded_files="$excluded_files $new_python3_dir"
     fi
 
     if [ "$OVERWRITE_THEMES_DIR" = false ]; then
-        log_and_display_message "Will not overwrite Themes directory."
+        log_message "Will not overwrite Themes directory."
         excluded_files="$excluded_files $new_themes_dir"
     fi
     
-    log_and_display_message "Files to exclude from extraction of new version: $excluded_files"
+    log_message "Files to exclude from extraction of new version: $excluded_files"
 
     if unzip -o "/mnt/SDCARD/$BRANCH.zip" -x $excluded_files -d /mnt/SDCARD ; then
         log_and_display_message "Archive extracted successfully."
@@ -194,6 +194,7 @@ preserve_sprig_config_settings() {
 
     existing_config="/mnt/SDCARD/Saves/sprig/sprig-config.json"
     new_config="/mnt/SDCARD/sprigUI-$BRANCH/Saves/sprig/sprig-config.json"
+    /mnt/SDCARD/App/PyUI/python3.10/bin/python3.10 /mnt/SDCARD/App/OTA/merge_configs.py "$existing_config" "$new_config"
 }
 
 complete_installation() {
