@@ -266,6 +266,6 @@ display_message(){
 }
 
 log_and_display_message(){
-    log_message $1
-    display_message $1
+    log_message "$1"
+    display_message "$1"
 }
