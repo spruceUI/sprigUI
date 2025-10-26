@@ -3,7 +3,6 @@ import os
 import shutil
 import time
 from devices.device import Device
-from display.display import Display
 from display.font_purpose import FontPurpose
 from utils.logger import PyUiLogger
 
@@ -64,6 +63,7 @@ class ThemePatcher():
 
     @classmethod
     def patch_folder(cls, input_folder, output_folder, scale, theme_width, theme_height, target_width, target_height):
+        from display.display import Display
         PyUiLogger().get_logger().error(f"Patching theme [{input_folder}] to [{input_folder}] with scale factor [{scale}]")
         # Ensure the output directory exists
         os.makedirs(output_folder, exist_ok=True)
