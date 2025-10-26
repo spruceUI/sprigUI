@@ -20,12 +20,6 @@ if [ ! -d /sys/class/gpio/gpio48 ]; then
     echo 48 > /sys/class/gpio/export 2>/dev/null
 fi
 
-trigger_vibrate() {
-    if [ "$1" = "pwrbtn" ] && [ -f /tmp/pwrbtn ]; then
-        vibrate 0.03 3
-    fi
-}
-
 # Start evtest in background and read its output line-by-line
 evtest "$DEVICE" 2>/dev/null | while read -r line; do
     case "$line" in
@@ -33,16 +27,13 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
             power_btn_press_time=$(date +%s)
             log_message "Power button pressed at $power_btn_press_time" -v
             touch /tmp/pwrbtn
-
-            # Launch background timer that waits HOLD_MIN seconds, then triggers the action
             (
                 sleep "$HOLD_MIN"
-                # Check if the pwrbtn file still exists (i.e., not released)
-                if [ -f /tmp/pwrbtn ]; then
-                    trigger_vibrate "pwrbtn" &
-                fi
-            ) &
+                [ -f /tmp/pwrbtn ] && vibrate 0.03 3  # short triple after 1s
 
+                sleep $((3 - HOLD_MIN))
+                [ -f /tmp/pwrbtn ] && vibrate 0.1 2   # longer double after 3s
+            ) &
             ;;
         *"code 116 (KEY_POWER), value 0"*)
             if [ -n "$power_btn_press_time" ]; then
