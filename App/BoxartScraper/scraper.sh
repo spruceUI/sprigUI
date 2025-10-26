@@ -5,32 +5,45 @@ export PATH="/mnt/SDCARD/sprig/bin:$PATH"
 export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH:/mnt/SDCARD/App/PyUI/libs/:/config/lib/:/customer/lib"
 
 resize_image() {
-    local image_path="$1"
-    local max_width=294
-    local max_height=294
+    local input_path="$1"
+    local med_path="$(printf '%s' "$input_path" | sed 's#/Imgs/#/Imgs_med/#')"
+    local small_path="$(printf '%s' "$input_path" | sed 's#/Imgs/#/Imgs_small/#')"
+    
+    local full_width=600
+    local full_height=600
+    local med_width=300
+    local med_height=300
+    local small_width=150
+    local small_height=150
 
     # Ensure image exists
-    [ -f "$image_path" ] || { echo "File not found: $image_path"; return 1; }
+    [ -f "$input_path" ] || { echo "File not found: $input_path"; return 1; }
+
+    log_message "$input_path ==> $med_path : $med_width x $med_height"
+    # Resize while preserving aspect ratio
+    ffmpeg -y -i "$input_path" \
+        -vf "scale='min($med_width,iw)':'min($med_height,ih)':force_original_aspect_ratio=decrease" \
+        "$med_path"
+
+    log_message "$input_path ==> $small_path : $small_width x $small_height"
+    ffmpeg -y -i "$input_path" \
+        -vf "scale='min($small_width,iw)':'min($small_height,ih)':force_original_aspect_ratio=decrease" \
+        "$small_path"
 
     local dir base tmp_path
     dir=$(dirname "$image_path")
     base=$(basename "$image_path")
     tmp_path="$dir/tmp_$base"
-
+    
+    log_message "$input_path ==> $input_path : $full_width x $full_height"
     # Resize while preserving aspect ratio
-    ffmpeg -y -i "$image_path" \
-        -vf "scale='min($max_width,iw)':'min($max_height,ih)':force_original_aspect_ratio=decrease" \
+    ffmpeg -y -i "$input_path" \
+        -vf "scale='min($full_width,iw)':'min($full_height,ih)':force_original_aspect_ratio=decrease" \
         "$tmp_path"
 
-    if [ $? -eq 0 ]; then
-        mv "$tmp_path" "$image_path"
-        echo "Resized: $image_path → max ${max_width}x${max_height}"
-        return 0
-    else
-        echo "Error resizing $image_path"
-        rm -f "$tmp_path"
-        return 1
-    fi
+    mv "$tmp_path" "$image_path"
+
+    return 0
 }
 
 # ==========================================================
@@ -236,6 +249,8 @@ for sys_dir in "$roms_dir"/*/; do
 
         # Create Imgs directory if it doesn't exist
         mkdir -p "${sys_dir}Imgs"
+        mkdir -p "${sys_dir}Imgs_med"
+        mkdir -p "${sys_dir}Imgs_small"
 
         if [ -f "$image_path" ]; then
             continue
