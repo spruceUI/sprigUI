@@ -4,6 +4,34 @@
 export PATH="/mnt/SDCARD/sprig/bin:$PATH"
 export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH:/mnt/SDCARD/App/PyUI/libs/:/config/lib/:/customer/lib"
 
+resize_image() {
+    local image_path="$1"
+    local max_width=294
+    local max_height=294
+
+    # Ensure image exists
+    [ -f "$image_path" ] || { echo "File not found: $image_path"; return 1; }
+
+    local dir base tmp_path
+    dir=$(dirname "$image_path")
+    base=$(basename "$image_path")
+    tmp_path="$dir/tmp_$base"
+
+    # Resize while preserving aspect ratio
+    ffmpeg -y -i "$image_path" \
+        -vf "scale='min($max_width,iw)':'min($max_height,ih)':force_original_aspect_ratio=decrease" \
+        "$tmp_path"
+
+    if [ $? -eq 0 ]; then
+        mv "$tmp_path" "$image_path"
+        echo "Resized: $image_path → max ${max_width}x${max_height}"
+        return 0
+    else
+        echo "Error resizing $image_path"
+        rm -f "$tmp_path"
+        return 1
+    fi
+}
 
 # ==========================================================
 # Box Art Scraper Script
@@ -189,7 +217,6 @@ for sys_dir in "$roms_dir"/*/; do
     # icon_path="$(jq ".iconsel" "/mnt/SDCARD/Emu/$sys_name/config.json")"
 
     log_and_display_message "System: $sys_label - Scraping boxart for $amount_games games..."
-    sleep 2
     if [ -z "$extensions" ]; then
         log_message "BoxartScraper: No supported extensions found for directory $sys_name - skipping."
         continue
@@ -243,12 +270,12 @@ for sys_dir in "$roms_dir"/*/; do
 
         if [ -f "$image_path" ]; then
             scraped_count=$((scraped_count + 1))
+            resize_image "$image_path"
         else
             non_found_count=$((non_found_count + 1))
         fi
     done
     log_and_display_message "$sys_name: Scraped: $scraped_count, Skipped: $skip_count, Not Found: $non_found_count"
-    sleep 2
 done
 
 log_and_display_message "Scraping complete!"
