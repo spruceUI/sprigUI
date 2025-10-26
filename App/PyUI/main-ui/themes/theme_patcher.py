@@ -1,13 +1,15 @@
 import json
 import os
 import shutil
+import time
 from devices.device import Device
+from display.display import Display
 from display.font_purpose import FontPurpose
 from utils.logger import PyUiLogger
 
 
 class ThemePatcher():
-
+    _last_display_time = 0
     # Add properties you want to scale (case-sensitive)
     SCALABLE_KEYS = {"grid1x4","grid3x4","FontSize","gameSelectImgWidth","gameSelectImgHeight","gridGameSelectImgWidth",
                      "gridGameSelectImgHeight","listGameSelectImgWidth","listGameSelectImgHeight","gridMultiRowSelBgResizePadWidth",
@@ -74,11 +76,16 @@ class ThemePatcher():
                 # Recursively patch subfolders
                 cls.patch_folder(input_path, output_path, scale, theme_width, theme_height, target_width, target_height)
             elif os.path.isfile(input_path):
+                now = time.time()
+                if now - cls._last_display_time >= 1.0:
+                    Display.display_message(f"Patching {os.path.basename(input_path)}")
+                    cls._last_display_time = now
                 # Process image file
                 cls.scale_image(input_path, output_path, scale, theme_width, theme_height, target_width, target_height)
 
     @staticmethod
     def scale_image(input_file, output_file, scale, theme_width, theme_height, target_width, target_height):
+
         image_utils = Device.get_image_utils()
         try:
             img_width ,img_height = image_utils.get_image_dimensions(input_file)

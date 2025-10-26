@@ -1,4 +1,5 @@
 
+import math
 import os
 import shutil
 import subprocess
@@ -41,11 +42,70 @@ class FfmpegImageUtils(ImageUtils):
             # Clean up temp file if it exists
             if os.path.exists(temp_path):
                 os.remove(temp_path)
-    def resize_image(self,input_path, output_path, max_width, max_height):
-        """Resize the image to fit within max_width/max_height preserving aspect ratio using ffmpeg."""
-        # This is essentially the same as shrink_image_if_needed
-        self.shrink_image_if_needed(input_path, output_path, max_width, max_height)
 
+    def resize_image(self, input_path, output_path, max_width, max_height):
+        """
+        Resize the image to fit within max_width/max_height preserving aspect ratio.
+        This WILL enlarge the image if it is smaller than the requested bounds.
+        Uses ffmpeg and writes to a temporary file before moving to output_path.
+        """
+        try:
+            actual_width, actual_height = self.get_image_dimensions(input_path)
+            if actual_width == 0 or actual_height == 0:
+                PyUiLogger().get_logger().warning(f"Can't determine dimensions for {input_path}; skipping resize.")
+                return
+
+            # compute scale factor allowing both shrink and enlarge
+            scale_w = float(max_width) / float(actual_width)
+            scale_h = float(max_height) / float(actual_height)
+            scale = min(scale_w, scale_h)
+
+            # compute new dimensions (ensure at least 1)
+            new_width = max(1, int(math.floor(actual_width * scale)))
+            new_height = max(1, int(math.floor(actual_height * scale)))
+
+            # If already the desired size, just copy (or move) the file
+            if new_width == actual_width and new_height == actual_height:
+                # If output_path differs from input_path, copy; otherwise nothing to do
+                if os.path.abspath(input_path) != os.path.abspath(output_path):
+                    shutil.copy2(input_path, output_path)
+                    PyUiLogger().get_logger().info(f"Copied without scaling: {input_path} → {output_path} ({new_width}x{new_height})")
+                else:
+                    PyUiLogger().get_logger().info(f"No resizing needed for {input_path} ({new_width}x{new_height})")
+                return
+
+            # Use a temp file to avoid "cannot overwrite input" problems
+            tmp_output = output_path + ".tmp.png"
+
+            ffmpeg_cmd = [
+                "ffmpeg",
+                "-y",                 # overwrite temp if exists
+                "-i", input_path,
+                "-vf", f"scale={new_width}:{new_height}",
+                tmp_output
+            ]
+
+            subprocess.run(ffmpeg_cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+            # Move temp file to final destination (atomic on same filesystem)
+            shutil.move(tmp_output, output_path)
+            PyUiLogger().get_logger().info(f"Resized: {input_path} → {output_path} -> {new_width}x{new_height}")
+
+        except subprocess.CalledProcessError as e:
+            PyUiLogger().get_logger().error(f"Error resizing {input_path}: {e}")
+            # cleanup temp file if present
+            try:
+                if os.path.exists(tmp_output):
+                    os.remove(tmp_output)
+            except Exception:
+                pass
+        except Exception as e:
+            PyUiLogger().get_logger().error(f"Unexpected error resizing {input_path}: {e}")
+            try:
+                if os.path.exists(tmp_output):
+                    os.remove(tmp_output)
+            except Exception:
+                pass
 
     def get_image_dimensions(self,path):
         """
