@@ -216,15 +216,10 @@ for sys_dir in "$roms_dir"/*/; do
     sys_label="$(jq ".label" "/mnt/SDCARD/Emu/$sys_name/config.json")"
     # icon_path="$(jq ".iconsel" "/mnt/SDCARD/Emu/$sys_name/config.json")"
 
-    log_and_display_message "System: $sys_label - Scraping boxart for $amount_games games..."
     if [ -z "$extensions" ]; then
         log_message "BoxartScraper: No supported extensions found for directory $sys_name - skipping."
         continue
     fi
-
-    skip_count=0
-    scraped_count=0
-    non_found_count=0
 
     printf "$games" | while IFS= read -r file; do
 
@@ -243,14 +238,12 @@ for sys_dir in "$roms_dir"/*/; do
         mkdir -p "${sys_dir}Imgs"
 
         if [ -f "$image_path" ]; then
-            skip_count=$((skip_count + 1))
             continue
         fi
 
         remote_image_name=$(find_image_name "$sys_name" "$rom_file_name")
 
         if [ -z "$remote_image_name" ]; then
-            non_found_count=$((non_found_count + 1))
             continue
         fi
 
@@ -269,13 +262,9 @@ for sys_dir in "$roms_dir"/*/; do
         fi
 
         if [ -f "$image_path" ]; then
-            scraped_count=$((scraped_count + 1))
             resize_image "$image_path"
-        else
-            non_found_count=$((non_found_count + 1))
         fi
     done
-    log_and_display_message "$sys_name: Scraped: $scraped_count, Skipped: $skip_count, Not Found: $non_found_count"
 done
 
 log_and_display_message "Scraping complete!"
