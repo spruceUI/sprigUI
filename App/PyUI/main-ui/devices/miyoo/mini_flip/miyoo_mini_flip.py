@@ -28,6 +28,7 @@ from menus.games.utils.rom_info import RomInfo
 import sdl2
 from utils import throttle
 from utils.config_copier import ConfigCopier
+from utils.ffmpeg_image_utils import FfmpegImageUtils
 from utils.logger import PyUiLogger
 from utils.py_ui_config import PyUiConfig
 
@@ -446,7 +447,10 @@ class MiyooMiniFlip(MiyooDevice):
             
     def max_texture_width(self):
         return 800
-            
+                    
+    def max_texture_height(self):
+        return 600
+
     def get_guaranteed_safe_max_text_char_count(self):
         return 35
 
@@ -457,7 +461,7 @@ class MiyooMiniFlip(MiyooDevice):
         return False
 
     def supports_image_resizing(self):
-        return False
+        return True
 
     def supports_brightness_calibration(self):
         return False
@@ -473,3 +477,6 @@ class MiyooMiniFlip(MiyooDevice):
     
     def supports_popup_menu(self):
         return False
+    
+    def get_image_utils(self):
+        return FfmpegImageUtils()

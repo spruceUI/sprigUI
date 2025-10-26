@@ -2,6 +2,7 @@
 
 ../../miyoo285/app/freemma
 
+export PATH="/mnt/SDCARD/sprig/bin:$PATH"
 export LD_LIBRARY_PATH="/mnt/SDCARD/App/PyUI/libs/:/config/lib/:/customer/lib"
 export PYSDL2_DLL_PATH="/mnt/SDCARD/App/PyUI/libs"
 

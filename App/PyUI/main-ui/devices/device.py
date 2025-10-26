@@ -1,4 +1,5 @@
 from devices.abstract_device import AbstractDevice
+from utils.image_utils import ImageUtils
 
 
 class Device:
@@ -321,6 +322,10 @@ class Device:
     @staticmethod
     def max_texture_width():
         return Device._impl.max_texture_width()
+    
+    @staticmethod
+    def max_texture_height():
+        return Device._impl.max_texture_height()
 
     @staticmethod
     def get_guaranteed_safe_max_text_char_count():
@@ -353,4 +358,8 @@ class Device:
     @staticmethod
     def supports_popup_menu():
         return Device._impl.supports_popup_menu()
+
+    @staticmethod
+    def get_image_utils() -> ImageUtils:
+        return Device._impl.get_image_utils()
 
