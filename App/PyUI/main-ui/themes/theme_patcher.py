@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+from devices.device import Device
 from display.font_purpose import FontPurpose
 from utils.logger import PyUiLogger
 
@@ -78,19 +79,18 @@ class ThemePatcher():
 
     @staticmethod
     def scale_image(input_file, output_file, scale, theme_width, theme_height, target_width, target_height):
-        from PIL import Image
+        image_utils = Device.get_image_utils()
         try:
-            with Image.open(input_file) as img:
-                new_width = int(img.width * scale)
-                if(img.width == theme_width and img.height != theme_height):
-                    new_width = target_width
-                new_height = int(img.height * scale)
-                if(img.height == theme_height and img.width != theme_width):
-                    new_height = target_height
+            img_width ,img_height = image_utils.get_image_dimensions(input_file)
+            new_width = int(img_width * scale)
+            if(img_width == theme_width and img_height != theme_height):
+                new_width = target_width
+            new_height = int(img_height * scale)
+            if(img_height == theme_height and img_width != theme_width):
+                new_height = target_height
 
-                resized_img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
-                resized_img.save(output_file)
-                PyUiLogger().get_logger().info(f"Scaled and saved: {output_file}")
+            image_utils.resize_image(input_file, output_file, new_width, new_height)
+
         except Exception as e:
             # Copy the file instead of scaling if something fails
             try:

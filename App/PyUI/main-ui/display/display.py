@@ -536,11 +536,22 @@ class Display:
                     return 0, 0
 
             texture = sdl2.SDL_CreateTextureFromSurface(cls.renderer.renderer, surface)
+
+            surface_width = surface.contents.w
+            surface_height = surface.contents.h
+
+            if(surface_width > Device.max_texture_width() or surface_height > Device.max_texture_height()):
+                sdl2.SDL_FreeSurface(surface)
+                PyUiLogger.get_logger().warning(f"Image is too large to render. Skipping {image_path}")
+                return 0, 0
+
+
             if not texture:
                 cls.log_sdl_error_and_clear_cache()
                 texture = sdl2.SDL_CreateTextureFromSurface(cls.renderer.renderer, surface)
                 if not texture:
                     sdl2.SDL_FreeSurface(surface)
+                    PyUiLogger.get_logger().info(f"{image_path} : {surface_width} x {surface_height}")
                     PyUiLogger.get_logger().error("Failed to create texture from surface")
                     cls._text_texture_cache.clear_cache()
                     cls._image_texture_cache.clear_cache()

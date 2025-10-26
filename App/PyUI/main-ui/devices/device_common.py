@@ -320,6 +320,10 @@ class DeviceCommon(AbstractDevice):
         #No known limit?
         return sys.maxsize()
         
+    def max_texture_height(self):
+        #No known limit?
+        return sys.maxsize()
+        
     def get_guaranteed_safe_max_text_char_count(self):
         #No known limit?
         return sys.maxsize()
