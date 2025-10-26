@@ -81,7 +81,7 @@ use_default_emulator() {
 
 
 set_cpu_mode() {
-	if [ "$EMU_NAME" != "NDS" ]; then
+	if [ "$EMU_NAME" != "NDS" ] && [ "$EMU_NAME" != "PICO8" ]; then
 		/mnt/SDCARD/sprig/scripts/enforceSmartCPU.sh &
 	fi
 }
@@ -160,11 +160,53 @@ run_port() {
 	/bin/sh "$ROM_FILE"
 }
 
+set_snd_level() {
+    local target_vol="$1"
+    local target_mute="$2"
+    local current_vol
+    local current_mute
+    local start_time
+    local elapsed_time
+
+    start_time=$(date +%s)
+    while [ ! -e /proc/mi_modules/mi_ao/mi_ao0 ]; do
+        sleep 0.2
+        elapsed_time=$(( $(date +%s) - start_time ))
+        if [ "$elapsed_time" -ge 30 ]; then
+            echo "Timed out waiting for /proc/mi_modules/mi_ao/mi_ao0"
+            return 1
+        fi
+    done
+
+    start_time=$(date +%s)
+    while true; do
+        echo "set_ao_volume 0 ${target_vol}dB" > /proc/mi_modules/mi_ao/mi_ao0
+        echo "set_ao_volume 1 ${target_vol}dB" > /proc/mi_modules/mi_ao/mi_ao0
+        echo "set_ao_mute ${target_mute}" > /proc/mi_modules/mi_ao/mi_ao0
+
+        current_vol=$(get_curvol)
+        current_mute=$(get_curmute)
+
+        if [ "$current_vol" = "$target_vol" ] && [ "$current_mute" = "$target_mute" ]; then
+            echo "Volume set to ${current_vol}dB, Mute status: ${current_mute}"
+            return 0
+        fi
+
+        elapsed_time=$(( $(date +%s) - start_time ))
+        if [ "$elapsed_time" -ge 360 ]; then
+            echo "Timed out trying to set volume and mute status"
+            return 1
+        fi
+
+        sleep 0.2
+    done
+}
+
 run_pico8() {
 
 	export HOME="$EMU_DIR"
 	export PATH="$HOME"/bin:$PATH:"/mnt/SDCARD/BIOS"
-	export LD_LIBRARY_PATH="/mnt/SDCARD/App/PyUI/libs:$HOME/lib:$LD_LIBRARY_PATH"
+	export LD_LIBRARY_PATH="$HOME/lib:/mnt/SDCARD/App/PyUI/libs:$LD_LIBRARY_PATH"
 
 	cd "$HOME"
 
@@ -173,40 +215,18 @@ run_pico8() {
 	export EGL_VIDEODRIVER=mmiyoo
 	export SDL_MMIYOO_DOUBLE_BUFFER=1
 
+	killall audioserver
+	killall audioserver.mod
+	set_snd_level &
+
+
 	if [ "${GAME##*.}" = "splore" ]; then
 		# check_and_connect_wifi
-		pico8_dyn -splore -width 752 -height 560 -root_path "/mnt/SDCARD/Roms/PICO8/"
+		pico8_dyn -preblit_scale 3 -pixel_perfect 0 -splore -root_path "/mnt/SDCARD/Roms/PICO8/"
 	else
-		pico8_dyn -width 752 -height 560 -scancodes -run "$ROM_FILE"
+		pico8_dyn -preblit_scale 3 -pixel_perfect 0 -run "$ROM_FILE"
 	fi
 	sync
-}
-
-load_pico8_control_profile() {
-	HOME="$EMU_DIR"
-	P8_DIR="/mnt/SDCARD/Emu/PICO8/.lexaloffle/pico-8"
-	CONTROL_PROFILE="$(setting_get "pico8_control_profile")"
-
-	case "$CONTROL_PROFILE" in
-		"Doubled") 
-			cp -f "$P8_DIR/sdl_controllers.facebuttons" "$P8_DIR/sdl_controllers.txt"
-			;;
-		"One-handed")
-			cp -f "$P8_DIR/sdl_controllers.onehand" "$P8_DIR/sdl_controllers.txt"
-			;;
-		"Racing")
-			cp -f "$P8_DIR/sdl_controllers.racing" "$P8_DIR/sdl_controllers.txt"
-			;;
-		"Doubled 2") 
-			cp -f "$P8_DIR/sdl_controllers.facebuttons_reverse" "$P8_DIR/sdl_controllers.txt"
-			;;
-		"One-handed 2")
-			cp -f "$P8_DIR/sdl_controllers.onehand_reverse" "$P8_DIR/sdl_controllers.txt"
-			;;
-		"Racing 2")
-			cp -f "$P8_DIR/sdl_controllers.racing_reverse" "$P8_DIR/sdl_controllers.txt"
-			;;
-	esac
 }
 
 run_retroarch() {
