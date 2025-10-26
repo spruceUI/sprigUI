@@ -10,7 +10,6 @@ HOLD_MAX=2   # maximum seconds to trigger
 
 
 # Wait until input is ready
-log_message "Waiting for $DEVICE..."
 for i in $(seq 1 25); do
     [ -e "$DEVICE" ] && break
     sleep 0.2
@@ -32,7 +31,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
     case "$line" in
         *"code 116 (KEY_POWER), value 1"*)
             power_btn_press_time=$(date +%s)
-            log_message "Power button pressed at $power_btn_press_time"
+            log_message "Power button pressed at $power_btn_press_time" -v
             touch /tmp/pwrbtn
 
             # Launch background timer that waits HOLD_MIN seconds, then triggers the action
@@ -48,7 +47,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
         *"code 116 (KEY_POWER), value 0"*)
             if [ -n "$power_btn_press_time" ]; then
                 release_time=$(date +%s)
-                log_message "Power button released at $release_time"
+                log_message "Power button released at $release_time" -v
                 duration=$((release_time - power_btn_press_time))
                 if [ "$duration" -ge "$HOLD_MIN" ] && [ "$duration" -le "$HOLD_MAX" ]; then
                     log_message "Power button held ${duration}s — running $POWER_OFF_SCRIPT"
@@ -63,7 +62,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
         *"code 1 (KEY_ESC), value 1"*)
             if [ -z "$menu_hold_pid" ]; then
                 menu_btn_press_time=$(date +%s)
-                log_message "Menu button pressed at $menu_btn_press_time"
+                log_message "Menu button pressed at $menu_btn_press_time" -v
                 touch /tmp/menubtn
 
                 # Launch background timer that waits required seconds, then triggers the action
@@ -80,7 +79,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
             fi
             ;;
         *"code 1 (KEY_ESC), value 0"*)
-            log_message "Menu button released at $(date +%s)"
+            log_message "Menu button released at $(date +%s)" -v
             rm -f /tmp/menubtn
             # Kill background hold timer if still running
             if [ -n "$menu_hold_pid" ]; then
