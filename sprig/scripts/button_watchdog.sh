@@ -22,10 +22,8 @@ if [ ! -d /sys/class/gpio/gpio48 ]; then
 fi
 
 trigger_vibrate() {
-    sleep "$HOLD_MIN"
-
     if [ "$1" = "pwrbtn" ] && [ -f /tmp/pwrbtn ]; then
-        vibrate 0.1
+        vibrate 0.03 3
     fi
 }
 
