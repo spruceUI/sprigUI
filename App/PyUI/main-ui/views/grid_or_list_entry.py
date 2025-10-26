@@ -119,19 +119,19 @@ class GridOrListEntry:
         medium_width, medium_height = Device.get_boxart_resize_dimensions()
 
         if(target_width <= small_width):
-            PyUiLogger.get_logger().info(f"Going with small due to width {target_width} <= {small_width}")
+            #PyUiLogger.get_logger().info(f"Going with small due to width {target_width} <= {small_width}")
             return self.get_image_path_small()
         elif(target_height <= small_height):
-            PyUiLogger.get_logger().info(f"Going with small due to height {target_height} <= {small_height}")
+            #PyUiLogger.get_logger().info(f"Going with small due to height {target_height} <= {small_height}")
             return self.get_image_path_small()
         elif(target_width <= medium_width):
-            PyUiLogger.get_logger().info(f"Going with medium due to width {target_width} <= {medium_width}")
+            #PyUiLogger.get_logger().info(f"Going with medium due to width {target_width} <= {medium_width}")
             return self.get_image_path_medium()
         elif(target_height <= medium_height):
-            PyUiLogger.get_logger().info(f"Going with medium due to width {target_height} <= {medium_height}")
+            #PyUiLogger.get_logger().info(f"Going with medium due to width {target_height} <= {medium_height}")
             return self.get_image_path_medium()
         else:
-            PyUiLogger.get_logger().info(f"Going with full size image")
+            #PyUiLogger.get_logger().info(f"Going with full size image")
             return self.get_image_path()
 
 
