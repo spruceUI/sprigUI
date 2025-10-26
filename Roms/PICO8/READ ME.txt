@@ -5,7 +5,7 @@ These files need to cone from the Rasberry Pi version of the official Pico-8.
 We strongly encourage you to buy and support Pico-8. https://www.lexaloffle.com/pico-8.php?#getpico8
 
 
-If you do not have the dat, _64 and dyn files to play Pico-8 here then you need to use FAKE08. Please reference that Rom folder.
+If you do not have the dat and dyn files to play Pico-8 here then you need to use FAKE08. Please reference that Rom folder.
   
 
 USING THIS PICO8
