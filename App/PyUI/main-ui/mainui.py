@@ -122,7 +122,14 @@ def check_for_msg_display_realtime(args):
                 PyUiLogger.get_logger().info(f"Received Message : {message}")
                 if message == "EXIT_APP":
                     break
-                Display.display_message(message)
+
+                if message.startswith("RENDER_IMAGE:"):
+                    image_path = message[len("RENDER_IMAGE:"):].strip()
+                    PyUiLogger.get_logger().info(f"Rendering image from path: {image_path}")
+                    Display.display_image(image_path)
+                else:
+                    Display.display_message(message)
+                    
         except Exception as e:
             PyUiLogger.get_logger().error("Error processing messages: ", exc_info=True)
         PyUiLogger.get_logger().info(f"Exitting...")

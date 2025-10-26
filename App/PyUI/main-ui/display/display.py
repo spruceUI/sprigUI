@@ -955,3 +955,12 @@ class Display:
         Display.present()
         # Sleep for the specified duration in milliseconds
         time.sleep(duration_ms / 1000)
+
+        
+    @classmethod
+    def display_image(cls,image_path, duration_ms=0):
+        Display.clear("")
+        Display.render_image(image_path,Device.screen_width()//2,Device.screen_height()//2,RenderMode.MIDDLE_CENTER_ALIGNED)
+        Display.present()
+        # Sleep for the specified duration in milliseconds
+        time.sleep(duration_ms / 1000)
