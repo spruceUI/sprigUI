@@ -214,7 +214,7 @@ class Display:
         cls._init_display()
         cls.init_fonts()
         cls.restore_bg(bg)
-        cls.clear("reinitialize")
+        cls.clear("")
         cls.present()
 
 

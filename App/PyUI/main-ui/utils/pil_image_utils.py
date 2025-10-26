@@ -34,21 +34,19 @@ class PilImageUtils(ImageUtils):
         img = Image.open(input_path)
         actual_width, actual_height = img.size
 
-        # Only shrink if necessary
-        if actual_width > width or actual_height > height:
-            aspect_ratio = actual_width / actual_height
-            if actual_width / width > actual_height / height:
-                # Width is the limiting factor
-                new_width = width
-                new_height = int(width / aspect_ratio)
-            else:
-                # Height is the limiting factor
-                new_height = height
-                new_width = int(height * aspect_ratio)
+        aspect_ratio = actual_width / actual_height
+        if actual_width / width > actual_height / height:
+            # Width is the limiting factor
+            new_width = width
+            new_height = int(width / aspect_ratio)
+        else:
+            # Height is the limiting factor
+            new_height = height
+            new_width = int(height * aspect_ratio)
 
-            img = img.resize((new_width, new_height), Image.LANCZOS)
-            img.save(output_path)
-            PyUiLogger().get_logger().info(f"Scaled: {input_path} to {output_path} -> {new_width}x{new_height}")
+        img = img.resize((new_width, new_height), Image.LANCZOS)
+        img.save(output_path)
+        PyUiLogger().get_logger().info(f"Scaled: {input_path} to {output_path} -> {new_width}x{new_height}")
 
     def get_image_dimensions(self, path):
         try:
