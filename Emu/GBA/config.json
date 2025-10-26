@@ -9,10 +9,10 @@
     "Emulator": {
       "display": "Retroarch Core",
       "options": [
-        "mgba",
-        "gpsp"
+        "gpsp",
+        "mgba"
       ],
-      "selected": "mgba",
+      "selected": "gpsp",
       "overrides": {}
     }
   },
