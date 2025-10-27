@@ -124,7 +124,7 @@ download_target_branch() {
         sleep 5
         return 0
     elif flag_check "developer"; then
-        log_and_display_message "Development branch not found. Falling back to main branch."
+        log_and_display_message "Development branch not found - will use main branch instead. Downloading!"
         sleep 3
         BRANCH=main
         if wget --tries=3 -O "$BRANCH.zip" https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip ; then
