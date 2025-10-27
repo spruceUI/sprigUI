@@ -52,6 +52,7 @@ https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0
 - Miyoo for providing us with development units.
 - OnionOS team for sharing their wealth of knowledge and a couple of apps.
 - Shaun Inman of MinUI for the same.
+- XK9274 for the SDL2 build that allows PyUI to even run on this device.
 - XanXic for a lot of the helperFunction code from spruce that we implemented in sprig.
 - The thememaking community, including tenlevels, 369px, Kyle Bing, HeyDW, and fagnerpc.
 
