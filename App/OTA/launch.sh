@@ -20,7 +20,7 @@ SPACE_REQUIRED=800
 OVERWRITE_EMU_DIR=false
 OVERWRITE_RA_CONFIGS=false
 OVERWRITE_PYTHON3_DIR=false
-OVERWRITE_THEMES_DIR=true
+OVERWRITE_THEMES_DIR=false
 
 # If true, delete current contents of SDCARD aside from Roms, BIOS, and Saves, to ensure full fresh install.
 DELETE_BEFORE_COPY=false
@@ -69,11 +69,16 @@ is_wifi_connected() {
 
 is_branch_newer_than_device() {
 
+    if flag_check "developer"; then
+        log_message "Developer mode detected. Skipping version check."
+        return 0
+    fi
+
     # get version file from target branch of sprigUI repo
     cd /tmp
     if ! wget --tries=3 -O version https://raw.githubusercontent.com/spruceUI/sprigUI/$BRANCH/sprig/version ; then
         log_and_display_message "Unable to retrieve version file from $BRANCH branch of sprigUI repo. Aborting."
-        return 1
+        return 3
     fi
 
     # put the contents of the two version files to compare into variables
@@ -108,7 +113,7 @@ is_branch_newer_than_device() {
         fi
     done
     log_and_display_message "Device is on same version as $BRANCH branch. No update needed. Aborting."
-    return 1
+    return 2
 }
 
 download_target_branch() {
@@ -118,6 +123,15 @@ download_target_branch() {
         log_and_display_message "Successfully downloaded $BRANCH branch zip file."
         sleep 5
         return 0
+    elif flag_check "developer"; then
+        log_and_display_message "Development branch not found. Falling back to main branch."
+        sleep 3
+        BRANCH=main
+        if wget --tries=3 -O "$BRANCH.zip" https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip ; then
+            log_and_display_message "Successfully downloaded $BRANCH branch zip file."
+            sleep 5
+            return 0
+        fi
     else
         log_and_display_message "Failed to download $BRANCH branch zip file. Aborting."
         rm -f "/mnt/SDCARD/$BRANCH.zip"
@@ -230,7 +244,7 @@ display_message "Starting OTA process. Checking space, wifi, and version"
 if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_than_device; then
 
     log_and_display_message "All checks passed. Proceeding to download $BRANCH branch of sprigUI repo."
-    sleep 5
+    sleep 3
     
     if download_target_branch && extract_archive; then
         preserve_sprig_config_settings
@@ -238,7 +252,7 @@ if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_tha
             preserve_user_emu_launch_settings
         else
             log_and_display_message "Emulator options and overrides will be reset to default."
-            sleep 5
+            sleep 3
         fi
         complete_installation
         sync
