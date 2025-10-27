@@ -11,3 +11,4 @@ Before first release:
 - dufs
 - syncthing
 - ebook "Emu"
+- B button or something to cancel scraper
