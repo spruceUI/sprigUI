@@ -7,7 +7,7 @@ _a twig of spruce_
 ## What is sprigUI?
 sprig is a custom operating system for the Miyoo Mini Flip, developed by the spruceOS team. Our aim with this project is to find a niche somewhere between the intentional simplicity of MinUI and the more visually-oriented user interfaces of OnionOS or spruceOS.
 
-## Features:
+## Features
 
 - Custom Python-based frontend that can shapeshift between the visual styles of Miyoo's MainUI, Daijisho, MinUI, or even EmulationStation, courtesy of chrisj951.
 
@@ -43,9 +43,19 @@ https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0
     - Hold 10 seconds to hard shutdown a device as a last resort.
 
 
+- Changing emulator cores for a system:
+    - Some systems, such as Game Boy, have multiple emulator options.
+    - To launch a system using a different core, press X while in that system's game list, then highlight **Retroarch Core** and press left or right to select your new core, then press B to close this menu and return to the game list. This will set that core as the default for all games in that system.
+    - To set an override to get a particular game to always use one core, regardlesss of what default you have set: press X while hovering over the game you wish to set the core association for, then change its **Retroarch Core** as described above. Then, before going back to the game list, press X or Y. An asterisk will appear next to the **Retroarch Core** text, indicating that the override is set.
+
+
 - sprigUI automatically enables wireless ADB and SSH access on boot. You can connect to your device using these services by running the following commands from your computer.
     - ADB: `adb connect 192.168.x.x:5555`
     - SSH: `ssh root@192.168.x.x`
+
+## Known Issues
+
+
 
 ## Special Thanks
 
