@@ -160,6 +160,14 @@ run_port() {
 	/bin/sh "$ROM_FILE"
 }
 
+get_curvol() {
+    awk '/LineOut/ {if (!printed) {gsub(",", "", $8); print $8; printed=1}}' /proc/mi_modules/mi_ao/mi_ao0
+}
+
+get_curmute() {
+    awk '/LineOut/ {if (!printed) {gsub(",", "", $8); print $6; printed=1}}' /proc/mi_modules/mi_ao/mi_ao0
+}
+
 set_snd_level() {
     local target_vol="$1"
     local target_mute="$2"
@@ -206,7 +214,7 @@ run_pico8() {
 
 	export HOME="$EMU_DIR"
 	export PATH="$HOME"/bin:$PATH:"/mnt/SDCARD/BIOS"
-	export LD_LIBRARY_PATH="$HOME/lib:/mnt/SDCARD/App/PyUI/libs:$LD_LIBRARY_PATH"
+	export LD_LIBRARY_PATH="$HOME/lib:/mnt/SDCARD/sprig/lib:/mnt/SDCARD/App/PyUI/libs:$LD_LIBRARY_PATH"
 
 	cd "$HOME"
 
@@ -217,11 +225,11 @@ run_pico8() {
 
 	killall audioserver
 	killall audioserver.mod
-	set_snd_level &
-
+    curvol="$(get_curvol)"
+    curmute="$(get_curmute)"
+	set_snd_level "${curvol}" "${curmute}" &
 
 	if [ "${GAME##*.}" = "splore" ]; then
-		# check_and_connect_wifi
 		pico8_dyn -preblit_scale 3 -pixel_perfect 0 -splore -root_path "/mnt/SDCARD/Roms/PICO8/"
 	else
 		pico8_dyn -preblit_scale 3 -pixel_perfect 0 -run "$ROM_FILE"

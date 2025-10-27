@@ -3,13 +3,12 @@ Before first release:
 - Fix or hide pico 8 system
 - Fix or hide media system
 - finish readme
-- check neocd core
-
-
 
 
 "Would be nice"s:
 
 - game nursery?
+- theme garden?
 - dufs
 - syncthing
+- ebook "Emu"
