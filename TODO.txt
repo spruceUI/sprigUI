@@ -2,12 +2,10 @@ Before first release:
 
 - Fix or hide pico 8 system
 - Fix or hide media system
-- decide if we wanr ports system
 - finish readme
-- check mednafen lynx core
 - check neocd core
-- check odyssey
-- check x68000
+
+
 
 
 "Would be nice"s:
