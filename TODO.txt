@@ -1,11 +1,16 @@
 Before first release:
 
-- Fix or hide pico 8 system
 - Fix or hide media system
 - finish readme
 
 
-"Would be nice"s:
+Known Issues:
+
+- Setting volume with the side buttons does not work inside native Pico-8.
+- Users have to force close Pico-8 if they get stuck on the console after hitting menu button.
+
+
+"Would be nice"s / ideas for future updates:
 
 - game nursery?
 - theme garden?
