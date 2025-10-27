@@ -160,54 +160,25 @@ run_port() {
 	/bin/sh "$ROM_FILE"
 }
 
-get_curvol() {
-    awk '/LineOut/ {if (!printed) {gsub(",", "", $8); print $8; printed=1}}' /proc/mi_modules/mi_ao/mi_ao0
-}
+sync_pico8_volume() {
+    SYSTEM_JSON="/appconfigs/system.json"
+    PICO8_CONFIG="/mnt/SDCARD/Emu/PICO8/.lexaloffle/pico-8/config.txt"
 
-get_curmute() {
-    awk '/LineOut/ {if (!printed) {gsub(",", "", $8); print $6; printed=1}}' /proc/mi_modules/mi_ao/mi_ao0
-}
+    # Get volume (0–20) from system.json
+    sysvol=$(jq -r '.vol' "$SYSTEM_JSON" 2>/dev/null)
+    [ -z "$sysvol" ] && log_message "WARNING: Unable to sync Pico-8 with system volume level." && return 1
 
-set_snd_level() {
-    local target_vol="$1"
-    local target_mute="$2"
-    local current_vol
-    local current_mute
-    local start_time
-    local elapsed_time
+    # Convert 0–20 → 0–256 with rounding
+    pico_vol=$(( (sysvol * 256 + 10) / 20 ))
 
-    start_time=$(date +%s)
-    while [ ! -e /proc/mi_modules/mi_ao/mi_ao0 ]; do
-        sleep 0.2
-        elapsed_time=$(( $(date +%s) - start_time ))
-        if [ "$elapsed_time" -ge 30 ]; then
-            echo "Timed out waiting for /proc/mi_modules/mi_ao/mi_ao0"
-            return 1
-        fi
-    done
+    # Replace the line starting with "volume " in the Pico-8 config
+    if grep -q '^volume ' "$PICO8_CONFIG"; then
+        sed -i "s/^volume .*/volume ${pico_vol}/" "$PICO8_CONFIG"
+    else
+        echo "volume ${pico_vol}" >> "$PICO8_CONFIG"
+    fi
 
-    start_time=$(date +%s)
-    while true; do
-        echo "set_ao_volume 0 ${target_vol}dB" > /proc/mi_modules/mi_ao/mi_ao0
-        echo "set_ao_volume 1 ${target_vol}dB" > /proc/mi_modules/mi_ao/mi_ao0
-        echo "set_ao_mute ${target_mute}" > /proc/mi_modules/mi_ao/mi_ao0
-
-        current_vol=$(get_curvol)
-        current_mute=$(get_curmute)
-
-        if [ "$current_vol" = "$target_vol" ] && [ "$current_mute" = "$target_mute" ]; then
-            echo "Volume set to ${current_vol}dB, Mute status: ${current_mute}"
-            return 0
-        fi
-
-        elapsed_time=$(( $(date +%s) - start_time ))
-        if [ "$elapsed_time" -ge 360 ]; then
-            echo "Timed out trying to set volume and mute status"
-            return 1
-        fi
-
-        sleep 0.2
-    done
+    log_message "Pico-8 volume synced: system vol=$sysvol → pico vol=$pico_vol"
 }
 
 run_pico8() {
@@ -225,9 +196,7 @@ run_pico8() {
 
 	killall audioserver
 	killall audioserver.mod
-    curvol="$(get_curvol)"
-    curmute="$(get_curmute)"
-	set_snd_level "${curvol}" "${curmute}" &
+	sync_pico8_volume
 
 	if [ "${GAME##*.}" = "splore" ]; then
 		pico8_dyn -preblit_scale 3 -pixel_perfect 0 -splore -root_path "/mnt/SDCARD/Roms/PICO8/"
