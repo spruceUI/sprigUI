@@ -33,7 +33,8 @@ https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0
 
 - Game Switcher:
     - Default behavior: Hold Menu button for 1 second to jump to your 5 most recent games.
-    - Button press time and number of recents is configurable from the Main Menu -> Settings -> Game Switcher Settings.
+    - Button press time and number of recents is configurable from the Main Menu -> Settings -> Extra Settings -> Game Switcher Settings.
+    - Please note that Game Switcher is only set to listen for the menu button in Retroarch, native Pico-8, and sprigUI itself.
 
 
 - Power Button behavior:
@@ -48,14 +49,14 @@ https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0
     - To launch a system using a different core, press X while in that system's game list, then highlight **Retroarch Core** and press left or right to select your new core, then press B to close this menu and return to the game list. This will set that core as the default for all games in that system.
     - To set an override to get a particular game to always use one core, regardlesss of what default you have set: press X while hovering over the game you wish to set the core association for, then change its **Retroarch Core** as described above. Then, before going back to the game list, press X or Y. An asterisk will appear next to the **Retroarch Core** text, indicating that the override is set.
 
-
-- sprigUI automatically enables wireless ADB and SSH access on boot. You can connect to your device using these services by running the following commands from your computer.
-    - ADB: `adb connect 192.168.x.x:5555`
-    - SSH: `ssh root@192.168.x.x`
+- Wireless connectivity:
+    - sprigUI automatically enables wireless ADB and SSH access on boot. You can connect to your device using these services by running the following commands from your computer.
+        - ADB: `adb connect 192.168.x.x:5555`
+        - SSH: `ssh root@192.168.x.x`
 
 ## Known Issues
 
-
+- Pico-8: Audio volume cannot be controlled using the side keys, and can only be manually set in-game by pressing Start -> Options -> Volume.
 
 ## Special Thanks
 
