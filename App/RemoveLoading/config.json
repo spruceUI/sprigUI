@@ -1,6 +1,7 @@
 {
-  "#label": "Remove Loading Text",
+  "label": "Remove Loading Text",
   "icon": "menuswitch.png",
   "launch": "launch.sh",
-  "description": "Removes SD card picture and loading text from boot sequence"
+  "description": "Removes SD card picture and loading text from boot sequence",
+  "hide": true
 }

@@ -1,6 +1,7 @@
 {
-"label":"RetroArch",
-"icon":"retroarch.png",
-"launch":"launch.sh",
-"description":"Libretro Frontend for emulators"
+  "label": "RetroArch",
+  "icon": "retroarch.png",
+  "launch": "launch.sh",
+  "description": "Libretro Frontend for emulators",
+  "hide": false
 }
