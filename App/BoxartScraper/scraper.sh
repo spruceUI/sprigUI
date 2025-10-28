@@ -276,9 +276,6 @@ for sys_dir in "$roms_dir"/*/; do
             fi
         fi
 
-        if [ -f "$image_path" ]; then
-            resize_image "$image_path"
-        fi
     done
 done
 
