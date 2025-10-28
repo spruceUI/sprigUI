@@ -57,6 +57,7 @@ https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0
 ## Known Issues
 
 - Pico-8: Audio volume cannot be controlled using the side keys, and can only be manually set in-game by pressing Start -> Options -> Volume.
+- OpenBOR: Audio volume cannot be controlled using the side keys, and can only be manually set in-game by pressing Start -> Options -> Volume.
 
 ## Special Thanks
 

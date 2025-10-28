@@ -134,26 +134,34 @@ run_drastic() {
 }
 
 run_openbor() {
-	mydir=/mnt/SDCARD/Emu/OPENBOR
-	mypak=`basename "$ROM_FILE"`
 	fbset -g 640 480 640 960 32
-	export HOME=$mydir
-	export PATH=$mydir:$PATH
-	export LD_LIBRARY_PATH=$mydir/lib:$LD_LIBRARY_PATH
+	export HOME="$EMU_DIR"
+	export PATH="$EMU_DIR:$PATH"
+	export LD_LIBRARY_PATH="$EMU_DIR/lib:$LD_LIBRARY_PATH"
 	export SDL_VIDEODRIVER=mmiyoo
 	export SDL_AUDIODRIVER=mmiyoo
 
 	killall audioserver
 	killall audioserver.mod
 	
-	cd $mydir
-	if [ "$mypak" == "Final Fight LNS.pak" ]; then
+	cd "$EMU_DIR"
+
+	# Keep saves in a safe location
+	if ! mount | grep -q "/mnt/SDCARD/Emu/OPENBOR/Saves"; then
+		mkdir -p "/mnt/SDCARD/Emu/OPENBOR/Saves"
+		mkdir -p "/mnt/SDCARD/Saves/OpenBOR"
+		mount --bind /mnt/SDCARD/Saves/OpenBOR /mnt/SDCARD/Emu/OPENBOR/Saves
+	fi
+
+	mypak="$(basename "$ROM_FILE")"
+	if [ "$mypak" = "Final Fight LNS.pak" ]; then
 		./OpenBOR_mod "$ROM_FILE"
 	else
 		./OpenBOR_new "$ROM_FILE"
 	fi
 	sync
 	fbset -g 752 560 752 1120 32
+	umount /mnt/SDCARD/Emu/OPENBOR/Saves >/dev/null 2>&1
 }
 
 run_port() {

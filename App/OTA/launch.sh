@@ -218,6 +218,8 @@ complete_installation() {
     log_message "Killing main execution loop, powerbutton watchdog, and SSH."
     killall -9 main button_watchdog.sh dropbearmulti # adbd    ### Keep adbd on for testing
     umount /etc/profile >/dev/null 2>&1
+	umount /mnt/SDCARD/Emu/OPENBOR/Saves >/dev/null 2>&1
+
 
     if [ "$DELETE_BEFORE_COPY" = true ]; then
         for dir in App Emu miyoo285 RetroArch sprig Themes RApp; do
