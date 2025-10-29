@@ -106,7 +106,7 @@ run_drastic() {
 		mkdir -p "/mnt/SDCARD/Emu/NDS/$dirname"
 		mkdir -p "/mnt/SDCARD/Saves/NDS/$dirname"
 		if ! mount | grep -q "/mnt/SDCARD/Emu/NDS/$dirname"; then
-			mount --bind /mnt/SDCARD/Saves/$dirname /mnt/SDCARD/Emu/NDS/$dirname
+			mount --bind /mnt/SDCARD/Saves/NDS/$dirname /mnt/SDCARD/Emu/NDS/$dirname
 		fi
 	done
 
