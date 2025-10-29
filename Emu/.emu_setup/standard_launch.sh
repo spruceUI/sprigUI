@@ -25,57 +25,7 @@ get_core_override() {
 }
 
 use_default_emulator() {
-
-	case "$EMU_NAME" in
-		"AMIGA")			default_core="uae4arm";;
-		"ARCADE"|"NEOGEO")	default_core="fbneo";;
-		"ARDUBOY")			default_core="ardens";;
-		"ATARI")			default_core="stella2014";;
-		"ATARIST")			default_core="hatari";;
-		"CHAI")				default_core="chailove";;
-		"COLECO"|"MSX")		default_core="bluemsx";;
-		"COMMODORE")		default_core="vice_x64";;
-		"CPC")				default_core="cap32";;
-		"DOOM")				default_core="prboom";;
-		"DOS")				default_core="dosbox_pure";;
-		"EASYRPG")			default_core="easyrpg";;
-		"EIGHTHUNDRED")		default_core="atari800";;
-		"FAIRCHILD")		default_core="freechaf";;
-		"FAKE08")			default_core="fake08";;
-		"FC"|"FDS")			default_core="fceumm";;
-		"FIFTYTWOHUNDRED")	default_core="a5200";;
-		"GAMETANK")			default_core="gametank";;
-		"GB"|"GBC")			default_core="gambatte";;
-		"GBA"|"SGB")		default_core="mgba";;
-		"GG"|"MS"|"MSUMD"|"SEGASGONE")	default_core="genesis_plus_gx";;
-		"GW")				default_core="gw";;
-		"INTELLIVISION")	default_core="freeintv";;
-		"LYNX")				default_core="handy";;
-		"MD"|"SEGACD"|"THIRTYTWOX")	default_core="picodrive";;
-		"MEGADUCK")			default_core="sameduck";;
-		"MSU1"|"SFC")		default_core="snes9x";;
-		"NEOCD")			default_core="neocd";;
-		"NGP"|"NGPC")		default_core="mednafen_ngp";;
-		"ODYSSEY")			default_core="o2em";;
-		"PCE"|"PCECD")		default_core="mednafen_pce_fast";;
-		"POKE")				default_core="pokemini";;
-		"PS")				default_core="pcsx_rearmed";;
-		"QUAKE")			default_core="tyrquake";;
-		"SEVENTYEIGHTHUNDRED")	default_core="prosystem";;
-		"SGFX")				default_core="mednafen_supergrafx";;
-		"SUPERVISION")		default_core="potator";;
-		"TIC")				default_core="tic80";;
-		"VB")				default_core="mednafen_vb";;
-		"VECTREX")			default_core="vecx";;
-		"VIC20")			default_core="vice_xvic";;
-		"WOLF")				default_core="ecwolf";;
-		"WS"|"WSC")			default_core="mednafen_wswan";;
-		"X68000")			default_core="px68k";;
-		"ZXS")				default_core="fuse";;
-		*)					default_core="";;
-	esac
-
-	export CORE="$default_core"
+	export CORE="$(jq -r '.default_emulator' "$EMU_JSON_PATH")"
 	log_message "Using default core of $CORE to run $EMU_NAME"
 }
 
