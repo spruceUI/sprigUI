@@ -43,5 +43,5 @@ cd "$DIR"
 
 } &> ./log.txt
 
-mv "./config.json" "./config.disabled"
+mv "$DIR/config.json" "$DIR/config.disabled"
 reboot
