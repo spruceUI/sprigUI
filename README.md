@@ -57,6 +57,9 @@ https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0
     - Running this app will replace the boot logo on your device with a custom sprigUI logo.
     - Please use this tool responsibly if attempting to use any logo other than the one provided. Custom bootlogos can in some rare instances cause a soft-bricked device. To recover from this state, or to reinstate the stock Miyoo boot logo, place [this firmware](https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0) at the root of your SD card, then, while holding the MENU button, plug the device into a power supply. You can release the MENU button once the "Super Upgrade" rocket comes up - then just let it do its thing and it will eventually reboot.
 
+- DraStic emulator hotkeys:
+    - Please see [the readme on Steward Fu's nds repository](https://github.com/steward-fu/nds?tab=readme-ov-file#hotkey) for a list of hotkeys and other DraStic-Steward functions.
+
 ## Known Issues
 
 - Pico-8: Audio volume cannot be controlled using the side keys, and can only be manually set in-game by pressing Start -> Options -> Volume.
@@ -68,6 +71,7 @@ https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0
 - OnionOS team for sharing their wealth of knowledge and a couple of apps.
 - Shaun Inman of MinUI for the same.
 - XK9274 for the SDL2 build that allows PyUI to even run on this device.
+- Steward Fu for all his work on the Miyoo Mini, including but not limited to porting the DraStic emulator.
 - XanXic for a lot of the helperFunction code from spruce that we implemented in sprig.
 - The thememaking community, including tenlevels, 369px, Kyle Bing, HeyDW, and fagnerpc.
 
