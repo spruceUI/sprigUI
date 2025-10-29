@@ -1,7 +1,7 @@
 {
   "label": "PORTS",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/ports.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/ports.png",
+  "icon": "ports.png",
+  "iconsel": "ports_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "ingamemenu": 1,
   "extlist": "sh",
@@ -10,5 +10,6 @@
   "sortOrder": 5000,
   "brand": "Other",
   "type": "other",
-  "releaseYear": 2000
+  "releaseYear": 2000,
+  "default_emulator": "sh"
 }

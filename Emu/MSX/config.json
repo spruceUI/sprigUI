@@ -1,7 +1,7 @@
 {
   "label": "MSX",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/msx.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/msx.png",
+  "icon": "msx.png",
+  "iconsel": "msx_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "zip|7z|rom|mx1|mx2|dsk|cas|m3u",
   "launchlist": [],
@@ -19,5 +19,6 @@
   "sortOrder": 3800,
   "brand": "Misc",
   "type": "pc",
-  "releaseYear": 1983
+  "releaseYear": 1983,
+  "default_emulator": "bluemsx"
 }

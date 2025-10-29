@@ -1,7 +1,7 @@
 {
   "label": "MSU1",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/msu1.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/msu1.png",
+  "icon": "msu1.png",
+  "iconsel": "msu1_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "sfc|smc|zip|7z|fig|bs|st",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 3600,
   "brand": "Nintendo",
   "type": "homeconsole",
-  "releaseYear": 1994
+  "releaseYear": 1994,
+  "default_emulator": "snes9x"
 }

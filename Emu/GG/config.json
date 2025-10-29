@@ -1,7 +1,7 @@
 {
   "label": "Game Gear",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/gg.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/gg.png",
+  "icon": "gg.png",
+  "iconsel": "gg_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "bin|gg|zip|7z",
   "launchlist": [],
@@ -33,5 +33,6 @@
   "sortOrder": 2600,
   "brand": "Sega",
   "type": "handheld",
-  "releaseYear": 1990
+  "releaseYear": 1990,
+  "default_emulator": "genesis_plus_gx"
 }

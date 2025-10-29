@@ -1,7 +1,7 @@
 {
   "label": "Sega CD",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/segacd.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/segacd.png",
+  "icon": "segacd.png",
+  "iconsel": "segacd_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "chd|m3u|zip|7z|gen|smd|md|32x|cue|iso|sms|68k",
   "launchlist": [
@@ -24,5 +24,6 @@
   "sortOrder": 5800,
   "brand": "Sega",
   "type": "homeconsole",
-  "releaseYear": 1991
+  "releaseYear": 1991,
+  "default_emulator": "picodrive"
 }

@@ -1,7 +1,7 @@
 {
   "label": "C64",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/c64.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/c64.png",
+  "icon": "c64.png",
+  "iconsel": "c64_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "d64|zip|7z|t64|crt|prg|nib|tap",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 1100,
   "brand": "Commodore",
   "type": "pc",
-  "releaseYear": 1982
+  "releaseYear": 1982,
+  "default_emulator": "vice_x64"
 }

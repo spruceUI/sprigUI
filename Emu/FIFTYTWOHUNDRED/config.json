@@ -1,7 +1,7 @@
 {
   "label": "Atari 5200",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/5200.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/5200.png",
+  "icon": "5200.png",
+  "iconsel": "5200_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "a52|zip|7z|atr|bin",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 600,
   "brand": "Atari",
   "type": "homeconsole",
-  "releaseYear": 1982
+  "releaseYear": 1982,
+  "default_emulator": "a5200"
 }

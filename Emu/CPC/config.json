@@ -1,7 +1,7 @@
 {
   "label": "Amst CPC",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/cpc.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/cpc.png",
+  "icon": "cpc.png",
+  "iconsel": "cpc_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "zip|7z|sna|dsk|kcr|bin",
   "launchlist": [],
@@ -19,5 +19,6 @@
   "sortOrder": 200,
   "brand": "Amstrad",
   "type": "pc",
-  "releaseYear": 1984
+  "releaseYear": 1984,
+  "default_emulator": "cap32"
 }

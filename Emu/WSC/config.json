@@ -1,7 +1,7 @@
 {
   "label": "WndrSwnC",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/wsc.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/wsc.png",
+  "icon": "wsc.png",
+  "iconsel": "wsc_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "ws|wsc|zip|7z|pc2",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 7400,
   "brand": "Bandai",
   "type": "handheld",
-  "releaseYear": 2000
+  "releaseYear": 2000,
+  "default_emulator": "mednafen_wswan"
 }

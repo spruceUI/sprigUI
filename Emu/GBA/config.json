@@ -1,7 +1,7 @@
 {
   "label": "GBA",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/gba.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/gba.png",
+  "icon": "gba.png",
+  "iconsel": "gba_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "gba|zip|7z|bin",
   "launchlist": [],
@@ -19,5 +19,6 @@
   "sortOrder": 2800,
   "brand": "Nintendo",
   "type": "handheld",
-  "releaseYear": 2001
+  "releaseYear": 2001,
+  "default_emulator": "mgba"
 }

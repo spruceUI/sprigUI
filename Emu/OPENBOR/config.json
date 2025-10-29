@@ -1,7 +1,7 @@
 {
   "label": "OpenBOR",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/openbor.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/openbor.png",
+  "icon": "openbor.png",
+  "iconsel": "openbor_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "pak",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 4700,
   "brand": "modernengine",
   "type": "fantasy",
-  "releaseYear": 2005
+  "releaseYear": 2005,
+  "default_emulator": "OpenBOR"
 }

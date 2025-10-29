@@ -1,7 +1,7 @@
 {
   "label": "Amiga",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/amiga.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/amiga.png",
+  "icon": "amiga.png",
+  "iconsel": "amiga_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "zip|7z|adf|adz|dms|fdi|ipf|hdf|hdz|lha|slave|info|cue|ccd|nrg|mds|iso|chd|uae|m3u|rp9",
   "launchlist": [],
@@ -19,5 +19,6 @@
   "sortOrder": 100,
   "brand": "Commodore",
   "type": "pc",
-  "releaseYear": 1985
+  "releaseYear": 1985,
+  "default_emulator": "uae4arm"
 }

@@ -1,7 +1,7 @@
 {
   "label": "NGPC",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/ngpc.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/ngpc.png",
+  "icon": "ngpc.png",
+  "iconsel": "ngpc_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "ngp|ngc|zip|7z",
   "launchlist": [
@@ -40,5 +40,6 @@
   "sortOrder": 4500,
   "brand": "SNK",
   "type": "handheld",
-  "releaseYear": 1999
+  "releaseYear": 1999,
+  "default_emulator": "mednafen_ngp"
 }

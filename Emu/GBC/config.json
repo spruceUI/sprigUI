@@ -1,7 +1,7 @@
 {
   "label": "GBC",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/gbc.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/gbc.png",
+  "icon": "gbc.png",
+  "iconsel": "gbc_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "gb|gbc|zip|7z|bin|dmg",
   "launchlist": [],
@@ -20,5 +20,6 @@
   "sortOrder": 2900,
   "brand": "Nintendo",
   "type": "handheld",
-  "releaseYear": 1998
+  "releaseYear": 1998,
+  "default_emulator": "gambatte"
 }

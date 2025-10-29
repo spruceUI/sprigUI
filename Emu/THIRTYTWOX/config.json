@@ -1,7 +1,7 @@
 {
   "label": "Sega 32X",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/32X.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/32X.png",
+  "icon": "32X.png",
+  "iconsel": "32X_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "zip|7z|gen|smd|md|32x|bin|iso|sms|68k|chd",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 5700,
   "brand": "Sega",
   "type": "homeconsole",
-  "releaseYear": 1994
+  "releaseYear": 1994,
+  "default_emulator": "picodrive"
 }

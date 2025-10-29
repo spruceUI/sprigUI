@@ -1,7 +1,7 @@
 {
   "label": "Arduboy",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/arduboy.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/arduboy.png",
+  "icon": "arduboy.png",
+  "iconsel": "arduboy_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "hex",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 400,
   "brand": "other",
   "type": "handheld",
-  "releaseYear": 2014
+  "releaseYear": 2014,
+  "default_emulator": "ardens"
 }

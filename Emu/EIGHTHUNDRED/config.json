@@ -1,7 +1,7 @@
 {
   "label": "Atari 800",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/atari800.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/atari800.png",
+  "icon": "atari800.png",
+  "iconsel": "atari800_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "zip|7z|xfd|atr|cdm|cas|bin|a52|atx|car|com|xex",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 800,
   "brand": "Atari",
   "type": "homeconsole",
-  "releaseYear": 1979
+  "releaseYear": 1979,
+  "default_emulator": "atari800"
 }

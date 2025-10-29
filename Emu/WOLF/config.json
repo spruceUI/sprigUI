@@ -1,7 +1,7 @@
 {
   "label": "Wolf3D",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/wolf.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/wolf.png",
+  "icon": "wolf.png",
+  "iconsel": "wolf_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "ecwolf|exe",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 7500,
   "brand": "Other",
   "type": "pc",
-  "releaseYear": 1992
+  "releaseYear": 1992,
+  "default_emulator": "ecwolf"
 }

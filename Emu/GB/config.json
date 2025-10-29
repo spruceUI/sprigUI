@@ -1,7 +1,7 @@
 {
   "label": "GB",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/gb.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/gb.png",
+  "icon": "gb.png",
+  "iconsel": "gb_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "gb|gbc|zip|7z|bin|dmg",
   "launchlist": [],
@@ -20,5 +20,6 @@
   "sortOrder": 2700,
   "brand": "Nintendo",
   "type": "handheld",
-  "releaseYear": 1989
+  "releaseYear": 1989,
+  "default_emulator": "gambatte"
 }

@@ -1,7 +1,7 @@
 {
   "label": "Intellivis.",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/itv.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/itv.png",
+  "icon": "itv.png",
+  "iconsel": "itv_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "zip|7z|bin|int",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 3100,
   "brand": "Mattel",
   "type": "homeconsole",
-  "releaseYear": 1979
+  "releaseYear": 1979,
+  "default_emulator": "freeintv"
 }

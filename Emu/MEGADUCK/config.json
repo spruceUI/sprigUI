@@ -1,7 +1,7 @@
 {
   "label": "Mega Duck",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/megaduck.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/megaduck.png",
+  "icon": "megaduck.png",
+  "iconsel": "megaduck_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "bin|zip|7z",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 3400,
   "brand": "Welback",
   "type": "handheld",
-  "releaseYear": 1993
+  "releaseYear": 1993,
+  "default_emulator": "sameduck"
 }

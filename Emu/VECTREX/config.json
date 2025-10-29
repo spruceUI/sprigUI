@@ -1,7 +1,7 @@
 {
   "label": "Vectrex",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/vectrex.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/vectrex.png",
+  "icon": "vectrex.png",
+  "iconsel": "vectrex_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "vec|zip|7z",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 6900,
   "brand": "General Consumer Electronics",
   "type": "homeconsole",
-  "releaseYear": 1982
+  "releaseYear": 1982,
+  "default_emulator": "vecx"
 }

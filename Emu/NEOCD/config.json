@@ -1,7 +1,7 @@
 {
   "label": "Neo CD",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/neocd.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/neocd.png",
+  "icon": "neocd.png",
+  "iconsel": "neocd_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "cue|chd|m3u",
   "launchlist": [
@@ -14,5 +14,6 @@
   "sortOrder": 4100,
   "brand": "SNK",
   "type": "homeconsole",
-  "releaseYear": 1994
+  "releaseYear": 1994,
+  "default_emulator": "neocd"
 }

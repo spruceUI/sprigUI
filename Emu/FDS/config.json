@@ -1,7 +1,7 @@
 {
   "label": "FDS",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/fds.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/fds.png",
+  "icon": "fds.png",
+  "iconsel": "fds_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "zip|7z|fds|nes|unif|unf",
   "launchlist": [],
@@ -19,5 +19,6 @@
   "sortOrder": 2400,
   "brand": "Nintendo",
   "type": "homeconsole",
-  "releaseYear": 1986
+  "releaseYear": 1986,
+  "default_emulator": "fceumm"
 }

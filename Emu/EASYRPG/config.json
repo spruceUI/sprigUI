@@ -1,7 +1,7 @@
 {
   "label": "EasyRPG",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/easyrpg.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/easyrpg.png",
+  "icon": "easyrpg.png",
+  "iconsel": "easyrpg_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "subfolder_launch_file": "RPG_RT.ldb",
   "extlist": "zip|ldb|easyrpg",
@@ -10,5 +10,6 @@
   "sortOrder": 2100,
   "brand": "modernengine",
   "type": "fantasy",
-  "releaseYear": 2008
+  "releaseYear": 2008,
+  "default_emulator": "easyrpg"
 }

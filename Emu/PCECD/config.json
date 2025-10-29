@@ -1,7 +1,7 @@
 {
   "label": "TG-CD",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/pcecd.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/pcecd.png",
+  "icon": "pcecd.png",
+  "iconsel": "pcecd_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "iso|img|chd|pce|ccd|cue|zip|7z",
   "launchlist": [
@@ -14,5 +14,6 @@
   "sortOrder": 6700,
   "brand": "NEC",
   "type": "homeconsole",
-  "releaseYear": 1988
+  "releaseYear": 1988,
+  "default_emulator": "mednafen_pce_fast"
 }

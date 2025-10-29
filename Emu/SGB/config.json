@@ -1,7 +1,7 @@
 {
   "label": "SGB",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/sgb.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/sgb.png",
+  "icon": "sgb.png",
+  "iconsel": "sgb_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "gb|gbc|gba|zip|7z|bin",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 6100,
   "brand": "Nintendo",
   "type": "homeconsole",
-  "releaseYear": 1994
+  "releaseYear": 1994,
+  "default_emulator": "mgba"
 }

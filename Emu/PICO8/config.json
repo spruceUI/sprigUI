@@ -1,7 +1,7 @@
 {
   "label": "Pico-8",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/pico.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/pico.png",
+  "icon": "pico.png",
+  "iconsel": "pico_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "requiredfiles": [
     [
@@ -22,5 +22,6 @@
   "sortOrder": 4800,
   "brand": "modernengine",
   "type": "fantasy",
-  "releaseYear": 2015
+  "releaseYear": 2015,
+  "default_emulator": "mednafen_pce_fast"
 }

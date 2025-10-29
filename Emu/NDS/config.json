@@ -1,7 +1,7 @@
 {
   "label": "NDS",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/nds.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/nds.png",
+  "icon": "nds.png",
+  "iconsel": "nds_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "nds|zip|7z|rar",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 4000,
   "brand": "Nintendo",
   "type": "handheld",
-  "releaseYear": 2004
+  "releaseYear": 2004,
+  "default_emulator": "DraStic-original"
 }

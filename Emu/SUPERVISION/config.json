@@ -1,7 +1,7 @@
 {
   "label": "Supervision",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/supervision.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/supervision.png",
+  "icon": "supervision.png",
+  "iconsel": "supervision_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "zip|7z|sv|bin",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 6500,
   "brand": "Watara",
   "type": "handheld",
-  "releaseYear": 1992
+  "releaseYear": 1992,
+  "default_emulator": "potator"
 }

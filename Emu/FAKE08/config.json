@@ -1,7 +1,7 @@
 {
   "label": "Fake08",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/pico.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/pico.png",
+  "icon": "pico.png",
+  "iconsel": "pico_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "p8|png",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 2200,
   "brand": "modernengine",
   "type": "fantasy",
-  "releaseYear": 2013
+  "releaseYear": 2013,
+  "default_emulator": "fake08"
 }

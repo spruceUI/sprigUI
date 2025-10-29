@@ -1,13 +1,1 @@
-{
-  "label": "GameTank",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/gametank.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/gametank.png",
-  "launch": "../.emu_setup/standard_launch.sh",
-  "extlist": "gtr",
-  "launchlist": [],
-  "menuOptions": {},
-  "sortOrder": 2650,
-  "brand": "other",
-  "type": "fantasy",
-  "releaseYear": 2023
-}
+null

@@ -1,7 +1,7 @@
 {
   "label": "TG-16",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/pce.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/pce.png",
+  "icon": "pce.png",
+  "iconsel": "pce_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "pce|zip|7z|ccd|iso|img|chd|cue",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 6600,
   "brand": "NEC",
   "type": "homeconsole",
-  "releaseYear": 1987
+  "releaseYear": 1987,
+  "default_emulator": "mednafen_pce_fast"
 }

@@ -1,7 +1,7 @@
 {
   "label": "Atari 7800",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/7800.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/7800.png",
+  "icon": "7800.png",
+  "iconsel": "7800_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "a78|zip|7z",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 700,
   "brand": "Atari",
   "type": "homeconsole",
-  "releaseYear": 1986
+  "releaseYear": 1986,
+  "default_emulator": "prosystem"
 }

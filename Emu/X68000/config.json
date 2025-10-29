@@ -1,7 +1,7 @@
 {
   "label": "X68000",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/x68000.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/x68000.png",
+  "icon": "x68000.png",
+  "iconsel": "x68000_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "dim|zip|img|m3u|7z|d88|88d|hdm|dup|2hd|xdf|hdf|cmd",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 7600,
   "brand": "Sharp",
   "type": "pc",
-  "releaseYear": 1987
+  "releaseYear": 1987,
+  "default_emulator": "px68k"
 }

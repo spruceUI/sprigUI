@@ -1,7 +1,7 @@
 {
   "label": "SG-1000",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/segasgone.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/segasgone.png",
+  "icon": "segasgone.png",
+  "iconsel": "segasgone_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "zip|7z|sms|gg|sg|mv|bin|rom",
   "launchlist": [],
@@ -20,5 +20,6 @@
   "sortOrder": 6000,
   "brand": "Sega",
   "type": "homeconsole",
-  "releaseYear": 1983
+  "releaseYear": 1983,
+  "default_emulator": "genesis_plus_gx"
 }

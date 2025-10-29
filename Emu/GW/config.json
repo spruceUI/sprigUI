@@ -1,7 +1,7 @@
 {
   "label": "G&W",
-  "icon": "/mnt/SDCARD/Themes/SPRUCE/icons/gw.png",
-  "iconsel": "/mnt/SDCARD/Themes/SPRUCE/icons/sel/gw.png",
+  "icon": "gw.png",
+  "iconsel": "gw_sel.png",
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "mgw|zip|7z",
   "launchlist": [],
@@ -9,5 +9,6 @@
   "sortOrder": 2500,
   "brand": "Nintendo",
   "type": "handheld",
-  "releaseYear": 1980
+  "releaseYear": 1980,
+  "default_emulator": "gw"
 }
