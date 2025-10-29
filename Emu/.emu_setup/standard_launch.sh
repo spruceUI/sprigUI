@@ -89,16 +89,6 @@ set_cpu_mode() {
 
 ##### EMULATOR LAUNCH FUNCTIONS #####
 
-run_ffplay() {
-	mydir="/mnt/SDCARD/Emu/MEDIA"
-	export HOME="$mydir"
-	export PATH="$mydir:$PATH"
-	export LD_LIBRARY_PATH="$mydir/libs:$LD_LIBRARY_PATH"
-
-	cd $mydir
-	ffplay -vf "hflip,vflip" -i "$ROM_FILE"
-}
-
 run_drastic() {
 
 	# Keep saves and configs in a safe location
@@ -256,9 +246,6 @@ ROM_FILE="$(echo "$1" | sed 's|/media/SDCARD0/|/mnt/SDCARD/|g')"
 export ROM_FILE="$(readlink -f "$ROM_FILE")"
 
 case $EMU_NAME in
-	"MEDIA")
-		run_ffplay
-		;;
 	"NDS")
 		run_drastic
 		;;
@@ -281,4 +268,4 @@ kill -9 $(pgrep -f enforceSmartCPU.sh)
 
 rm -f /tmp/cmd_to_run.sh # do this or else games will sometimes launch when you reload PyUI/change themes
 
-log_message "-----Closing Emulator-----" -v
+log_message "-----Closing Emulator-----"

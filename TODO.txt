@@ -1,9 +1,3 @@
-Before first release:
-
-- Fix or hide media system
-- finish readme
-
-
 "Would be nice"s / ideas for future updates:
 
 - game nursery?
@@ -12,3 +6,5 @@ Before first release:
 - syncthing
 - ebook "Emu"
 - B button or something to cancel scraper
+- MEDIA "Emu"
+- PORTS "Emu"
