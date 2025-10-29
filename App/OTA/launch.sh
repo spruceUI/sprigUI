@@ -10,7 +10,7 @@ export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH:/mnt/SDCARD/App/P
 # Tweak these variables to change specific behaviors of the OTA process.
 
 # Change this to change which branch of the repo to download. 'developer.lock' overrides this to the "Development" branch.
-BRANCH=main
+BRANCH=release
 
 # This controls how many MiB of free space we want to require on the SDCARD. It should be greater than
 # the size of the zipfile plus the size of the contents thereof.
@@ -131,6 +131,11 @@ download_target_branch() {
             log_and_display_message "Successfully downloaded $BRANCH branch zip file."
             sleep 5
             return 0
+        else
+            log_and_display_message "Failed to download $BRANCH branch zip file. Aborting."
+            rm -f "/mnt/SDCARD/$BRANCH.zip"
+            rm -rf "/mnt/SDCARD/sprigUI-$BRANCH"
+            return 1
         fi
     else
         log_and_display_message "Failed to download $BRANCH branch zip file. Aborting."
