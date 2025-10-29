@@ -27,7 +27,7 @@
                 "display": "Branch",
                 "options": [
                     "release",
-                    "nightly"
+                    "development"
                 ],
                 "selected": "release"
             },
