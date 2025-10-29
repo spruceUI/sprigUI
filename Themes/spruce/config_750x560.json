@@ -43,5 +43,7 @@
     },
     "recentsEnabled": false,
     "topBarInitialXOffset": 69,
-    "gameSelectionViewType": "TEXT_AND_IMAGE"
+    "gameSelectionViewType": "TEXT_AND_IMAGE",
+    "setTopBarTextToGameSelection": true,
+    "fullScreenGridGameMenuResizeType": "FIT"
 }
