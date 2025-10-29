@@ -4,6 +4,10 @@ from abc import ABC, abstractmethod
 
 class ImageUtils(ABC):
     @abstractmethod
+    def convert_from_jpg_to_tga(self, jpg_path, png_path):
+        pass
+
+    @abstractmethod
     def convert_from_jpg_to_png(self, jpg_path, png_path):
         pass
 
@@ -18,3 +22,9 @@ class ImageUtils(ABC):
     @abstractmethod
     def get_image_dimensions(self, path):
         pass
+
+    @abstractmethod
+    def convert_from_png_to_tga(self, png_path):
+        pass
+
+    

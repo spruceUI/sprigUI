@@ -34,6 +34,9 @@ class FileBasedGameSystemConfig():
     def get_launch(self):
         return self._data.get('launch')
 
+    def get_devices(self):
+        return self._data.get('devices', [])
+
     def get_extlist(self):
         return {f".{ext}" for ext in (self._data.get('extlist') or '').lower().split("|") if ext}
 
@@ -69,7 +72,7 @@ class FileBasedGameSystemConfig():
     
     def get_release_year(self):
         return self._data.get('releaseYear', 9999999)
-    
+        
     def save_config(self):
         with open(self.config_path, 'w', encoding='utf-8') as f:
             json.dump(self._data, f, indent=4)

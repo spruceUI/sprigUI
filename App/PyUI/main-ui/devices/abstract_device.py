@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 import subprocess
 
+from devices.miyoo.system_config import SystemConfig
 from games.utils.game_entry import GameEntry
 from utils.image_utils import ImageUtils
 
@@ -133,6 +134,10 @@ class AbstractDevice(ABC):
 
     @abstractmethod
     def get_collections_path(self):
+        pass
+
+    @abstractmethod
+    def get_apps_config_path(self):
         pass
 
     @abstractmethod
@@ -288,7 +293,7 @@ class AbstractDevice(ABC):
         pass
 
     @abstractmethod
-    def get_system_config(self):
+    def get_system_config(self) -> SystemConfig:
         pass
 
     @abstractmethod
@@ -320,11 +325,25 @@ class AbstractDevice(ABC):
         pass
 
     @abstractmethod
-    def get_boxart_resize_dimensions(self):
+    def get_boxart_medium_resize_dimensions(self):
         pass
 
     @abstractmethod
     def get_boxart_small_resize_dimensions(self):
         pass
+
+    @abstractmethod
+    def get_boxart_large_resize_dimensions(self):
+        pass
+
+    @abstractmethod
+    def get_device_name(self):
+        pass
+
+    @abstractmethod
+    def supports_tga(self):
+        pass
+
+
 
 

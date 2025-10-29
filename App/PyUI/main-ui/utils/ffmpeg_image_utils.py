@@ -9,17 +9,23 @@ from utils.logger import PyUiLogger
 
 class FfmpegImageUtils(ImageUtils):
 
-    def convert_from_jpg_to_png(self,jpg_path, png_path):
-        """Convert a JPG image to PNG using ffmpeg."""
+    def convert_type(self, input_path, output_path):
         try:
             subprocess.run([
                 "ffmpeg",
                 "-y",           # overwrite if exists
-                "-i", jpg_path,
-                png_path
+                "-i", input_path,
+                output_path
             ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except subprocess.CalledProcessError as e:
-            PyUiLogger().get_logger().error(f"Error converting {jpg_path} to {png_path}: {e}")
+            PyUiLogger().get_logger().error(f"Error converting {input_path} to {output_path}: {e}")
+
+    def convert_from_jpg_to_tga(self,jpg_path, tga_path):
+       self.convert_type(jpg_path,tga_path)
+
+
+    def convert_from_jpg_to_png(self,jpg_path, png_path):
+       self.convert_type(jpg_path,png_path)
 
     def shrink_image_if_needed(self,input_path, output_path, max_width, max_height):
         temp_path = output_path + ".tmp.png"
@@ -139,3 +145,28 @@ class FfmpegImageUtils(ImageUtils):
             PyUiLogger().get_logger().info(f"Error getting dimens of {path} : {e}")
             return 0, 0
 
+    def convert_from_png_to_tga(self, png_path):
+        """
+        Converts a PNG file to a 32-bit RGBA TGA using ffmpeg.
+        The TGA will be in the same directory with the same basename.
+        """
+        if not png_path.lower().endswith(".png"):
+            PyUiLogger().get_logger().info(f"{png_path} is not a png")
+            return
+        PyUiLogger().get_logger().info(f"Converting {png_path} to tga")
+
+        tga_path = os.path.splitext(png_path)[0] + ".tga"
+
+        # Call ffmpeg to convert PNG → 32-bit RGBA TGA
+        subprocess.run([
+            "ffmpeg",
+            "-y",                  # overwrite output
+            "-i", png_path,        # input file
+            "-pix_fmt", "rgba",    # 32-bit RGBA
+            "-frames:v", "1",      # only one frame
+            tga_path               # output file
+        ], check=True)
+
+        PyUiLogger().get_logger().info(f"Converted {png_path} ==> {tga_path}")
+
+        return tga_path

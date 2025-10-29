@@ -1,4 +1,5 @@
 from devices.abstract_device import AbstractDevice
+from devices.miyoo.system_config import SystemConfig
 from utils.image_utils import ImageUtils
 
 
@@ -138,6 +139,10 @@ class Device:
     @staticmethod
     def get_collections_path():
         return Device._impl.get_collections_path()
+
+    @staticmethod
+    def get_apps_config_path():
+        return Device._impl.get_apps_config_path()
 
     @staticmethod
     def parse_favorites():
@@ -332,7 +337,7 @@ class Device:
         return Device._impl.get_guaranteed_safe_max_text_char_count()
 
     @staticmethod
-    def get_system_config():
+    def get_system_config() -> SystemConfig:
         return Device._impl.get_system_config()
 
     @staticmethod
@@ -364,10 +369,23 @@ class Device:
         return Device._impl.get_image_utils()
 
     @staticmethod
-    def get_boxart_resize_dimensions():
-        return Device._impl.get_boxart_resize_dimensions()
+    def get_boxart_medium_resize_dimensions():
+        return Device._impl.get_boxart_medium_resize_dimensions()
     
     @staticmethod
     def get_boxart_small_resize_dimensions():
         return Device._impl.get_boxart_small_resize_dimensions()
+
+    @staticmethod
+    def get_boxart_large_resize_dimensions():
+        return Device._impl.get_boxart_large_resize_dimensions()
+
+    @staticmethod
+    def get_device_name():
+        return Device._impl.get_device_name()
+
+    @staticmethod
+    def supports_tga():
+        return Device._impl.supports_tga()
+
 
