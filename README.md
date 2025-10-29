@@ -34,7 +34,6 @@ https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0
 - Game Switcher:
     - Default behavior: Hold Menu button for 1 second to jump to your 5 most recent games.
     - Button press time and number of recents is configurable from the Main Menu -> Settings -> Extra Settings -> Game Switcher Settings.
-    - Please note that Game Switcher is only set to listen for the menu button in Retroarch, native Pico-8, and sprigUI itself.
 
 
 - Power Button behavior:
@@ -53,6 +52,10 @@ https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0
     - sprigUI automatically enables wireless ADB and SSH access on boot. You can connect to your device using these services by running the following commands from your computer.
         - ADB: `adb connect 192.168.x.x:5555`
         - SSH: `ssh root@192.168.x.x`
+
+- Boot Logo flasher
+    - Running this app will replace the boot logo on your device with a custom sprigUI logo.
+    - Please use this tool responsibly if attempting to use any logo other than the one provided. Custom bootlogos can in some rare instances cause a soft-bricked device. To recover from this state, or to reinstate the stock Miyoo boot logo, place [this firmware](https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0) at the root of your SD card, then, while holding the MENU button, plug the device into a power supply. You can release the MENU button once the "Super Upgrade" rocket comes up - then just let it do its thing and it will eventually reboot.
 
 ## Known Issues
 

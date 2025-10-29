@@ -101,13 +101,16 @@ run_ffplay() {
 
 run_drastic() {
 
-	mydir=/mnt/SDCARD/Emu/NDS
-	cd $mydir
-	if [ ! -f "/tmp/.show_hotkeys" ]; then
-		touch /tmp/.show_hotkeys
-		LD_LIBRARY_PATH=./libs:/customer/lib:/config/lib ./show_hotkeys
-	fi
+	# Keep saves and configs in a safe location
+	for dirname in backup config savestates; do
+		mkdir -p "/mnt/SDCARD/Emu/NDS/$dirname"
+		mkdir -p "/mnt/SDCARD/Saves/NDS/$dirname"
+		if ! mount | grep -q "/mnt/SDCARD/Emu/NDS/$dirname"; then
+			mount --bind /mnt/SDCARD/Saves/$dirname /mnt/SDCARD/Emu/NDS/$dirname
+		fi
+	done
 
+	mydir=/mnt/SDCARD/Emu/NDS
 	export HOME=$mydir
 	export PATH=$mydir:$PATH
 	export LD_LIBRARY_PATH=$mydir/libs:$LD_LIBRARY_PATH
@@ -131,6 +134,10 @@ run_drastic() {
 	sync
 
 	echo $sv > /proc/sys/vm/swappiness
+
+	for dirname in backup config savestates; do
+		umount /mnt/SDCARD/Emu/NDS/$dirname  >/dev/null 2>&1
+	done
 }
 
 run_openbor() {
