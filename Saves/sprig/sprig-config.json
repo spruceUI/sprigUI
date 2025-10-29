@@ -21,6 +21,25 @@
                 ],
                 "selected": "True"
             }
+        },
+        "OTA Settings": {
+            "branch": {
+                "display": "Branch",
+                "options": [
+                    "release",
+                    "main"
+                ],
+                "selected": "release"
+            },
+            "bypassVersionChecks": {
+                "display": "Bypass Version Checks",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "selected": "False"
+            }
         }
     }
+    
 }
