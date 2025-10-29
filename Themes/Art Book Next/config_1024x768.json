@@ -1,0 +1,72 @@
+{
+    "showBottomBar": true,
+    "name": "Colorfully Details",
+    "author": "Jamesinorbit, Viking",
+    "description": "Colorfully Details",
+    "title": {
+        "font": "nunwen.ttf",
+        "size": 40,
+        "color": "#FFFFFF"
+    },
+    "hint": {
+        "font": "nunwen.ttf",
+        "size": 40,
+        "color": "#FFFFFF"
+    },
+    "currentpage": {
+        "font": "nunwen.ttf",
+        "size": 35,
+        "color": "#FFFFFF"
+    },
+    "total": {
+        "font": "nunwen.ttf",
+        "size": 35,
+        "color": "#FFFFFF"
+    },
+    "grid": {
+        "font": "nunwen.ttf",
+        "grid1x4": 40,
+        "grid3x4": 28,
+        "color": "#6e6f6d",
+        "selectedcolor": "#FFFFFF"
+    },
+    "list": {
+        "font": "nunwen.ttf",
+        "size": 38,
+        "color": "#FFFFFF",
+        "selectedcolor": "#000000"
+    },
+    "shadowed": {
+        "font": "nunwen.ttf",
+        "shadowedFontSize": 64,
+        "shadowedFontBackdropSize": 64,
+        "shadowedFontColor": "#000000",
+        "shadowedFontBackdropColor": "#FFFFFF",
+        "shadowedFontSmallSize": 41,
+        "shadowedFontBackdropSmallSize": 41,
+        "shadowedFontSmallColor": "#000000",
+        "shadowedFontBackdropSmallColor": "#FFFFFF"
+    },
+    "gameSelectionViewType": "FULLSCREEN_GRID",
+    "systemSelectViewType": "FULLSCREEN_GRID",
+    "gameSelectImgWidth": 224,
+    "gameSelectImgHeight": 224,
+    "gridGameSelectImgWidth": 224,
+    "gridGameSelectImgHeight": 224,
+    "listGameSelectImgWidth": 470,
+    "listGameSelectImgHeight": 470,
+    "gameSelectShowTextGridMode": false,
+    "gameSelectShowSelectedBgGridMode": true,
+    "setTopBarTextToGameSelection": true,
+    "gridMultiRowSelBgResizePadWidth": 32,
+    "gridMultiRowSelBgResizePadHeight": 32,
+    "gridMultiRowExtraYPad": 27,
+    "gameSelectGridResizeType": "ZOOM",
+    "skipMainMenu": true,
+    "mainMenuColCount": 5,
+    "systemSelectFullScreenGridTextOverlay": false,
+    "gameSystemSelectColCount": 1,
+    "gameSystemSelectRowCount": 1,
+    "systemSelectShowTextGridMode": false,
+    "systemSelectShowSelectedBgGridMode": false
+}

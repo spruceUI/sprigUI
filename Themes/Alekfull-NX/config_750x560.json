@@ -1,5 +1,6 @@
 {
     "showBottomBar": true,
+    "setTopBarTextToGameSelection": false,
     "name": "Alekfull-NX",
     "author": "fagnerpc",
     "description": "Alekfull-NX modified for the 640x480 devices",
@@ -57,7 +58,6 @@
     "listGameSelectImgHeight": 343,
     "gameSelectShowTextGridMode": false,
     "gameSelectShowSelectedBgGridMode": true,
-    "setTopBarTextToGameSelection": true,
     "gridMultiRowSelBgResizePadWidth": 23,
     "gridMultiRowSelBgResizePadHeight": 23,
     "gridMultiRowExtraYPad": 19,
