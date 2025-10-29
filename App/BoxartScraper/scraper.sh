@@ -227,7 +227,6 @@ for sys_dir in "$roms_dir"/*/; do
     games="$(find "$sys_dir" -maxdepth 2 -type f -regex ".*\.\($(echo "$extensions" | sed 's/ /\\\|/g')\)$")"
     amount_games="$(echo "$games" | wc -l)"
     sys_label="$(jq ".label" "/mnt/SDCARD/Emu/$sys_name/config.json")"
-    # icon_path="$(jq ".iconsel" "/mnt/SDCARD/Emu/$sys_name/config.json")"
 
     if [ -z "$extensions" ]; then
         log_message "BoxartScraper: No supported extensions found for directory $sys_name - skipping."
