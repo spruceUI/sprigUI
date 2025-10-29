@@ -10,7 +10,9 @@ export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH:/mnt/SDCARD/App/P
 # Tweak these variables to change specific behaviors of the OTA process.
 
 # Change this to change which branch of the repo to download. 'developer.lock' overrides this to the "Development" branch.
-BRANCH=release
+BRANCH="$(get_config_value '.menuOptions."OTA Settings".branch.selected' "release")"
+BYPASS_VERSION_CHECKS="$(get_config_value '.menuOptions."OTA Settings".bypassVersionChecks.selected' "False")"
+
 
 # This controls how many MiB of free space we want to require on the SDCARD. It should be greater than
 # the size of the zipfile plus the size of the contents thereof.
@@ -29,8 +31,6 @@ DELETE_BEFORE_COPY=false
 start_pyui_message_writer
 
 ##########################################################
-
-if flag_check "developer"; then BRANCH=Development ; fi
 
 if [ "$DELETE_BEFORE_COPY" = true ]; then
     OVERWRITE_EMU_DIR=true
@@ -69,7 +69,7 @@ is_wifi_connected() {
 
 is_branch_newer_than_device() {
 
-    if flag_check "developer"; then
+    if [ "$BYPASS_VERSION_CHECKS" = "True" ]; then
         log_message "Developer mode detected. Skipping version check."
         return 0
     fi
