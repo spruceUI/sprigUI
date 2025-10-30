@@ -27,7 +27,7 @@ sprig is a custom operating system for the Miyoo Mini Flip, developed by the spr
 
 ## Required Firmware
 
-https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0
+[Official Firmware From Miyoo](https://github.com/spruceUI/sprigUI/releases/download/Official_Miyoo_Firmware/miyoo285_fw.img)
 
 ## Operating Manual
 
