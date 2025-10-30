@@ -48,7 +48,7 @@
         "shadowedFontBackdropSmallColor": "#FFFFFF"
     },
     "gameSelectionViewType": "CAROUSEL",
-    "systemSelectViewType": "FULLSCREEN_GRID",
+    "systemSelectViewType": "GRID",
     "gameSelectImgWidth": 163,
     "gameSelectImgHeight": 163,
     "gridGameSelectImgWidth": 163,
