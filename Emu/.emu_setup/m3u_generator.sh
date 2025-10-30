@@ -2,7 +2,6 @@
 
 . /mnt/SDCARD/sprig/helperFunctions.sh
 
-ICON_PATH="/mnt/SDCARD/Themes/SPRUCE/icons/app/gamelist.png"
 ROMS_DIR="/mnt/SDCARD/Roms"
 DISC_EXTS="cue|gdi|chd|pbp|iso|dsk"
 SYSTEM="$(echo "$1" | cut -d'/' -f5)"
@@ -23,11 +22,7 @@ generate_cues() {
   TRACK 01 MODE1/2352
     INDEX 01 00:00:00" > "$cuepath"
     done
-
-    find $SYSTEM -maxdepth 1 -type f -iname "*_cache[6-7].db" -exec rm -f {} +
 }
-
-display --icon "$ICON_PATH" -t "Generating M3Us... this shouldn't take longer than a few seconds"
 
 generate_cues # generate any missing cue sheets
 
@@ -78,8 +73,4 @@ else
 fi
 
 cd "$ROMS_DIR"
-find $SYSTEM -maxdepth 1 -type f -iname "*_cache[6-7].db" -exec rm -f {} +
 sync
-
-display_kill
-auto_regen_tmp_update
