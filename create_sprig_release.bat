@@ -31,7 +31,7 @@ set "output7z=%archiveName%V%version%.7z"
 
 REM Create the 7z file excluding this script and all git-related files
 echo Creating 7z archive "%output7z%"...
-7z a -t7z -mx=9 -xr!.git* -x!.gitignore -x!.gitattributes -x!"%~nx0" -x!create_spruce_release.sh "%output7z%" *
+7z a -t7z -mx=9 -xr!.git* -x!.gitignore -x!.gitattributes -x!"%~nx0" -x!create_sprig_release.sh -x!main -x!TODO.txt "%output7z%" *
 
 REM Check if 7z creation was successful
 if %errorlevel% neq 0 (
@@ -43,3 +43,4 @@ if %errorlevel% neq 0 (
 echo 7z archive "%output7z%" created successfully.
 pause
 exit /b 0
+
