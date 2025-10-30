@@ -27,7 +27,7 @@ if [ -f "$OUTPUT_7Z" ]; then
     rm "$OUTPUT_7Z"
 fi
 
-7z a -t7z -mx=9 -xr!.git* -x!.gitignore -x!.gitattributes -x!"$(basename "$0")" -x!create_spruce_release.bat "$OUTPUT_7Z" *
+7z a -t7z -mx=9 -xr!.git* -x!.gitignore -x!.gitattributes -x!"$(basename "$0")" -x!create_sprig_release.bat -x!main -x!TODO.txt "$OUTPUT_7Z" *
 
 if [ $? -ne 0 ]; then
     echo "Error: failed to create 7z archive"
