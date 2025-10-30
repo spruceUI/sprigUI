@@ -9,7 +9,8 @@ export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH:/mnt/SDCARD/App/P
 
 # This controls how many MiB of free space we want to require on the SDCARD. It should be greater than
 # the size of the zipfile plus the size of the contents thereof.
-SPACE_REQUIRED=800
+# sprigUI v1.0.0 release candidate size was 734 + 184 = 918 MiB.
+SPACE_REQUIRED=1024
 
 # Tweak these variables in sprig-config.json to change specific behaviors of the OTA process.
 BRANCH="$(get_config_value '.menuOptions."OTA Settings".branch.selected' "release")"
