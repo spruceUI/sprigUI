@@ -5,6 +5,5 @@
 - dufs
 - syncthing
 - ebook "Emu"
-- B button or something to cancel scraper
 - MEDIA "Emu"
 - PORTS "Emu"
