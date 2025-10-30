@@ -48,6 +48,10 @@ sprig is a custom operating system for the Miyoo Mini Flip, developed by the spr
     - To launch a system using a different core, press X while in that system's game list, then highlight **Retroarch Core** and press left or right to select your new core, then press B to close this menu and return to the game list. This will set that core as the default for all games in that system.
     - To set an override to get a particular game to always use one core, regardlesss of what default you have set: press X while hovering over the game you wish to set the core association for, then change its **Retroarch Core** as described above. Then, before going back to the game list, press X or Y. An asterisk will appear next to the **Retroarch Core** text, indicating that the override is set.
 
+- Native Pico-8
+    - By placing your own copies of `pico8.dat` and `pico8_dyn` (from the "Raspberry Pi" version of [Pico-8](https://www.lexaloffle.com/pico-8.php)) directly in your `BIOS/` folder, you will gain access to the Pico-8 system in your Games section. From there, if you are connected to Wi-Fi, you can launch Splore, a wonderful repository of hundreds of free games. You can also add your own games to `Roms/PICO8` and launch them directly through sprigUI.
+    - Please note that without these commercial binaries, you can instead use the `Roms/FAKE08` folder, which allows you to emulate Pico-8, but without Splore access.
+
 - Wireless connectivity:
     - sprigUI automatically enables wireless ADB and SSH access on boot. You can connect to your device using these services by running the following commands from your computer.
         - ADB: `adb connect 192.168.x.x:5555`
