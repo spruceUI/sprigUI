@@ -57,6 +57,17 @@ https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0
     - Running this app will replace the boot logo on your device with a custom sprigUI logo.
     - Please use this tool responsibly if attempting to use any logo other than the one provided. Custom bootlogos can in some rare instances cause a soft-bricked device. To recover from this state, or to reinstate the stock Miyoo boot logo, place [this firmware](https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0) at the root of your SD card, then, while holding the MENU button, plug the device into a power supply. You can release the MENU button once the "Super Upgrade" rocket comes up - then just let it do its thing and it will eventually reboot.
 
+- RetroArch hotkeys:
+    - Screenshot: SELECT + A
+    - Exit to sprigUI: SELECT + B
+    - Open menu: SELECT + X
+    - Toggle FPS display: SELECT + Y
+    - Load state: SELECT + L1
+    - Save state: SELECT + R1
+    - Toggle slow-motion: SELECT + L2
+    - Toggle fast-forward: SELECT + R2
+    - Cycle state slots: SELECT + D-Pad LEFT/D-Pad RIGHT
+
 - DraStic emulator hotkeys:
     - Please see [the readme on Steward Fu's nds repository](https://github.com/steward-fu/nds?tab=readme-ov-file#hotkey) for a list of hotkeys and other DraStic-Steward functions.
 
