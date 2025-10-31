@@ -91,7 +91,8 @@ sprig is a custom operating system for the Miyoo Mini Flip, developed by the spr
 - XK9274 for the SDL2 build that allows PyUI to even run on this device.
 - Steward Fu for all his work on the Miyoo Mini, including but not limited to porting the DraStic emulator.
 - XanXic for a lot of the helperFunction code from spruce that we implemented in sprig.
-- The thememaking community, including tenlevels, 369px, Kyle Bing, HeyDW, and fagnerpc.
+- The thememaking community, including tenlevels, 369px, Kyle Bing, HeyDW, Anthony Caccese, and fagnerpc.
+- [Icons8.com](icons8.com) for the logo, icons and their generosity in giving us expanded access to icons for our projects.
 
 ## Need help? Want to contribute?
 
