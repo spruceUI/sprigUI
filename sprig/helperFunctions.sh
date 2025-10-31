@@ -48,8 +48,8 @@ flag_remove() {
 # Call this like:
 # log_message "Your message here"
 # To output to a custom log file, set the variable within your script:
-# log_file="/mnt/SDCARD/App/MyApp/spruce.log"
-# This will log the message to the spruce.log file in the Saves/spruce folder
+# log_file="/mnt/SDCARD/App/MyApp/sprig.log"
+# This will log the message to the sprig.log file in the Saves/sprig folder
 #
 # Usage examples:
 # Log a regular message:
@@ -117,7 +117,7 @@ rotate_logs() {
         mv "$log_target" "$log_target.tmp"
     fi
 
-    # Create a fresh spruce.log immediately
+    # Create a fresh sprig.log immediately
     touch "$log_target"
 
     # Perform log rotation in the background
@@ -131,7 +131,7 @@ rotate_logs() {
             i=$((i - 1))
         done
 
-        # Move the temporary file to spruce1.log
+        # Move the temporary file to sprig1.log
         if [ -f "$log_target.tmp" ]; then
             mv "$log_target.tmp" "$log_dir/sprig1.log"
         fi
