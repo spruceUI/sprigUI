@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-REM This bat file will create a 7z archive of the spruce folder named sprigV<version>.7z
+REM This bat file will create a 7z archive of the sprig folder named sprigV<version>.7z
 REM It excludes all git-related files and this script itself
 REM You need 7zip installed to use this script
 
@@ -11,7 +11,7 @@ set "version="
 
 REM Check for the sprig version file
 if not exist "sprig\version" (
-    echo Error: Could not find the file "spruce\spruce".
+    echo Error: Could not find the file "sprig\version".
 	pause
     exit /b 1
 )
@@ -21,7 +21,7 @@ set /p version=<sprig\version
 
 REM Validate that we have the version
 if "%version%"=="" (
-    echo Error: Failed to retrieve the version from "spruce\spruce".
+    echo Error: Failed to retrieve the version from "sprig\version".
 	pause
     exit /b 1
 )
@@ -31,7 +31,7 @@ set "output7z=%archiveName%V%version%.7z"
 
 REM Create the 7z file excluding this script and all git-related files
 echo Creating 7z archive "%output7z%"...
-7z a -t7z -mx=9 -xr!.git* -x!.gitignore -x!.gitattributes -x!"%~nx0" -x!create_spruce_release.sh "%output7z%" *
+7z a -t7z -mx=9 -xr!.git* -x!.gitignore -x!.gitattributes -x!"%~nx0" -x!create_sprig_release.sh -x!main -x!TODO.txt "%output7z%" *
 
 REM Check if 7z creation was successful
 if %errorlevel% neq 0 (
@@ -43,3 +43,4 @@ if %errorlevel% neq 0 (
 echo 7z archive "%output7z%" created successfully.
 pause
 exit /b 0
+

@@ -27,14 +27,27 @@ sprig is a custom operating system for the Miyoo Mini Flip, developed by the spr
 
 ## Required Firmware
 
-https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0
+[Official Firmware From Miyoo](https://github.com/spruceUI/sprigUI/releases/download/Official_Miyoo_Firmware/miyoo285_fw.img)
 
 ## Operating Manual
+
+- RetroArch hotkeys:
+    - Screenshot: SELECT + A
+    - Exit to sprigUI: SELECT + B
+    - Open menu: SELECT + X
+    - Toggle FPS display: SELECT + Y
+    - Load state: SELECT + L1
+    - Save state: SELECT + R1
+    - Toggle slow-motion: SELECT + L2
+    - Toggle fast-forward: SELECT + R2
+    - Cycle state slots: SELECT + D-Pad LEFT/D-Pad RIGHT
+
+- DraStic emulator hotkeys:
+    - Please see [the readme on Steward Fu's nds repository](https://github.com/steward-fu/nds?tab=readme-ov-file#hotkey) for a list of hotkeys and other DraStic-Steward functions.
 
 - Game Switcher:
     - Default behavior: Hold Menu button for 1 second to jump to your 5 most recent games.
     - Button press time and number of recents is configurable from the Main Menu -> Settings -> Extra Settings -> Game Switcher Settings.
-
 
 - Power Button behavior:
     - Quick tap to sleep/wake.
@@ -42,23 +55,28 @@ https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0
     - Hold 3 seconds to force close a frozen app or emulator. (longer double vibrate)
     - Hold 10 seconds to hard shutdown a device as a last resort.
 
-
 - Changing emulator cores for a system:
     - Some systems, such as Game Boy, have multiple emulator options.
     - To launch a system using a different core, press X while in that system's game list, then highlight **Retroarch Core** and press left or right to select your new core, then press B to close this menu and return to the game list. This will set that core as the default for all games in that system.
     - To set an override to get a particular game to always use one core, regardlesss of what default you have set: press X while hovering over the game you wish to set the core association for, then change its **Retroarch Core** as described above. Then, before going back to the game list, press X or Y. An asterisk will appear next to the **Retroarch Core** text, indicating that the override is set.
+
+- Native Pico-8
+    - By placing your own copies of `pico8.dat` and `pico8_dyn` (from the "Raspberry Pi" version of [Pico-8](https://www.lexaloffle.com/pico-8.php)) directly in your `BIOS/` folder, you will gain access to the Pico-8 system in your Games section. From there, if you are connected to Wi-Fi, you can launch Splore, a wonderful repository of hundreds of free games. You can also add your own games to `Roms/PICO8` and launch them directly through sprigUI.
+    - Please note that without these commercial binaries, you can instead use the `Roms/FAKE08` folder, which allows you to emulate Pico-8, but without Splore access.
 
 - Wireless connectivity:
     - sprigUI automatically enables wireless ADB and SSH access on boot. You can connect to your device using these services by running the following commands from your computer.
         - ADB: `adb connect 192.168.x.x:5555`
         - SSH: `ssh root@192.168.x.x`
 
+- Box Art Scraper
+    - Run this app to automatically search the LibRetro thumbnails database for box art matching the names of your Roms.
+    - Press the MENU button at any time to stop scraping.
+
 - Boot Logo flasher
     - Running this app will replace the boot logo on your device with a custom sprigUI logo.
     - Please use this tool responsibly if attempting to use any logo other than the one provided. Custom bootlogos can in some rare instances cause a soft-bricked device. To recover from this state, or to reinstate the stock Miyoo boot logo, place [this firmware](https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0) at the root of your SD card, then, while holding the MENU button, plug the device into a power supply. You can release the MENU button once the "Super Upgrade" rocket comes up - then just let it do its thing and it will eventually reboot.
 
-- DraStic emulator hotkeys:
-    - Please see [the readme on Steward Fu's nds repository](https://github.com/steward-fu/nds?tab=readme-ov-file#hotkey) for a list of hotkeys and other DraStic-Steward functions.
 
 ## Known Issues
 
@@ -73,7 +91,8 @@ https://github.com/spruceUI/sprigUI/releases/tag/sprigOSv0.0
 - XK9274 for the SDL2 build that allows PyUI to even run on this device.
 - Steward Fu for all his work on the Miyoo Mini, including but not limited to porting the DraStic emulator.
 - XanXic for a lot of the helperFunction code from spruce that we implemented in sprig.
-- The thememaking community, including tenlevels, 369px, Kyle Bing, HeyDW, and fagnerpc.
+- The thememaking community, including tenlevels, 369px, Kyle Bing, HeyDW, Anthony Caccese, and fagnerpc.
+- [Icons8.com](icons8.com) for the logo, icons and their generosity in giving us expanded access to icons for our projects.
 
 ## Need help? Want to contribute?
 

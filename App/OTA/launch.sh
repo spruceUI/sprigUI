@@ -7,36 +7,30 @@ export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH:/mnt/SDCARD/App/P
 
 ##### VARIABLES #####
 
-# Tweak these variables to change specific behaviors of the OTA process.
-
-# Change this to change which branch of the repo to download. 'developer.lock' overrides this to the "Development" branch.
-BRANCH="$(get_config_value '.menuOptions."OTA Settings".branch.selected' "release")"
-BYPASS_VERSION_CHECKS="$(get_config_value '.menuOptions."OTA Settings".bypassVersionChecks.selected' "False")"
-
-
 # This controls how many MiB of free space we want to require on the SDCARD. It should be greater than
 # the size of the zipfile plus the size of the contents thereof.
-SPACE_REQUIRED=800
+# sprigUI v1.0.0 release candidate size was 734 + 184 = 918 MiB.
+SPACE_REQUIRED=1024
 
-# Will not copy certain files and folders into place if set to false. DELETE_BEFORE_COPY overrides these all to true.
-OVERWRITE_EMU_DIR=false
-OVERWRITE_RA_CONFIGS=false
-OVERWRITE_PYTHON3_DIR=false
-OVERWRITE_THEMES_DIR=false
-
-# If true, delete current contents of SDCARD aside from Roms, BIOS, and Saves, to ensure full fresh install.
-DELETE_BEFORE_COPY=false
-
-
-start_pyui_message_writer
+# Tweak these variables in sprig-config.json to change specific behaviors of the OTA process.
+BRANCH="$(get_config_value '.menuOptions."OTA Settings".branch.selected' "release")"
+BYPASS_VERSION_CHECKS="$(get_config_value '.menuOptions."OTA Settings".bypassVersionChecks.selected' "False")"
+OVERWRITE_EMU_DIR="$(get_config_value '.menuOptions."OTA Settings".overwriteEmuDir.selected' "False")"
+OVERWRITE_RA_CONFIGS="$(get_config_value '.menuOptions."OTA Settings".overwriteRAconfigs.selected' "False")"
+OVERWRITE_PYTHON3_DIR="$(get_config_value '.menuOptions."OTA Settings".overwritePythonDir.selected' "False")"
+OVERWRITE_THEMES_DIR="$(get_config_value '.menuOptions."OTA Settings".overwriteThemesDir.selected' "False")"
 
 ##########################################################
 
+# If DELETE_BEFORE_COPY=true, delete current contents of SDCARD aside from Roms, BIOS, and Saves, to ensure full fresh install.
+# This one is not accessible from sprig-config.json (yet?).
+DELETE_BEFORE_COPY=false
+
 if [ "$DELETE_BEFORE_COPY" = true ]; then
-    OVERWRITE_EMU_DIR=true
-    OVERWRITE_RA_CONFIGS=true
-    OVERWRITE_PYTHON3_DIR=true
-    OVERWRITE_THEMES_DIR=true
+    OVERWRITE_EMU_DIR="True"
+    OVERWRITE_RA_CONFIGS="True"
+    OVERWRITE_PYTHON3_DIR="True"
+    OVERWRITE_THEMES_DIR="True"
 fi
 
 ##########################################################
@@ -70,7 +64,7 @@ is_wifi_connected() {
 is_branch_newer_than_device() {
 
     if [ "$BYPASS_VERSION_CHECKS" = "True" ]; then
-        log_message "Developer mode detected. Skipping version check."
+        log_message "Bypassing version check."
         return 0
     fi
 
@@ -118,25 +112,11 @@ is_branch_newer_than_device() {
 
 download_target_branch() {
     cd /mnt/SDCARD
-    log_and_display_message "Update found. Downloading! (~5min)"
+    log_and_display_message "Update found. Downloading! (~5-10min)"
     if wget --tries=3 -O "$BRANCH.zip" https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip ; then
         log_and_display_message "Successfully downloaded $BRANCH branch zip file."
         sleep 5
         return 0
-    elif flag_check "developer"; then
-        log_and_display_message "Development branch not found - will use main branch instead. Downloading!"
-        sleep 3
-        BRANCH=main
-        if wget --tries=3 -O "$BRANCH.zip" https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip ; then
-            log_and_display_message "Successfully downloaded $BRANCH branch zip file."
-            sleep 5
-            return 0
-        else
-            log_and_display_message "Failed to download $BRANCH branch zip file. Aborting."
-            rm -f "/mnt/SDCARD/$BRANCH.zip"
-            rm -rf "/mnt/SDCARD/sprigUI-$BRANCH"
-            return 1
-        fi
     else
         log_and_display_message "Failed to download $BRANCH branch zip file. Aborting."
         rm -f "/mnt/SDCARD/$BRANCH.zip"
@@ -156,17 +136,17 @@ extract_archive() {
 
     excluded_files="$new_dir/create_sprig_release.sh $new_dir/create_sprig_release.bat $new_dir/TODO.txt"
 
-    if [ "$OVERWRITE_RA_CONFIGS" = false ]; then
+    if [ "$OVERWRITE_RA_CONFIGS" = "False" ]; then
         log_message "Will not overwrite RA configs."
         excluded_files="$excluded_files $new_ra_dir/config $new_ra_dir/retroarchV4.cfg"
     fi
 
-    if [ "$OVERWRITE_PYTHON3_DIR" = false ]; then
+    if [ "$OVERWRITE_PYTHON3_DIR" = "False" ]; then
         log_message "Will not overwrite Python3.10 directory."
         excluded_files="$excluded_files $new_python3_dir"
     fi
 
-    if [ "$OVERWRITE_THEMES_DIR" = false ]; then
+    if [ "$OVERWRITE_THEMES_DIR" = "False" ]; then
         log_message "Will not overwrite Themes directory."
         excluded_files="$excluded_files $new_themes_dir"
     fi
@@ -244,9 +224,9 @@ complete_installation() {
 
 ##### MAIN EXECUTION #####
 
+start_pyui_message_writer
+
 log_and_display_message "Starting OTA process. Checking space, wifi, and version."
-display_message "Starting OTA process. Checking space, wifi, and version"
-# show /mnt/SDCARD/sprig/res/sprucetree.png
 
 if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_than_device; then
 
@@ -255,7 +235,7 @@ if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_tha
     
     if download_target_branch && extract_archive; then
         preserve_sprig_config_settings
-        if [ "$OVERWRITE_EMU_DIR" = false ]; then
+        if [ "$OVERWRITE_EMU_DIR" = "False" ]; then
             preserve_user_emu_launch_settings
         else
             log_and_display_message "Emulator options and overrides will be reset to default."

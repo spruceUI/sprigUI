@@ -5,7 +5,11 @@
 BBS_PATH="/mnt/SDCARD/Emu/PICO8/.lexaloffle/pico-8/bbs"
 ROM_PATH="/mnt/SDCARD/Roms/PICO8"
 FAVE_PATH="/mnt/SDCARD/Emu/PICO8/.lexaloffle/pico-8/favourites.txt"
-BG_TREE="/mnt/SDCARD/spruce/imgs/bg_tree.png"
+
+start_pyui_message_writer
+sleep 2
+log_and_display_message "Importing carts from Pico-8's bbs folder into sprigUI."
+sleep 2
 
 {
 for cart in "$BBS_PATH"/*/*.p8.png ; do
@@ -28,9 +32,7 @@ for cart in "$BBS_PATH"/*/*.p8.png ; do
 		fi
 	fi
 done
-} &
+}
 
-display -i "$BG_TREE" -t "Importing carts from Splore" -d 2
-
-rm -f "$ROM_PATH/PICO8_cache6.db" "$ROM_PATH/PICO8_cache7.db"
-log_message "Done importing. Pico-8 romlist refreshed."
+log_and_display_message "Done importing."
+sleep 1

@@ -5,6 +5,6 @@
     "enableButtonWatchers": false,
     "enableWifiMonitor": true,
     "mainMenuTitle": "sprigUI",
-    "animationsEnabled": true,
+    "animationsEnabled": false,
     "includeStockOsLaunchOption": false
 }

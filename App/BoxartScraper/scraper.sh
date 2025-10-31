@@ -4,6 +4,15 @@
 export PATH="/mnt/SDCARD/sprig/bin:$PATH"
 export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH:/mnt/SDCARD/App/PyUI/libs/:/config/lib/:/customer/lib"
 
+start_menu_button_watchdog() {
+    evtest /dev/input/event0 | while read line; do
+        case "$line" in
+            *"EV_KEY"*"KEY_ESC"*"value 1") touch /tmp/kill_scraper ;;
+        esac
+    done &
+    export WATCHDOG_PID=$!
+}
+
 resize_image() {
     local input_path="$1"
     local med_path="$(printf '%s' "$input_path" | sed 's#/Imgs/#/Imgs_med/#')"
@@ -191,8 +200,8 @@ is_wifi_connected() {
 roms_dir="/mnt/SDCARD/Roms"
 
 start_pyui_message_writer
-log_and_display_message "Scraping box art. Please be patient, especially with large libraries!"
-sleep 3
+log_and_display_message "Scraping box art. Please be patient, especially with large libraries! Press MENU at any time to stop scraping."
+sleep 2
 
 is_wifi_connected || exit 1
 
@@ -207,10 +216,20 @@ if ! ping -c 2 thumbnails.libretro.com > /dev/null 2>&1; then
     fi
 fi
 
+start_menu_button_watchdog
+
 # Process each system directory
 for sys_dir in "$roms_dir"/*/; do
     if [ ! -d "$sys_dir" ]; then
         continue
+    fi
+
+    if [ -f /tmp/kill_scraper ]; then
+        kill "$WATCHDOG_PID"
+        rm -f /tmp/kill_scraper
+        log_and_display_message "Stopping scraping."
+        sleep 2
+        exit 5
     fi
 
     sys_name="$(basename "$sys_dir")"
@@ -275,8 +294,19 @@ for sys_dir in "$roms_dir"/*/; do
             fi
         fi
 
+        if [ -f /tmp/kill_scraper ]; then
+            kill "$WATCHDOG_PID"
+            rm -f /tmp/kill_scraper
+            log_and_display_message "Stopping scraping."
+            sleep 2
+            exit 5
+        fi
+
     done
 done
 
+kill "$WATCHDOG_PID"
+rm -f /tmp/kill_scraper
+
 log_and_display_message "Scraping complete!"
-sleep 3
+sleep 2

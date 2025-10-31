@@ -24,15 +24,47 @@
         },
         "OTA Settings": {
             "branch": {
-                "display": "Branch",
+                "display": "Target Branch",
                 "options": [
                     "release",
-                    "nightly"
+                    "development"
                 ],
                 "selected": "release"
             },
             "bypassVersionChecks": {
                 "display": "Bypass Version Checks",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "selected": "False"
+            },
+            "overwriteEmuDir": {
+                "display": "Reset Core Preferences",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "selected": "False"
+            },
+            "overwriteRAconfigs": {
+                "display": "Reset RetroArch Configurations",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "selected": "False"
+            },
+            "overwriteThemesDir": {
+                "display": "Reinstall Base Themes",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "selected": "False"
+            },
+            "overwritePythonDir": {
+                "display": "Reinstall Python",
                 "options": [
                     "True",
                     "False"
