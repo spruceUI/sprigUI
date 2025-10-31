@@ -2,10 +2,10 @@
 
 . /mnt/SDCARD/sprig/helperFunctions.sh
 
-game_switcher_enabled="$(get_pyui_config_value '.gameSwitcherEnabled' "True")"
+game_switcher_enabled="$(get_pyui_config_value '.gameSwitcherEnabled' "true")"
 
 # If the key is missing or explicitly set to true, proceed
-if [ -z "$game_switcher_enabled" ] || [ "$game_switcher_enabled" = "true" ]; then
+if [ -z "$game_switcher_enabled" ] || [ "$game_switcher_enabled" = "null" ] || [ "$game_switcher_enabled" = "true" ]; then
 	if pgrep "retroarch" >/dev/null || pgrep "pico8_dyn" >/dev/null || pgrep "drastic" >/dev/null; then
 		do_vibrate="$(get_config_value '.menuOptions."Game Switcher Settings".menuShouldVibrate.selected' "True")"
 		# Only vibrate if enabled
