@@ -10,3 +10,4 @@
 - SCUMMVM .... maybe
 - A / B prompt for bootlogo, ota, remove loading, instead of committing you to it as soon as you click the app
 - firmware updater app? IDK
+- fsck.fat app or auto fix thingie

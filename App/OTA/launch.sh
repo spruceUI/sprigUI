@@ -112,7 +112,7 @@ is_branch_newer_than_device() {
 
 download_target_branch() {
     cd /mnt/SDCARD
-    log_and_display_message "Update found. Downloading! (~5min)"
+    log_and_display_message "Update found. Downloading! (~5-10min)"
     if wget --tries=3 -O "$BRANCH.zip" https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip ; then
         log_and_display_message "Successfully downloaded $BRANCH branch zip file."
         sleep 5
