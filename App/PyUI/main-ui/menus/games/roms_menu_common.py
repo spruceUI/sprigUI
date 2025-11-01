@@ -34,7 +34,10 @@ class RomsMenuCommon(ABC):
     
     def _get_image_path(self, rom_path):
         # Get the base filename without extension (e.g., "DKC")
-        return self.rom_select_options_builder.get_image_path(rom_path)
+        return self.rom_select_options_builder.get_image_path(rom_path, prefer_savestate_screenshot=self.prefer_savestate_screenshot())
+
+    def prefer_savestate_screenshot(self):
+        return False #TODO
         
     def _extract_game_system(self, rom_path):
         rom_path = os.path.abspath(os.path.normpath(rom_path))

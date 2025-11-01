@@ -80,7 +80,7 @@ class Theme():
 
         #qoi_converted = ThemePatcher.convert_to_qoi(path)
 
-        if(resolution_converted): #or qoi_converted):
+        if(resolution_converted): # or qoi_converted):
             cls.set_theme_path(path,width,height)
 
     @classmethod
@@ -1057,8 +1057,8 @@ class Theme():
 
     @classmethod
     def get_resize_type_for_game_switcher(cls):
-        view_type_str = cls._data.get("gameSwitcherResizeType", "FIT")
-        return getattr(ResizeType, view_type_str, ResizeType.FIT)
+        view_type_str = cls._data.get("gameSwitcherResizeType", "ZOOM")
+        return getattr(ResizeType, view_type_str, ResizeType.ZOOM)
 
     @classmethod
     def set_resize_type_for_game_switcher(cls, resize_type):

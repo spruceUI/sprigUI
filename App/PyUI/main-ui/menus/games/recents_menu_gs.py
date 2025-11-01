@@ -28,3 +28,5 @@ class RecentsMenuGS(RecentsMenu):
     def default_to_last_game_selection(self):
         return False
    
+    def prefer_savestate_screenshot(self):
+        return Device.get_system_config().use_savestate_screenshots_for_gameswitcher()
