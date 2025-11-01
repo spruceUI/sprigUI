@@ -133,7 +133,7 @@ class BoxArtResizer():
                                 print(f"Error converting for small image {full_path} : {e}")
                                 continue
 
-                            # os.remove(full_path)
+                            os.remove(full_path)
                             for output_path in cls._to_delete:
                                 try:
                                     os.remove(output_path)
@@ -176,6 +176,5 @@ class BoxArtResizer():
                 return needed_shrink
             except Exception as e:
                 PyUiLogger().get_logger().warning(f"Unable to convert {resize_png_path} : {e}")
-
 
         return needed_shrink

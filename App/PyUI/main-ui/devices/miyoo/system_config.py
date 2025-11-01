@@ -172,6 +172,15 @@ class SystemConfig:
         self.config["neverPromptBoxartResize"] = value
         self.save_config()
 
+    def use_savestate_screenshots_for_gameswitcher(self):
+        return self.config.get("preferSaveStateScreenshots", True)
+
+    def set_use_savestate_screenshots_for_gameswitcher(self,value):
+        self.config["preferSaveStateScreenshots"] = value
+        self.save_config()
+
+
+
     def set_game_switcher_game_count(self, value):
         if(value < 1):
             value = 1
