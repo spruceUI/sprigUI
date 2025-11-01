@@ -46,7 +46,6 @@ fi
     -xr!'App/PyUI/MainPyUI/main-ui' \
     -xr!'App/PyUI/MainPyUI/lang' \
     -x!'App/PyUI/MainPyUI/README.md' \
-    -x!'App/PyUI/MainPyUI/LICENSE.md' \
     "$OUTPUT_7Z" *
 
 if [ $? -ne 0 ]; then
