@@ -159,7 +159,8 @@ class RomSelectOptionsBuilder:
             return None
         
 
-    def build_rom_list(self, game_system,filter: Callable[[str, str], bool] = lambda a,b: True, subfolder = None) -> list[GridOrListEntry]:
+    def build_rom_list(self, game_system,filter: Callable[[str, str], bool] = lambda a,b: True, subfolder = None,
+                       prefer_savestate_screenshot: bool = False) -> list[GridOrListEntry]:
         file_rom_list = []
         folder_rom_list = []
         valid_files, valid_folders = self.rom_utils.get_roms(game_system, subfolder)
@@ -183,8 +184,8 @@ class RomSelectOptionsBuilder:
                         primary_text=display_name,
                         description=game_system.folder_name, 
                         value=rom_info,
-                        image_path_searcher= lambda rom_info=rom_info, game_entry=game_entry: self.get_image_path(rom_info, game_entry),
-                        image_path_selected_searcher= lambda rom_info=rom_info, game_entry=game_entry: self.get_image_path(rom_info, game_entry),
+                        image_path_searcher= lambda rom_info=rom_info, game_entry=game_entry: self.get_image_path(rom_info, game_entry, prefer_savestate_screenshot=prefer_savestate_screenshot),
+                        image_path_selected_searcher= lambda rom_info=rom_info, game_entry=game_entry: self.get_image_path(rom_info, game_entry, prefer_savestate_screenshot=prefer_savestate_screenshot),
                         icon_searcher=lambda rom_info=rom_info: self._get_favorite_icon(rom_info)
                     )
                 )
@@ -200,7 +201,8 @@ class RomSelectOptionsBuilder:
                         description=game_system.folder_name, 
                         value=rom_info,
                         image_path_searcher=lambda rom_info: self.get_image_path(rom_info),
-                        image_path_selected_searcher=lambda rom_info: self.get_image_path(rom_info),
+                        image_path_selected_searcher=lambda rom_info: self.get_image_path(
+                            rom_info, prefer_savestate_screenshot=prefer_savestate_screenshot),
                         icon_searcher=lambda rom_info: self._get_favorite_icon(rom_info)
                     )
                 )
