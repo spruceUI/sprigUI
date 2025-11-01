@@ -1,0 +1,3 @@
+[submodule "App/PyUI/MainPyUI"]
+	path = App/PyUI/MainPyUI
+	url = https://github.com/spruceUI/MainPyUI.git

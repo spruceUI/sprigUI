@@ -5,3 +5,14 @@ dist/
 # Build artifacts
 main
 
+# PyUI logs
+App/PyUI/logs/
+*.log
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
