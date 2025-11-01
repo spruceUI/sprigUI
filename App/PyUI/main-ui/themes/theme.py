@@ -1083,3 +1083,22 @@ class Theme():
     def set_set_top_bar_text_to_game_selection_for_game_switcher(cls, value):
         cls._data["gameSwitcherSetTopBarTextToGameSelection"] = value
         cls.save_changes()
+
+    @classmethod
+    def display_battery_percent(cls):
+        return cls._data.get("displayBatteryPercent", True)
+    
+    @classmethod
+    def set_display_battery_percent(cls, value):
+        cls._data["displayBatteryPercent"] = value
+        cls.save_changes()
+
+    @classmethod
+    def display_battery_icon(cls):
+        return cls._data.get("displayBatteryIcon", True)
+    
+    @classmethod
+    def set_display_battery_icon(cls, value):
+        cls._data["displayBatteryIcon"] = value
+        cls.save_changes()
+

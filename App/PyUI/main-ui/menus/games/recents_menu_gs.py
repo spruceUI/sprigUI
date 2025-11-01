@@ -3,6 +3,7 @@ from devices.device import Device
 from display.resize_type import ResizeType
 from menus.games.recents_menu import RecentsMenu
 from themes.theme import Theme
+from utils.consts import GAME_SWITCHER
 from views.view_type import ViewType
 
 
@@ -29,4 +30,4 @@ class RecentsMenuGS(RecentsMenu):
         return False
    
     def prefer_savestate_screenshot(self):
-        return Device.get_system_config().use_savestate_screenshots_for_gameswitcher()
+        return Device.get_system_config().use_savestate_screenshots(GAME_SWITCHER)
