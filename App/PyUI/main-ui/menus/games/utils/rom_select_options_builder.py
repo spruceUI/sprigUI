@@ -55,7 +55,15 @@ class RomSelectOptionsBuilder:
 
         # Build path to the image using the extracted directory
         root_dir = os.sep.join(parts[:roms_index+2])  # base path before Roms
+        
+        # Priority 1: Check for save state screenshot
+        saves_root = os.sep.join(parts[:roms_index]) + os.sep + "Saves" + os.sep + "states"
+        for root, dirs, files in os.walk(saves_root):
+            state_png = os.path.join(root, base_name + ".state.auto.png")
+            if os.path.exists(state_png):
+                return state_png
 
+        # Priority 2: Check for boxart (QOI format)
         qoi_path = os.path.join(root_dir, "Imgs", base_name + ".qoi")
         if os.path.exists(qoi_path) and Device.supports_qoi():
             return qoi_path
