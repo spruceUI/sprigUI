@@ -163,6 +163,37 @@ extract_archive() {
     fi
 }
 
+download_and_populate_submodules() {
+    # Download and extract MainPyUI submodule if .gitmodules exists
+    if [ ! -f /mnt/SDCARD/sprigUI-$BRANCH/.gitmodules ]; then
+        return 0  
+    fi
+    
+    log_and_display_message "Downloading PyUI core (~1min)"
+    
+    cd /mnt/SDCARD
+    if ! wget --tries=3 -q -O MainPyUI.zip "https://github.com/spruceUI/MainPyUI/archive/refs/heads/main.zip" ; then
+        log_and_display_message "Failed to download PyUI. Aborting."
+        return 1
+    fi
+    
+    # Remove symlink and create real directory (matches build structure)
+    rm -f sprigUI-$BRANCH/App/PyUI/main-ui
+    mkdir -p sprigUI-$BRANCH/App/PyUI
+    
+    # The archive contains MainPyUI-main/main-ui/*, we want just the main-ui/ contents
+    if unzip -o MainPyUI.zip "MainPyUI-*/main-ui/*" -d sprigUI-$BRANCH/App/PyUI/ ; then
+        mv sprigUI-$BRANCH/App/PyUI/MainPyUI-*/main-ui sprigUI-$BRANCH/App/PyUI/
+        rm -rf sprigUI-$BRANCH/App/PyUI/MainPyUI-*
+        rm -f MainPyUI.zip
+        return 0
+    else
+        log_and_display_message "Failed to extract PyUI. Aborting."
+        rm -f MainPyUI.zip
+        return 1
+    fi
+}
+
 preserve_user_emu_launch_settings() {
     log_and_display_message "Preserving user emu launch settings."
     for configjson in /mnt/SDCARD/Emu/*/config.json ; do
@@ -233,7 +264,7 @@ if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_tha
     log_and_display_message "All checks passed. Proceeding to download $BRANCH branch of sprigUI repo."
     sleep 3
     
-    if download_target_branch && extract_archive; then
+    if download_target_branch && extract_archive && download_and_populate_submodules; then
         preserve_sprig_config_settings
         if [ "$OVERWRITE_EMU_DIR" = "False" ]; then
             preserve_user_emu_launch_settings
