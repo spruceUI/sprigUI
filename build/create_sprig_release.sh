@@ -28,7 +28,26 @@ if [ -f "$OUTPUT_7Z" ]; then
     rm "$OUTPUT_7Z"
 fi
 
-7z a -t7z -mx=9 -xr!.git* -xr!build -x!.gitignore -x!.gitattributes -x!justfile -x!main -x!TODO.txt "$OUTPUT_7Z" *
+# Exclude unnecessary files from the MainPyUI submodule:
+7z a -t7z -mx=9 \
+    -xr!.git* \
+    -xr!build \
+    -x!.gitignore \
+    -x!.gitattributes \
+    -x!justfile \
+    -x!main \
+    -x!TODO.txt \
+    -xr!'App/PyUI/MainPyUI/onionOS' \
+    -xr!'App/PyUI/MainPyUI/muOS' \
+    -xr!'App/PyUI/MainPyUI/miyoo_mini_flip' \
+    -xr!'App/PyUI/MainPyUI/docs' \
+    -xr!'App/PyUI/MainPyUI/Themes' \
+    -xr!'App/PyUI/MainPyUI/misc' \
+    -xr!'App/PyUI/MainPyUI/main-ui' \
+    -xr!'App/PyUI/MainPyUI/lang' \
+    -x!'App/PyUI/MainPyUI/README.md' \
+    -x!'App/PyUI/MainPyUI/LICENSE.md' \
+    "$OUTPUT_7Z" *
 
 if [ $? -ne 0 ]; then
     echo "Error: failed to create 7z archive"
