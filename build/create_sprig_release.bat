@@ -5,8 +5,12 @@ REM This bat file will create a 7z archive of the sprig folder named sprigV<vers
 REM It excludes all git-related files and this script itself
 REM You need 7zip installed to use this script
 
+REM Navigate to repository root
+cd /d "%~dp0\.."
+
 REM Define variables
 set "archiveName=sprig"
+set "destinationDir=dist"
 set "version="
 
 REM Check for the sprig version file
@@ -26,12 +30,15 @@ if "%version%"=="" (
     exit /b 1
 )
 
+REM Create destination directory
+if not exist "%destinationDir%" mkdir "%destinationDir%"
+
 REM Create the 7z file name
-set "output7z=%archiveName%V%version%.7z"
+set "output7z=%destinationDir%\%archiveName%V%version%.7z"
 
 REM Create the 7z file excluding this script and all git-related files
 echo Creating 7z archive "%output7z%"...
-7z a -t7z -mx=9 -xr!.git* -x!.gitignore -x!.gitattributes -x!"%~nx0" -x!create_sprig_release.sh -x!main -x!TODO.txt "%output7z%" *
+7z a -t7z -mx=9 -xr!.git* -xr!build -x!.gitignore -x!.gitattributes -x!justfile -x!main -x!TODO.txt "%output7z%" *
 
 REM Check if 7z creation was successful
 if %errorlevel% neq 0 (

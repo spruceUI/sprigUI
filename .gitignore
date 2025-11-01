@@ -1,0 +1,7 @@
+# Release archives
+dist/
+*.7z
+
+# Build artifacts
+main
+
