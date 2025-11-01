@@ -36,5 +36,24 @@ if [ -e /mnt/SDCARD/sprig/flags/lastgame.lock ]; then
     /tmp/cmd_to_run.sh
 fi
 
+
+# Fix timezone (why did Miyoo make this a /tmp file symlink?)
+timezone=$(jq -r '.timezone // empty' "/mnt/SDCARD/Saves/mini-flip-system.json")
+
+if [ -n "$timezone" ] && [ "$timezone" != "null" ]; then
+    target="/mnt/SDCARD/miyoo285/zoneinfo/$timezone"
+
+    # Check if /tmp/localtime already points to the correct target
+    if [ "$(readlink -f /tmp/localtime)" = "$target" ]; then
+        log_message "/tmp/localtime is already linked to $timezone"
+    else
+        log_message "Updating /tmp/localtime to $timezone"
+        rm -f /tmp/localtime
+        ln -s "$target" /tmp/localtime
+        exit 0
+    fi
+fi
+
+
 ./freemma
 /mnt/SDCARD/App/PyUI/launch.sh
