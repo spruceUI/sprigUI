@@ -134,7 +134,7 @@ extract_archive() {
     new_python3_dir="$new_dir/App/PyUI/python3.10"
     new_themes_dir="$new_dir/Themes"
 
-    excluded_files="$new_dir/create_sprig_release.sh $new_dir/create_sprig_release.bat $new_dir/TODO.txt"
+    excluded_files="$new_dir/build $new_dir/justfile $new_dir/.gitignore $new_dir/.gitattributes $new_dir/TODO.txt"
 
     if [ "$OVERWRITE_RA_CONFIGS" = "False" ]; then
         log_message "Will not overwrite RA configs."
