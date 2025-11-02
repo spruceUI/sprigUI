@@ -302,6 +302,92 @@ volume_down() {
 }
 
 
+##########     BACKLIGHT CONTROL     ##########
+
+BACKLIGHT_CONFIG_FILE="/mnt/SDCARD/Saves/sprig/backlight_state.txt"
+DUTY_CYCLE_PATH="/sys/class/pwm/pwmchip0/pwm0/duty_cycle"
+MIN_RAW_BACKLIGHT=3
+MAX_RAW_BACKLIGHT=100
+MAX_BACKLIGHT=10
+
+# Get current backlight level (0-10)
+get_backlight() {
+    if [ -f "$BACKLIGHT_CONFIG_FILE" ]; then
+        cat "$BACKLIGHT_CONFIG_FILE"
+    else
+        echo "5"  # Default backlight
+    fi
+}
+
+# Set backlight level (0-10)
+# Usage: set_backlight 5
+set_backlight() {
+    local backlight="$1"
+    
+    # Clamp backlight between 0 and MAX_BACKLIGHT
+    [ "$backlight" -lt 0 ] && backlight=0
+    [ "$backlight" -gt "$MAX_BACKLIGHT" ] && backlight="$MAX_BACKLIGHT"
+    
+    # Save backlight to config
+    echo "$backlight" > "$BACKLIGHT_CONFIG_FILE"
+    
+    # Calculate raw backlight
+    local backlight_raw=0
+    if [ "$backlight" -ne 0 ]; then
+        case "$backlight" in
+            1) backlight_raw=4 ;;
+            2) backlight_raw=5 ;;
+            3) backlight_raw=8 ;;
+            4) backlight_raw=13 ;;
+            5) backlight_raw=20 ;;
+            6) backlight_raw=30 ;;
+            7) backlight_raw=45 ;;
+            8) backlight_raw=60 ;;
+            9) backlight_raw=80 ;;
+            10) backlight_raw=100 ;;
+            *) backlight_raw="$MIN_RAW_BACKLIGHT" ;;
+        esac
+    else
+        backlight_raw="$MIN_RAW_BACKLIGHT"
+    fi
+    
+    # Apply backlight setting using hardware interface
+    set_backlight_raw "$backlight_raw"
+    
+    log_message "Backlight set to $backlight (raw: ${backlight_raw}% duty cycle)" -v
+}
+
+# Set raw hardware backlight
+# Usage: set_backlight_raw 60
+set_backlight_raw() {
+    local backlight_raw="$1"
+    
+    # Clamp to hardware limits
+    [ "$backlight_raw" -lt "$MIN_RAW_BACKLIGHT" ] && backlight_raw="$MIN_RAW_BACKLIGHT"
+    [ "$backlight_raw" -gt "$MAX_RAW_BACKLIGHT" ] && backlight_raw="$MAX_RAW_BACKLIGHT"
+    
+    echo $backlight_raw > "$DUTY_CYCLE_PATH"
+}
+
+# Increase backlight
+# Usage: backlight_up
+backlight_up() {
+    local current_backlight
+    current_backlight=$(get_backlight)
+    local new_backlight=$((current_backlight + 1))
+    set_backlight "$new_backlight"
+}
+
+# Decrease backlight
+# Usage: backlight_down
+backlight_down() {
+    local current_backlight
+    current_backlight=$(get_backlight)
+    local new_backlight=$((current_backlight - 1))
+    set_backlight "$new_backlight"
+}
+
+
 ##########     OTHER STUFF     ##########
 
 
