@@ -374,15 +374,13 @@ backlight_down() {
 
 read_only_check() {
     log_message "Performing read-only check"
-    SD_or_sd=$(mount | grep -q SDCARD && echo "SDCARD" || echo "sdcard")
-    log_message "Device uses /mnt/$SD_or_sd for its SD card path" -v
-    MNT_LINE=$(mount | grep "$SD_or_sd")
+    MNT_LINE=$(mount | grep "SDCARD")
     if [ -n "$MNT_LINE" ]; then
         log_message "mount line for SD card: $MNT_LINE" -v
         MNT_STATUS=$(echo "$MNT_LINE" | cut -d'(' -f2 | cut -d',' -f1)
-        if [ "$MNT_STATUS" = "ro" ] && [ -n "$SD_DEV" ]; then
+        if [ "$MNT_STATUS" = "ro" ] && [ -n /dev/mmcblk0p1 ]; then
             log_message "SD card is mounted as RO. Attempting to remount."
-            mount -o remount,rw "$SD_DEV" /mnt/"$SD_or_sd"
+            mount -o remount,rw /dev/mmcblk0p1 /mnt/SDCARD
         else
             log_message "SD card is not read-only."
         fi
