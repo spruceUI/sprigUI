@@ -290,7 +290,6 @@ volume_up() {
     current_volume=$(get_volume)
     local new_volume=$((current_volume + 1))
     set_volume "$new_volume"
-    show_volume_osd "$new_volume"
 }
 
 # Decrease volume
@@ -300,16 +299,6 @@ volume_down() {
     current_volume=$(get_volume)
     local new_volume=$((current_volume - 1))
     set_volume "$new_volume"
-    show_volume_osd "$new_volume"
-}
-
-# Show volume OSD (placeholder - will be replaced with actual OSD later)
-# Usage: show_volume_osd 15
-show_volume_osd() {
-    local volume="$1"
-    local percentage=$((volume * 5))
-    log_message "Volume: ${volume}/${MAX_VOLUME} (${percentage}%)" -v
-    # TODO: Implement visual OSD overlay
 }
 
 
