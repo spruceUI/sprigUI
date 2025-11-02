@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export LD_LIBRARY_PATH="/mnt/SDCARD/spruce/bin/Samba/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH"
 
 # Create necessary directories
 mkdir -p /tmp/samba/private
