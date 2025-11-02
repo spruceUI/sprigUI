@@ -29,6 +29,10 @@ if ! pgrep -f "/mnt/SDCARD/sprig/scripts/button_watchdog.sh" >/dev/null; then
     /mnt/SDCARD/sprig/scripts/button_watchdog.sh &
 fi
 
+if ! pgrep -f "/mnt/SDCARD/sprig/scripts/lid_watchdog.sh" >/dev/null; then
+    /mnt/SDCARD/sprig/scripts/lid_watchdog.sh &
+fi
+
 # auto resume last app or game
 if [ -e /mnt/SDCARD/sprig/flags/lastgame.lock ]; then
     ./freemma

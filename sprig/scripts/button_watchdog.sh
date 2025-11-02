@@ -7,7 +7,14 @@ POWER_OFF_SCRIPT="/mnt/SDCARD/sprig/scripts/save_poweroff.sh"
 GAMESWITCHER_SCRIPT="/mnt/SDCARD/sprig/scripts/gameswitcher.sh"
 HOLD_MIN=1   # minimum seconds to trigger
 HOLD_MAX=2   # maximum seconds to trigger
+BRIGHTNESS_FILE="/sys/devices/soc0/soc/1f003400.pwm/pwm/pwmchip0/pwm0/duty_cycle"
+SCREEN_BLANK_FILE="/proc/mi_modules/fb/mi_fb0"
+BUTTON_ENABLE_FILE="/sys/module/gpio_keys_polled/parameters/button_enable"
 
+# Initialize volume on startup
+current_volume=$(get_volume)
+set_volume "$current_volume"
+log_message "Button watchdog started, volume initialized to $current_volume"
 
 # Wait until input is ready
 for i in $(seq 1 25); do
@@ -24,6 +31,22 @@ fi
 evtest "$DEVICE" 2>/dev/null | while read -r line; do
     case "$line" in
         *"code 116 (KEY_POWER), value 1"*)
+            # Check if screen is blanked - if so, wake it up immediately
+            if [ -f /tmp/screen_blanked ]; then
+                log_message "Power button pressed while screen blanked — restoring screen"
+                echo "GUI_SHOW 0 on" > "$SCREEN_BLANK_FILE" 2>/dev/null
+                # Re-enable buttons
+                [ -e "$BUTTON_ENABLE_FILE" ] && echo "Y" > "$BUTTON_ENABLE_FILE" 2>/dev/null
+                # Restore a default brightness if we don't have the saved value
+                if [ -f /tmp/saved_brightness ]; then
+                    cat /tmp/saved_brightness > "$BRIGHTNESS_FILE" 2>/dev/null
+                else
+                    echo "50" > "$BRIGHTNESS_FILE" 2>/dev/null
+                fi
+                rm -f /tmp/screen_blanked /tmp/saved_brightness
+                continue
+            fi
+            
             power_btn_press_time=$(date +%s)
             log_message "Power button pressed at $power_btn_press_time" -v
             touch /tmp/pwrbtn
@@ -43,6 +66,15 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
                 if [ "$duration" -ge "$HOLD_MIN" ] && [ "$duration" -le "$HOLD_MAX" ]; then
                     log_message "Power button held ${duration}s — running $POWER_OFF_SCRIPT"
                     "$POWER_OFF_SCRIPT" &
+                elif [ "$duration" -lt "$HOLD_MIN" ]; then
+                    log_message "Power button tapped (${duration}s) — blanking screen"
+                    # Save current brightness
+                    cat "$BRIGHTNESS_FILE" > /tmp/saved_brightness 2>/dev/null
+                    # Blank screen and disable buttons
+                    echo "GUI_SHOW 0 off" > "$SCREEN_BLANK_FILE" 2>/dev/null
+                    echo "0" > "$BRIGHTNESS_FILE" 2>/dev/null
+                    [ -e "$BUTTON_ENABLE_FILE" ] && echo "N" > "$BUTTON_ENABLE_FILE" 2>/dev/null
+                    touch /tmp/screen_blanked
                 else
                     log_message "Power button held ${duration}s — ignored (outside range ${HOLD_MIN}-${HOLD_MAX}s)"
                 fi
@@ -85,6 +117,14 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
                 wait "$menu_hold_pid" 2>/dev/null
                 menu_hold_pid=""
             fi
+            ;;
+        *"code 115 (KEY_VOLUMEUP), value 1"*)
+            log_message "Volume Up button pressed" -v
+            volume_up
+            ;;
+        *"code 114 (KEY_VOLUMEDOWN), value 1"*)
+            log_message "Volume Down button pressed" -v
+            volume_down
             ;;
     esac
 done &
