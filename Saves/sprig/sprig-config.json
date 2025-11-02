@@ -48,7 +48,7 @@
                 "selected": "False"
             },
             "overwriteRAconfigs": {
-                "display": "Reset RetroArch Configurations",
+                "display": "Reset RetroArch/DraStic Configurations",
                 "options": [
                     "True",
                     "False"
