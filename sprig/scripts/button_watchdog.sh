@@ -11,6 +11,10 @@ BRIGHTNESS_FILE="/sys/devices/soc0/soc/1f003400.pwm/pwm/pwmchip0/pwm0/duty_cycle
 SCREEN_BLANK_FILE="/proc/mi_modules/fb/mi_fb0"
 BUTTON_ENABLE_FILE="/sys/module/gpio_keys_polled/parameters/button_enable"
 
+# Initialize volume on startup
+current_volume=$(get_volume)
+set_volume "$current_volume"
+log_message "Button watchdog started, volume initialized to $current_volume"
 
 # Wait until input is ready
 for i in $(seq 1 25); do
@@ -113,6 +117,14 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
                 wait "$menu_hold_pid" 2>/dev/null
                 menu_hold_pid=""
             fi
+            ;;
+        *"code 115 (KEY_VOLUMEUP), value 1"*)
+            log_message "Volume Up button pressed" -v
+            volume_up
+            ;;
+        *"code 114 (KEY_VOLUMEDOWN), value 1"*)
+            log_message "Volume Down button pressed" -v
+            volume_down
             ;;
     esac
 done &

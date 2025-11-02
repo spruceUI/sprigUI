@@ -194,6 +194,125 @@ set_performance() {
     fi
 }
 
+##########     VOLUME CONTROL     ##########
+
+VOLUME_CONFIG_FILE="/mnt/SDCARD/Saves/sprig/volume_state.txt"
+MIN_RAW_VOLUME=-60
+MAX_RAW_VOLUME=30
+MAX_VOLUME=20
+
+# Get current volume level (0-20)
+get_volume() {
+    if [ -f "$VOLUME_CONFIG_FILE" ]; then
+        cat "$VOLUME_CONFIG_FILE"
+    else
+        echo "10"  # Default volume
+    fi
+}
+
+# Set volume level (0-20)
+# Usage: set_volume 15
+set_volume() {
+    local volume="$1"
+    
+    # Clamp volume between 0 and MAX_VOLUME
+    [ "$volume" -lt 0 ] && volume=0
+    [ "$volume" -gt "$MAX_VOLUME" ] && volume="$MAX_VOLUME"
+    
+    # Save volume to config
+    echo "$volume" > "$VOLUME_CONFIG_FILE"
+    
+    # Calculate raw volume using logarithmic curve
+    local volume_raw=0
+    if [ "$volume" -ne 0 ]; then
+        # Using integer arithmetic: volume_raw = round(48 * log10(1 + volume))
+        # Approximation using lookup table for integer math
+        case "$volume" in
+            1) volume_raw=-44 ;;
+            2) volume_raw=-37 ;;
+            3) volume_raw=-32 ;;
+            4) volume_raw=-29 ;;
+            5) volume_raw=-26 ;;
+            6) volume_raw=-24 ;;
+            7) volume_raw=-22 ;;
+            8) volume_raw=-20 ;;
+            9) volume_raw=-18 ;;
+            10) volume_raw=-17 ;;
+            11) volume_raw=-15 ;;
+            12) volume_raw=-14 ;;
+            13) volume_raw=-13 ;;
+            14) volume_raw=-12 ;;
+            15) volume_raw=-11 ;;
+            16) volume_raw=-10 ;;
+            17) volume_raw=-9 ;;
+            18) volume_raw=-8 ;;
+            19) volume_raw=-7 ;;
+            20) volume_raw=-6 ;;
+            *) volume_raw="$MIN_RAW_VOLUME" ;;
+        esac
+    else
+        volume_raw="$MIN_RAW_VOLUME"
+    fi
+    
+    # Apply volume using hardware interface
+    set_volume_raw "$volume_raw"
+    
+    log_message "Volume set to $volume (raw: ${volume_raw}dB)" -v
+}
+
+# Set raw hardware volume
+# Usage: set_volume_raw -20
+set_volume_raw() {
+    local volume_raw="$1"
+    
+    # Clamp to hardware limits
+    [ "$volume_raw" -lt "$MIN_RAW_VOLUME" ] && volume_raw="$MIN_RAW_VOLUME"
+    [ "$volume_raw" -gt "$MAX_RAW_VOLUME" ] && volume_raw="$MAX_RAW_VOLUME"
+    
+    # Set volume via hardware interface
+    if [ -e /proc/mi_modules/mi_ao/mi_ao0 ]; then
+        echo "set_ao_volume 0 ${volume_raw}dB" > /proc/mi_modules/mi_ao/mi_ao0 2>/dev/null
+        echo "set_ao_volume 1 ${volume_raw}dB" > /proc/mi_modules/mi_ao/mi_ao0 2>/dev/null
+        
+        # Handle mute state
+        if [ "$volume_raw" -le "$MIN_RAW_VOLUME" ]; then
+            echo "set_ao_mute 1" > /proc/mi_modules/mi_ao/mi_ao0 2>/dev/null
+        else
+            echo "set_ao_mute 0" > /proc/mi_modules/mi_ao/mi_ao0 2>/dev/null
+        fi
+    fi
+}
+
+# Increase volume
+# Usage: volume_up
+volume_up() {
+    local current_volume
+    current_volume=$(get_volume)
+    local new_volume=$((current_volume + 1))
+    set_volume "$new_volume"
+    show_volume_osd "$new_volume"
+}
+
+# Decrease volume
+# Usage: volume_down
+volume_down() {
+    local current_volume
+    current_volume=$(get_volume)
+    local new_volume=$((current_volume - 1))
+    set_volume "$new_volume"
+    show_volume_osd "$new_volume"
+}
+
+# Show volume OSD (placeholder - will be replaced with actual OSD later)
+# Usage: show_volume_osd 15
+show_volume_osd() {
+    local volume="$1"
+    local percentage=$((volume * 5))
+    log_message "Volume: ${volume}/${MAX_VOLUME} (${percentage}%)" -v
+    # TODO: Implement visual OSD overlay
+}
+
+
 ##########     OTHER STUFF     ##########
 
 
