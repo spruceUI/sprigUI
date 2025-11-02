@@ -371,6 +371,13 @@ backlight_down() {
 
 ##########     OTHER STUFF     ##########
 
+init_volume_backlight() {
+    current_backlight=$(get_pyui_config_value ".backlight" 5)
+    set_backlight "$current_backlight"
+    current_volume=$(get_pyui_config_value ".vol" 10)
+    set_volume "$current_volume"
+}
+
 
 read_only_check() {
     log_message "Performing read-only check"
