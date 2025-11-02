@@ -32,7 +32,7 @@ fi
 # auto resume last app or game
 if [ -e /mnt/SDCARD/sprig/flags/lastgame.lock ]; then
     ./freemma
-    mv /mnt/SDCARD/sprig/flags/lastgame.lock /tmp/cmd_to_run.sh
+    cp /mnt/SDCARD/sprig/flags/lastgame.lock /tmp/cmd_to_run.sh
     if [ ! -e /tmp/menu_launched ]; then
         /tmp/cmd_to_run.sh
     fi
