@@ -1,11 +1,14 @@
 #!/bin/sh
 
+. /mnt/SDCARD/sprig/helperFunctions.sh
+
 if ! mount | grep -q "/etc/profile"; then
     mount -o bind /mnt/SDCARD/sprig/etc/profile /etc/profile
+    mount -o bind /mnt/SDCARD/sprig/etc/passwd /etc/passwd
+    mount -o bind /mnt/SDCARD/sprig/etc/group /etc/group
 fi
 
 if [ ! -e /tmp/logs_rotated ]; then
-    . /mnt/SDCARD/sprig/helperFunctions.sh
     rotate_logs
     log_message "sprigUI has entered the chat"
     touch /tmp/logs_rotated
@@ -19,25 +22,28 @@ if [ -e /proc/$$/fd/3 ]; then
     exec 3>&-
 fi
 
-mount -o bind /mnt/SDCARD/sprig/etc/passwd /etc/passwd
-mount -o bind /mnt/SDCARD/sprig/etc/group /etc/group
+# Start network services if necessary
+ADB_ENABLED="$(get_config_value 'menuOptions."Network Settings".enableADB.selected' "True")"
+SSH_ENABLED="$(get_config_value 'menuOptions."Network Settings".enableSSH.selected' "False")"
+SMB_ENABLED="$(get_config_value 'menuOptions."Network Settings".enableSMB.selected' "False")"
 
-if ! pgrep adbd >/dev/null 2>&1; then
+if [ "$ADB_ENABLED" = "True" ] && ! pgrep adbd >/dev/null 2>&1; then
     /mnt/SDCARD/sprig/scripts/start_adbd.sh
+    log_message "Started ADBD"
 fi
-
-if ! pgrep dropbearmulti >/dev/null 2>&1; then
+if [ "$SSH_ENABLED" = "True" ] && ! pgrep dropbearmulti >/dev/null 2>&1; then
     /mnt/SDCARD/sprig/scripts/start_dropbear.sh
+    log_message "Started Dropbear"
 fi
-
-if ! pgrep smbd >/dev/null 2>&1; then
+if [ "$SMB_ENABLED" = "True" ] && ! pgrep smbd >/dev/null 2>&1; then
     /mnt/SDCARD/sprig/scripts/start_samba.sh
+    log_message "started Samba"
 fi
 
+# Start lid and button watchdogs
 if ! pgrep -f "/mnt/SDCARD/sprig/scripts/button_watchdog.sh" >/dev/null; then
     /mnt/SDCARD/sprig/scripts/button_watchdog.sh &
 fi
-
 if ! pgrep -f "/mnt/SDCARD/sprig/scripts/lid_watchdog.sh" >/dev/null; then
     /mnt/SDCARD/sprig/scripts/lid_watchdog.sh &
 fi
@@ -67,6 +73,6 @@ if [ -n "$timezone" ] && [ "$timezone" != "null" ]; then
     fi
 fi
 
-
+# Actually launch the UI
 ./freemma
 /mnt/SDCARD/App/PyUI/launch.sh

@@ -22,6 +22,32 @@
                 "selected": "True"
             }
         },
+        "Network Settings": {
+            "enableADB": {
+                "display": "Enable Wireless ADB",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "selected": "True"
+            },
+            "enableSSH": {
+                "display": "Enable SSH",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "selected": "False"
+            },
+            "enableSMB": {
+                "display": "Enable Samba",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "selected": "False"
+            }
+        },
         "OTA Settings": {
             "branch": {
                 "display": "Target Branch",
