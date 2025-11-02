@@ -19,6 +19,9 @@ if [ -e /proc/$$/fd/3 ]; then
     exec 3>&-
 fi
 
+mount -o bind /mnt/SDCARD/sprig/etc/passwd /etc/passwd
+mount -o bind /mnt/SDCARD/sprig/etc/group /etc/group
+
 if ! pgrep adbd >/dev/null 2>&1; then
     /mnt/SDCARD/sprig/scripts/start_adbd.sh
 fi
