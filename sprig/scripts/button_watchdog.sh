@@ -56,6 +56,8 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
 
                 sleep $((3 - HOLD_MIN))
                 [ -f /tmp/pwrbtn ] && vibrate 0.1 2   # longer double after 3s
+                sleep 0.1
+                [ -f /tmp/cmd_to_run.sh ] && /customer/kill_apps.sh
             ) &
             ;;
         *"code 116 (KEY_POWER), value 0"*)
