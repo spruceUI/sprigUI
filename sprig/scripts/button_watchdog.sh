@@ -29,7 +29,9 @@ fi
 
 # Start evtest in background and read its output line-by-line
 evtest "$DEVICE" 2>/dev/null | while read -r line; do
+
     case "$line" in
+
         *"code 116 (KEY_POWER), value 1"*)
             # Check if screen is blanked - if so, wake it up immediately
             if [ -f /tmp/screen_blanked ]; then
@@ -60,6 +62,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
                 [ -f /tmp/cmd_to_run.sh ] && /customer/kill_apps.sh
             ) &
             ;;
+
         *"code 116 (KEY_POWER), value 0"*)
             if [ -n "$power_btn_press_time" ]; then
                 release_time=$(date +%s)
@@ -84,6 +87,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
                 rm -f /tmp/pwrbtn
             fi
             ;;
+
         *"code 1 (KEY_ESC), value 1"*)
             if [ -z "$menu_hold_pid" ]; then
 
@@ -110,6 +114,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
                 menu_hold_pid=$!
             fi
             ;;
+            
         *"code 1 (KEY_ESC), value 0"*)
             log_message "Menu button released at $(date +%s)" -v
             rm -f /tmp/menubtn
@@ -120,13 +125,31 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
                 menu_hold_pid=""
             fi
             ;;
+
+        *"code 97 (KEY_RIGHTCTRL), value 1"*)
+            touch /tmp/select_pressed
+            ;;
+        *"code 97 (KEY_RIGHTCTRL), value 0"*)
+            rm -f /tmp/select_pressed
+            ;;
+
         *"code 115 (KEY_VOLUMEUP), value 1"*)
             log_message "Volume Up button pressed" -v
-            volume_up
+            if [ -e /tmp/select_pressed ]; then
+                backlight_up
+            else
+                volume_up
+            fi
             ;;
+
         *"code 114 (KEY_VOLUMEDOWN), value 1"*)
             log_message "Volume Down button pressed" -v
-            volume_down
+            if [ -e /tmp/select_pressed ]; then
+                backlight_down
+            else
+                volume_down
+            fi
             ;;
     esac
+
 done &
