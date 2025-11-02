@@ -5,6 +5,9 @@
 LID_HALL_FILE="/sys/devices/soc0/soc/soc:hall-mh248/hallvalue"
 POWER_OFF_SCRIPT="/mnt/SDCARD/sprig/scripts/save_poweroff.sh"
 IDLE_TIMEOUT=5  # seconds to wait in sleep before full poweroff
+BRIGHTNESS_FILE="/sys/devices/soc0/soc/1f003400.pwm/pwm/pwmchip0/pwm0/duty_cycle"
+SCREEN_BLANK_FILE="/proc/mi_modules/fb/mi_fb0"
+BUTTON_ENABLE_FILE="/sys/module/gpio_keys_polled/parameters/button_enable"
 
 # Wait until hall sensor is ready
 for i in $(seq 1 25); do
@@ -21,6 +24,7 @@ log_message "Lid watchdog started, monitoring $LID_HALL_FILE"
 
 # Read initial lid state
 prev_state=$(cat "$LID_HALL_FILE" 2>/dev/null | head -c 1)
+saved_brightness=""
 
 while true; do
     # Read current lid state (1 = open, 0 = closed)
@@ -28,22 +32,31 @@ while true; do
     
     # Detect lid close event (transition from 1 to 0)
     if [ "$prev_state" = "1" ] && [ "$current_state" = "0" ]; then
-        log_message "Lid closed detected, entering sleep mode"
+        log_message "Lid closed detected, blanking screen"
         
-        # Enter sleep immediately
-        echo deep > /sys/power/mem_sleep 2>/dev/null
-        echo mem > /sys/power/state 2>/dev/null
+        # Save current brightness
+        saved_brightness=$(cat "$BRIGHTNESS_FILE" 2>/dev/null)
         
-        log_message "Woke from sleep, checking if lid is still closed"
+        # Blank screen, turn off backlight, and disable buttons
+        echo "GUI_SHOW 0 off" > "$SCREEN_BLANK_FILE" 2>/dev/null
+        echo "0" > "$BRIGHTNESS_FILE" 2>/dev/null
+        [ -e "$BUTTON_ENABLE_FILE" ] && echo "N" > "$BUTTON_ENABLE_FILE" 2>/dev/null
+        
+        log_message "Screen blanked, starting idle timeout countdown"
         
         # Start countdown - if lid stays closed for IDLE_TIMEOUT, poweroff
         elapsed=0
         while [ "$elapsed" -lt "$IDLE_TIMEOUT" ]; do
             current_state=$(cat "$LID_HALL_FILE" 2>/dev/null | head -c 1)
             
-            # If lid opened, break out
+            # If lid opened, restore screen and break out
             if [ "$current_state" = "1" ]; then
-                log_message "Lid opened, cancelling poweroff"
+                log_message "Lid opened, restoring screen"
+                echo "GUI_SHOW 0 on" > "$SCREEN_BLANK_FILE" 2>/dev/null
+                [ -e "$BUTTON_ENABLE_FILE" ] && echo "Y" > "$BUTTON_ENABLE_FILE" 2>/dev/null
+                if [ -n "$saved_brightness" ]; then
+                    echo "$saved_brightness" > "$BRIGHTNESS_FILE" 2>/dev/null
+                fi
                 break
             fi
             
