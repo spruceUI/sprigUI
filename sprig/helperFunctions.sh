@@ -196,19 +196,9 @@ set_performance() {
 
 ##########     VOLUME CONTROL     ##########
 
-VOLUME_CONFIG_FILE="/mnt/SDCARD/Saves/sprig/volume_state.txt"
 MIN_RAW_VOLUME=-60
 MAX_RAW_VOLUME=30
 MAX_VOLUME=20
-
-# Get current volume level (0-20)
-get_volume() {
-    if [ -f "$VOLUME_CONFIG_FILE" ]; then
-        cat "$VOLUME_CONFIG_FILE"
-    else
-        echo "10"  # Default volume
-    fi
-}
 
 # Set volume level (0-20)
 # Usage: set_volume 15
@@ -220,7 +210,7 @@ set_volume() {
     [ "$volume" -gt "$MAX_VOLUME" ] && volume="$MAX_VOLUME"
     
     # Save volume to config
-    echo "$volume" > "$VOLUME_CONFIG_FILE"
+    set_pyui_config_value ".vol" "$volume"
     
     # Calculate raw volume using logarithmic curve
     local volume_raw=0
@@ -287,7 +277,7 @@ set_volume_raw() {
 # Usage: volume_up
 volume_up() {
     local current_volume
-    current_volume=$(get_volume)
+    current_volume=$(get_pyui_config_value ".vol" 10)
     local new_volume=$((current_volume + 1))
     set_volume "$new_volume"
 }
@@ -296,7 +286,7 @@ volume_up() {
 # Usage: volume_down
 volume_down() {
     local current_volume
-    current_volume=$(get_volume)
+    current_volume=$(get_pyui_config_value ".vol" 10)
     local new_volume=$((current_volume - 1))
     set_volume "$new_volume"
 }
@@ -304,20 +294,11 @@ volume_down() {
 
 ##########     BACKLIGHT CONTROL     ##########
 
-BACKLIGHT_CONFIG_FILE="/mnt/SDCARD/Saves/sprig/backlight_state.txt"
 DUTY_CYCLE_PATH="/sys/class/pwm/pwmchip0/pwm0/duty_cycle"
 MIN_RAW_BACKLIGHT=3
 MAX_RAW_BACKLIGHT=100
 MAX_BACKLIGHT=10
 
-# Get current backlight level (0-10)
-get_backlight() {
-    if [ -f "$BACKLIGHT_CONFIG_FILE" ]; then
-        cat "$BACKLIGHT_CONFIG_FILE"
-    else
-        echo "5"  # Default backlight
-    fi
-}
 
 # Set backlight level (0-10)
 # Usage: set_backlight 5
@@ -329,8 +310,8 @@ set_backlight() {
     [ "$backlight" -gt "$MAX_BACKLIGHT" ] && backlight="$MAX_BACKLIGHT"
     
     # Save backlight to config
-    echo "$backlight" > "$BACKLIGHT_CONFIG_FILE"
-    
+    set_pyui_config_value ".backlight" "$backlight"
+
     # Calculate raw backlight
     local backlight_raw=0
     if [ "$backlight" -ne 0 ]; then
@@ -373,7 +354,7 @@ set_backlight_raw() {
 # Usage: backlight_up
 backlight_up() {
     local current_backlight
-    current_backlight=$(get_backlight)
+    current_backlight=$(get_pyui_config_value ".backlight" 5)
     local new_backlight=$((current_backlight + 1))
     set_backlight "$new_backlight"
 }
@@ -382,7 +363,7 @@ backlight_up() {
 # Usage: backlight_down
 backlight_down() {
     local current_backlight
-    current_backlight=$(get_backlight)
+    current_backlight=$(get_pyui_config_value ".backlight" 5)
     local new_backlight=$((current_backlight - 1))
     set_backlight "$new_backlight"
 }
@@ -430,6 +411,16 @@ get_pyui_config_value() {
     local file="/mnt/SDCARD/Saves/mini-flip-system.json"
 
     jq -r "${key} // \"$default\"" "$file"
+}
+
+set_pyui_config_value() {
+    local key="$1"       # e.g. '.vol'
+    local value="$2"     # e.g. '10'
+    local file="/mnt/SDCARD/Saves/mini-flip-system.json"
+
+    [ ! -f "$file" ] && echo '{}' > "$file"
+    tmpfile="$(mktemp)"
+    jq "$key = $value" "$file" > "$tmpfile" && mv "$tmpfile" "$file"
 }
 
 PYUI_PIPE=/tmp/pyui_pipe
