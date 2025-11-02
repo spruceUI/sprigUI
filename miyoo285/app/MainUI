@@ -36,10 +36,8 @@ fi
 # auto resume last app or game
 if [ -e /mnt/SDCARD/sprig/flags/lastgame.lock ]; then
     ./freemma
-    cp /mnt/SDCARD/sprig/flags/lastgame.lock /tmp/cmd_to_run.sh
-    if [ ! -e /tmp/menu_launched ]; then
-        /tmp/cmd_to_run.sh
-    fi
+    mv /mnt/SDCARD/sprig/flags/lastgame.lock /tmp/cmd_to_run.sh
+    /tmp/cmd_to_run.sh
 fi
 
 
@@ -63,6 +61,3 @@ fi
 
 ./freemma
 /mnt/SDCARD/App/PyUI/launch.sh
-
-touch /tmp/menu_launched
-cp /tmp/cmd_to_run.sh /mnt/SDCARD/sprig/flags/lastgame.lock
