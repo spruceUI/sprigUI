@@ -68,6 +68,14 @@ is_branch_newer_than_device() {
         return 0
     fi
 
+    # Check if local archive exists - skip version check if it does
+    for archive in /mnt/SDCARD/*.zip /mnt/SDCARD/*.7z; do
+        if [ -f "$archive" ]; then
+            log_message "Local archive found. Skipping online version check."
+            return 0
+        fi
+    done
+
     # get version file from target branch of sprigUI repo
     cd /tmp
     if ! wget --tries=3 -O version https://raw.githubusercontent.com/spruceUI/sprigUI/$BRANCH/sprig/version ; then
