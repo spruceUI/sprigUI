@@ -352,6 +352,9 @@ class DeviceCommon(AbstractDevice):
     def supports_caching_rom_lists(self):
         return True
 
+    def keep_running_on_error(self):
+        return True
+
     def get_boxart_small_resize_dimensions(self):
         return 640, 480
 

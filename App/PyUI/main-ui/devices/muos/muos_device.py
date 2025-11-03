@@ -65,7 +65,7 @@ class MuosDevice(DeviceCommon):
 
 
     def _set_volume(self, volume):
-        ProcessRunner.run(["/opt/muos/device/script/audio.sh", str(volume)])
+        ProcessRunner.run(["/opt/muos/script/device/audio.sh", str(volume)])
         return volume 
 
 
@@ -74,7 +74,7 @@ class MuosDevice(DeviceCommon):
 
     def _set_lumination_to_config(self):
         luminosity = self.map_backlight_from_10_to_full_255(self.system_config.backlight)
-        ProcessRunner.run(["/opt/muos/device/script/bright.sh", str(luminosity)])
+        ProcessRunner.run(["/opt/muos/script/device/bright.sh", str(luminosity)])
     
     def _set_contrast_to_config(self):
         pass
@@ -374,4 +374,7 @@ class MuosDevice(DeviceCommon):
         return False
 
     def supports_qoi(self):
+        return False
+
+    def keep_running_on_error(self):
         return False
