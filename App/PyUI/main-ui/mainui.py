@@ -171,13 +171,15 @@ def main():
     main_menu = MainMenu()
 
     start_background_threads()
-
-    while(True):
+    keep_running = True
+    while(keep_running):
         try:
             main_menu.run_main_menu_selection()
         except Exception as e:
             PyUiLogger.get_logger().exception("Unhandled exception occurred")
             PyUiState.clear()
+            if(not Device.keep_running_on_error()):
+                keep_running = False
 
 def sigterm_handler(signum, frame):
     print(f"Received SIGTERM (Signal {signum}). Shutting down...")
