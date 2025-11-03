@@ -10,7 +10,7 @@ on:
       branch:
         description: 'Branch to build'
         required: true
-        default: 'main'
+        default: 'development'
 
 jobs:
   build-zips:
