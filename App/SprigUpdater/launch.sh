@@ -174,81 +174,44 @@ extract_archive() {
     
     cd /mnt/SDCARD
     
-    # Extract based on archive type
-    if [ "$archive_type" = "7z" ]; then
-        log_message "Extracting 7z archive"
-        if 7zr x -y "$archive_file" -o/mnt/SDCARD ; then
-            log_and_display_message "Archive extracted successfully."
-            # Find the extracted directory (it will be named sprigUI-<something> or sprigV<version>)
-            extracted_dir=$(find /mnt/SDCARD -maxdepth 1 -type d -name "sprig*" ! -path "/mnt/SDCARD/sprig" | head -1)
-            if [ -d "$extracted_dir" ]; then
-                # Rename to expected format
-                mv "$extracted_dir" "/mnt/SDCARD/sprigUI-$BRANCH"
-                log_message "Renamed $(basename "$extracted_dir") to sprigUI-$BRANCH"
-            fi
-        else
-            log_and_display_message "Archive extraction failed. Aborting."
-            return 1
+    # Extract using 7zr (works for both zip and 7z)
+    log_message "Extracting $archive_type archive with 7zr"
+    if 7zr x -y "$archive_file" -o/mnt/SDCARD ; then
+        log_and_display_message "Archive extracted successfully."
+        # Find the extracted directory (it will be named sprigUI-<something> or sprigV<version>)
+        extracted_dir=$(find /mnt/SDCARD -maxdepth 1 -type d -name "sprig*" ! -path "/mnt/SDCARD/sprig" | head -1)
+        if [ -d "$extracted_dir" ]; then
+            # Rename to expected format
+            mv "$extracted_dir" "/mnt/SDCARD/sprigUI-$BRANCH"
+            log_message "Renamed $(basename "$extracted_dir") to sprigUI-$BRANCH"
         fi
     else
-        log_message "Extracting zip archive"
-        
-        new_dir="sprigUI-$BRANCH"
-        new_ra_dir="$new_dir/RetroArch"
-        new_python3_dir="$new_dir/App/PyUI/python3.10"
-        new_themes_dir="$new_dir/Themes"
-
-        excluded_files="$new_dir/build $new_dir/justfile $new_dir/.gitignore $new_dir/.gitattributes $new_dir/TODO.txt"
-
-        if [ "$OVERWRITE_RA_CONFIGS" = "False" ]; then
-            log_message "Will not overwrite RA configs."
-            excluded_files="$excluded_files $new_ra_dir/config $new_ra_dir/retroarchV4.cfg $new_dir/Saves/NDS/config"
-        fi
-
-        if [ "$OVERWRITE_PYTHON3_DIR" = "False" ]; then
-            log_message "Will not overwrite Python3.10 directory."
-            excluded_files="$excluded_files $new_python3_dir"
-        fi
-
-        if [ "$OVERWRITE_THEMES_DIR" = "False" ]; then
-            log_message "Will not overwrite Themes directory."
-            excluded_files="$excluded_files $new_themes_dir"
-        fi
-        
-        log_message "Files to exclude from extraction of new version: $excluded_files"
-
-        if unzip -o "$archive_file" -x $excluded_files -d /mnt/SDCARD ; then
-            log_and_display_message "Archive extracted successfully."
-        else
-            log_and_display_message "Archive extraction failed. Aborting."
-            return 1
-        fi
+        log_and_display_message "Archive extraction failed. Aborting."
+        return 1
     fi
     
-    # Handle exclusions for 7z files by removing unwanted files after extraction
-    if [ "$archive_type" = "7z" ]; then
-        new_dir="sprigUI-$BRANCH"
-        if [ "$OVERWRITE_RA_CONFIGS" = "False" ]; then
-            log_message "Removing extracted RA configs to preserve existing ones."
-            rm -rf "/mnt/SDCARD/$new_dir/RetroArch/config" \
-                   "/mnt/SDCARD/$new_dir/RetroArch/retroarchV4.cfg" \
-                   "/mnt/SDCARD/$new_dir/Saves/NDS/config"
-        fi
-        if [ "$OVERWRITE_PYTHON3_DIR" = "False" ]; then
-            log_message "Removing extracted Python directory to preserve existing one."
-            rm -rf "/mnt/SDCARD/$new_dir/App/PyUI/python3.10"
-        fi
-        if [ "$OVERWRITE_THEMES_DIR" = "False" ]; then
-            log_message "Removing extracted Themes directory to preserve existing one."
-            rm -rf "/mnt/SDCARD/$new_dir/Themes"
-        fi
-        # Always remove build files
-        rm -rf "/mnt/SDCARD/$new_dir/build" \
-               "/mnt/SDCARD/$new_dir/justfile" \
-               "/mnt/SDCARD/$new_dir/.gitignore" \
-               "/mnt/SDCARD/$new_dir/.gitattributes" \
-               "/mnt/SDCARD/$new_dir/TODO.txt"
+    # Handle exclusions by removing unwanted files after extraction
+    new_dir="sprigUI-$BRANCH"
+    if [ "$OVERWRITE_RA_CONFIGS" = "False" ]; then
+        log_message "Removing extracted RA configs to preserve existing ones."
+        rm -rf "/mnt/SDCARD/$new_dir/RetroArch/config" \
+               "/mnt/SDCARD/$new_dir/RetroArch/retroarchV4.cfg" \
+               "/mnt/SDCARD/$new_dir/Saves/NDS/config"
     fi
+    if [ "$OVERWRITE_PYTHON3_DIR" = "False" ]; then
+        log_message "Removing extracted Python directory to preserve existing one."
+        rm -rf "/mnt/SDCARD/$new_dir/App/PyUI/python3.10"
+    fi
+    if [ "$OVERWRITE_THEMES_DIR" = "False" ]; then
+        log_message "Removing extracted Themes directory to preserve existing one."
+        rm -rf "/mnt/SDCARD/$new_dir/Themes"
+    fi
+    # Always remove build files
+    rm -rf "/mnt/SDCARD/$new_dir/build" \
+           "/mnt/SDCARD/$new_dir/justfile" \
+           "/mnt/SDCARD/$new_dir/.gitignore" \
+           "/mnt/SDCARD/$new_dir/.gitattributes" \
+           "/mnt/SDCARD/$new_dir/TODO.txt"
     
     sleep 5
     return 0
