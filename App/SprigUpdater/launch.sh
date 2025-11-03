@@ -112,7 +112,30 @@ is_branch_newer_than_device() {
 
 download_target_branch() {
     cd /mnt/SDCARD
-    log_and_display_message "Update found. Downloading! (~5-10min)"
+    
+    # Check for any zip or 7z file in root of SD card
+    local_archive=""
+    for archive in /mnt/SDCARD/*.zip /mnt/SDCARD/*.7z; do
+        if [ -f "$archive" ]; then
+            local_archive="$archive"
+            log_and_display_message "Found local archive: $(basename "$archive")"
+            break
+        fi
+    done
+    
+    if [ -n "$local_archive" ]; then
+        log_and_display_message "Using local archive for update."
+        # Ensure the file is named correctly for later processing
+        if [ "$local_archive" != "/mnt/SDCARD/$BRANCH.zip" ]; then
+            cp "$local_archive" "/mnt/SDCARD/$BRANCH.zip"
+            log_message "Copied local archive to $BRANCH.zip"
+        fi
+        sleep 3
+        return 0
+    fi
+    
+    # If no local file found, download from GitHub
+    log_and_display_message "No local archive found. Downloading! (~5-10min)"
     if wget --tries=3 -O "$BRANCH.zip" https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip ; then
         log_and_display_message "Successfully downloaded $BRANCH branch zip file."
         sleep 5
@@ -195,7 +218,7 @@ preserve_sprig_config_settings() {
 
     existing_config="/mnt/SDCARD/Saves/sprig/sprig-config.json"
     new_config="/mnt/SDCARD/sprigUI-$BRANCH/Saves/sprig/sprig-config.json"
-    /mnt/SDCARD/App/PyUI/python3.10/bin/python3.10 /mnt/SDCARD/App/OTA/merge_configs.py "$existing_config" "$new_config"
+    /mnt/SDCARD/App/PyUI/python3.10/bin/python3.10 /mnt/SDCARD/App/SprigUpdater/merge_configs.py "$existing_config" "$new_config"
 }
 
 complete_installation() {
@@ -218,6 +241,14 @@ complete_installation() {
 
     log_and_display_message "Installation complete. Cleaning up temporary files (~2min)"
     rm -rf "/mnt/SDCARD/$BRANCH.zip" "/mnt/SDCARD/sprigUI-$BRANCH"
+    
+    # Clean up any other zip or 7z files in root
+    for archive in /mnt/SDCARD/*.zip /mnt/SDCARD/*.7z; do
+        if [ -f "$archive" ]; then
+            rm -f "$archive"
+            log_message "Removed $(basename "$archive")"
+        fi
+    done
 
     log_and_display_message "Update finished. Syncing and rebooting! happy gaming.........."
 }
@@ -226,31 +257,69 @@ complete_installation() {
 
 start_pyui_message_writer
 
-log_and_display_message "Starting OTA process. Checking space, wifi, and version."
+log_and_display_message "Starting update process. Checking requirements."
 
-if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_than_device; then
+# Check if any zip or 7z file exists in root of SD card
+local_archive_exists=false
+for archive in /mnt/SDCARD/*.zip /mnt/SDCARD/*.7z; do
+    if [ -f "$archive" ]; then
+        local_archive_exists=true
+        log_message "Local archive detected. Will skip wifi check."
+        break
+    fi
+done
 
-    log_and_display_message "All checks passed. Proceeding to download $BRANCH branch of sprigUI repo."
-    sleep 3
-    
-    if download_target_branch && extract_archive; then
-        preserve_sprig_config_settings
-        if [ "$OVERWRITE_EMU_DIR" = "False" ]; then
-            preserve_user_emu_launch_settings
+# Run checks based on whether we have a local archive
+if [ "$local_archive_exists" = true ]; then
+    # Only check space and version when using local file
+    if does_device_have_sufficient_space && is_branch_newer_than_device; then
+        log_and_display_message "All checks passed. Proceeding with local update file."
+        sleep 3
+        
+        if download_target_branch && extract_archive; then
+            preserve_sprig_config_settings
+            if [ "$OVERWRITE_EMU_DIR" = "False" ]; then
+                preserve_user_emu_launch_settings
+            else
+                log_and_display_message "Emulator options and overrides will be reset to default."
+                sleep 3
+            fi
+            complete_installation
+            sync
+            sleep 5
+            reboot
         else
-            log_and_display_message "Emulator options and overrides will be reset to default."
-            sleep 3
+            sleep 5
+            exit 2
         fi
-        complete_installation
-        sync
-        sleep 5
-        reboot
     else
         sleep 5
-        exit 2
+        exit 1
     fi
-
 else
-    sleep 5
-    exit 1
+    # Check space, wifi, and version for download
+    if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_than_device; then
+        log_and_display_message "All checks passed. Proceeding to download $BRANCH branch of sprigUI repo."
+        sleep 3
+        
+        if download_target_branch && extract_archive; then
+            preserve_sprig_config_settings
+            if [ "$OVERWRITE_EMU_DIR" = "False" ]; then
+                preserve_user_emu_launch_settings
+            else
+                log_and_display_message "Emulator options and overrides will be reset to default."
+                sleep 3
+            fi
+            complete_installation
+            sync
+            sleep 5
+            reboot
+        else
+            sleep 5
+            exit 2
+        fi
+    else
+        sleep 5
+        exit 1
+    fi
 fi

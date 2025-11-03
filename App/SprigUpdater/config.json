@@ -1,0 +1,7 @@
+{
+  "label": "Sprig Updater",
+  "icon": "updater.png",
+  "launch": "launch.sh",
+  "description": "Install updates from local file or download over Wi-Fi",
+  "hide": false
+}
