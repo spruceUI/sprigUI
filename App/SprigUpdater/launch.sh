@@ -123,9 +123,14 @@ download_target_branch() {
     
     # Check for any zip or 7z file in root of SD card
     local_archive=""
+    local_archive_type=""
     for archive in /mnt/SDCARD/*.zip /mnt/SDCARD/*.7z; do
         if [ -f "$archive" ]; then
             local_archive="$archive"
+            case "$archive" in
+                *.7z) local_archive_type="7z" ;;
+                *.zip) local_archive_type="zip" ;;
+            esac
             log_and_display_message "Found local archive: $(basename "$archive")"
             break
         fi
@@ -133,10 +138,12 @@ download_target_branch() {
     
     if [ -n "$local_archive" ]; then
         log_and_display_message "Using local archive for update."
-        # Ensure the file is named correctly for later processing
-        if [ "$local_archive" != "/mnt/SDCARD/$BRANCH.zip" ]; then
-            cp "$local_archive" "/mnt/SDCARD/$BRANCH.zip"
-            log_message "Copied local archive to $BRANCH.zip"
+        # Store the archive type for extraction
+        echo "$local_archive_type" > /tmp/archive_type
+        # Keep original filename but ensure we know where it is
+        if [ "$local_archive" != "/mnt/SDCARD/update_archive.$local_archive_type" ]; then
+            cp "$local_archive" "/mnt/SDCARD/update_archive.$local_archive_type"
+            log_message "Copied local archive to update_archive.$local_archive_type"
         fi
         sleep 3
         return 0
@@ -144,13 +151,14 @@ download_target_branch() {
     
     # If no local file found, download from GitHub
     log_and_display_message "No local archive found. Downloading! (~5-10min)"
-    if wget --tries=3 -O "$BRANCH.zip" https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip ; then
+    echo "zip" > /tmp/archive_type
+    if wget --tries=3 -O "update_archive.zip" https://github.com/spruceUI/sprigUI/archive/refs/heads/$BRANCH.zip ; then
         log_and_display_message "Successfully downloaded $BRANCH branch zip file."
         sleep 5
         return 0
     else
         log_and_display_message "Failed to download $BRANCH branch zip file. Aborting."
-        rm -f "/mnt/SDCARD/$BRANCH.zip"
+        rm -f "/mnt/SDCARD/update_archive.zip"
         rm -rf "/mnt/SDCARD/sprigUI-$BRANCH"
         return 1
     fi
@@ -160,38 +168,90 @@ extract_archive() {
 
     log_and_display_message "Download finished. Extracting! (~4min)" 
 
-    new_dir="sprigUI-$BRANCH"
-    new_ra_dir="$new_dir/RetroArch"
-    new_python3_dir="$new_dir/App/PyUI/python3.10"
-    new_themes_dir="$new_dir/Themes"
+    # Determine archive type
+    archive_type="$(cat /tmp/archive_type 2>/dev/null || echo 'zip')"
+    archive_file="/mnt/SDCARD/update_archive.$archive_type"
+    
+    cd /mnt/SDCARD
+    
+    # Extract based on archive type
+    if [ "$archive_type" = "7z" ]; then
+        log_message "Extracting 7z archive"
+        if 7zr x -y "$archive_file" -o/mnt/SDCARD ; then
+            log_and_display_message "Archive extracted successfully."
+            # Find the extracted directory (it will be named sprigUI-<something> or sprigV<version>)
+            extracted_dir=$(find /mnt/SDCARD -maxdepth 1 -type d -name "sprig*" ! -path "/mnt/SDCARD/sprig" | head -1)
+            if [ -d "$extracted_dir" ]; then
+                # Rename to expected format
+                mv "$extracted_dir" "/mnt/SDCARD/sprigUI-$BRANCH"
+                log_message "Renamed $(basename "$extracted_dir") to sprigUI-$BRANCH"
+            fi
+        else
+            log_and_display_message "Archive extraction failed. Aborting."
+            return 1
+        fi
+    else
+        log_message "Extracting zip archive"
+        
+        new_dir="sprigUI-$BRANCH"
+        new_ra_dir="$new_dir/RetroArch"
+        new_python3_dir="$new_dir/App/PyUI/python3.10"
+        new_themes_dir="$new_dir/Themes"
 
-    excluded_files="$new_dir/build $new_dir/justfile $new_dir/.gitignore $new_dir/.gitattributes $new_dir/TODO.txt"
+        excluded_files="$new_dir/build $new_dir/justfile $new_dir/.gitignore $new_dir/.gitattributes $new_dir/TODO.txt"
 
-    if [ "$OVERWRITE_RA_CONFIGS" = "False" ]; then
-        log_message "Will not overwrite RA configs."
-        excluded_files="$excluded_files $new_ra_dir/config $new_ra_dir/retroarchV4.cfg $new_dir/Saves/NDS/config"
-    fi
+        if [ "$OVERWRITE_RA_CONFIGS" = "False" ]; then
+            log_message "Will not overwrite RA configs."
+            excluded_files="$excluded_files $new_ra_dir/config $new_ra_dir/retroarchV4.cfg $new_dir/Saves/NDS/config"
+        fi
 
-    if [ "$OVERWRITE_PYTHON3_DIR" = "False" ]; then
-        log_message "Will not overwrite Python3.10 directory."
-        excluded_files="$excluded_files $new_python3_dir"
-    fi
+        if [ "$OVERWRITE_PYTHON3_DIR" = "False" ]; then
+            log_message "Will not overwrite Python3.10 directory."
+            excluded_files="$excluded_files $new_python3_dir"
+        fi
 
-    if [ "$OVERWRITE_THEMES_DIR" = "False" ]; then
-        log_message "Will not overwrite Themes directory."
-        excluded_files="$excluded_files $new_themes_dir"
+        if [ "$OVERWRITE_THEMES_DIR" = "False" ]; then
+            log_message "Will not overwrite Themes directory."
+            excluded_files="$excluded_files $new_themes_dir"
+        fi
+        
+        log_message "Files to exclude from extraction of new version: $excluded_files"
+
+        if unzip -o "$archive_file" -x $excluded_files -d /mnt/SDCARD ; then
+            log_and_display_message "Archive extracted successfully."
+        else
+            log_and_display_message "Archive extraction failed. Aborting."
+            return 1
+        fi
     fi
     
-    log_message "Files to exclude from extraction of new version: $excluded_files"
-
-    if unzip -o "/mnt/SDCARD/$BRANCH.zip" -x $excluded_files -d /mnt/SDCARD ; then
-        log_and_display_message "Archive extracted successfully."
-        sleep 5
-        return 0
-    else
-        log_and_display_message "Archive extraction failed. Aborting."
-        return 1
+    # Handle exclusions for 7z files by removing unwanted files after extraction
+    if [ "$archive_type" = "7z" ]; then
+        new_dir="sprigUI-$BRANCH"
+        if [ "$OVERWRITE_RA_CONFIGS" = "False" ]; then
+            log_message "Removing extracted RA configs to preserve existing ones."
+            rm -rf "/mnt/SDCARD/$new_dir/RetroArch/config" \
+                   "/mnt/SDCARD/$new_dir/RetroArch/retroarchV4.cfg" \
+                   "/mnt/SDCARD/$new_dir/Saves/NDS/config"
+        fi
+        if [ "$OVERWRITE_PYTHON3_DIR" = "False" ]; then
+            log_message "Removing extracted Python directory to preserve existing one."
+            rm -rf "/mnt/SDCARD/$new_dir/App/PyUI/python3.10"
+        fi
+        if [ "$OVERWRITE_THEMES_DIR" = "False" ]; then
+            log_message "Removing extracted Themes directory to preserve existing one."
+            rm -rf "/mnt/SDCARD/$new_dir/Themes"
+        fi
+        # Always remove build files
+        rm -rf "/mnt/SDCARD/$new_dir/build" \
+               "/mnt/SDCARD/$new_dir/justfile" \
+               "/mnt/SDCARD/$new_dir/.gitignore" \
+               "/mnt/SDCARD/$new_dir/.gitattributes" \
+               "/mnt/SDCARD/$new_dir/TODO.txt"
     fi
+    
+    sleep 5
+    return 0
 }
 
 preserve_user_emu_launch_settings() {
@@ -248,7 +308,7 @@ complete_installation() {
     cp -rf /mnt/SDCARD/sprigUI-"$BRANCH"/* /mnt/SDCARD
 
     log_and_display_message "Installation complete. Cleaning up temporary files (~2min)"
-    rm -rf "/mnt/SDCARD/$BRANCH.zip" "/mnt/SDCARD/sprigUI-$BRANCH"
+    rm -rf "/mnt/SDCARD/update_archive.zip" "/mnt/SDCARD/update_archive.7z" "/mnt/SDCARD/sprigUI-$BRANCH"
     
     # Clean up any other zip or 7z files in root
     for archive in /mnt/SDCARD/*.zip /mnt/SDCARD/*.7z; do
