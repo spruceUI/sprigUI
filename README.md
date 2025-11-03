@@ -97,3 +97,5 @@ sprig is a custom operating system for the Miyoo Mini Flip, developed by the spr
 ## Need help? Want to contribute?
 
 Come chat with the spruce team in [our Discord server](https://discord.gg/KjR5uMQQt9)!
+
+
