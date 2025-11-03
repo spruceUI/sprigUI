@@ -23,9 +23,9 @@ if [ -e /proc/$$/fd/3 ]; then
 fi
 
 # Start network services if necessary
-ADB_ENABLED="$(get_config_value 'menuOptions."Network Settings".enableADB.selected' "True")"
-SSH_ENABLED="$(get_config_value 'menuOptions."Network Settings".enableSSH.selected' "False")"
-SMB_ENABLED="$(get_config_value 'menuOptions."Network Settings".enableSMB.selected' "False")"
+ADB_ENABLED="$(get_config_value '.menuOptions."Network Settings".enableADB.selected' "True")"
+SSH_ENABLED="$(get_config_value '.menuOptions."Network Settings".enableSSH.selected' "False")"
+SMB_ENABLED="$(get_config_value '.menuOptions."Network Settings".enableSMB.selected' "False")"
 
 if [ "$ADB_ENABLED" = "True" ] && ! pgrep adbd >/dev/null 2>&1; then
     /mnt/SDCARD/sprig/scripts/start_adbd.sh
