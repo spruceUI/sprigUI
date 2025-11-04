@@ -152,23 +152,15 @@ set_smart() {
     if ! flag_check "setting_cpu"; then
         flag_add "setting_cpu"
 
-        chmod a+w "$POLICY_DIR"/scaling_governor
-        chmod a+w "$POLICY_DIR"/scaling_min_freq
-        chmod a+w "$POLICY_DIR"/scaling_max_freq
-
         echo ondemand >"$POLICY_DIR"/scaling_governor
         echo $scaling_min_freq >"$POLICY_DIR"/scaling_min_freq
         echo $scaling_max_freq >"$POLICY_DIR"/scaling_max_freq
 
-        echo 80 >"$OD_DIR"/up_threshold
+        echo 85 >"$OD_DIR"/up_threshold
         echo 1 >"$OD_DIR"/sampling_down_factor
         echo 400000 >"$OD_DIR"/sampling_rate
 
-        chmod a-w "$POLICY_DIR"/scaling_governor
-        chmod a-w "$POLICY_DIR"/scaling_min_freq
-        chmod a-w "$POLICY_DIR"/scaling_max_freq
-
-        log_message "CPU Mode now locked to SMART" -v
+        log_message "CPU Mode now set to SMART" -v
         flag_remove "setting_cpu"
     fi
 }
@@ -177,19 +169,11 @@ set_performance() {
     if ! flag_check "setting_cpu"; then
         flag_add "setting_cpu"
 
-        chmod a+w "$POLICY_DIR"/scaling_governor
-        chmod a+w "$POLICY_DIR"/scaling_min_freq
-        chmod a+w "$POLICY_DIR"/scaling_max_freq
-
         echo performance >"$POLICY_DIR"/scaling_governor
         echo $scaling_max_freq >"$POLICY_DIR"/scaling_min_freq # not a typo. we lockin' it.
         echo $scaling_max_freq >"$POLICY_DIR"/scaling_max_freq
 
-        chmod a-w "$POLICY_DIR"/scaling_governor
-        chmod a-w "$POLICY_DIR"/scaling_min_freq
-        chmod a-w "$POLICY_DIR"/scaling_max_freq
-
-        log_message "CPU Mode now locked to PERFORMANCE" -v
+        log_message "CPU Mode now set to PERFORMANCE" -v
         flag_remove "setting_cpu"
     fi
 }

@@ -2,6 +2,8 @@
 
 . /mnt/SDCARD/sprig/helperFunctions.sh
 
+set_performance
+
 if ! mount | grep -q "/etc/profile"; then
     mount -o bind /mnt/SDCARD/sprig/etc/profile /etc/profile
     mount -o bind /mnt/SDCARD/sprig/etc/passwd /etc/passwd
@@ -54,7 +56,6 @@ if [ -e /mnt/SDCARD/sprig/flags/lastgame.lock ]; then
     mv /mnt/SDCARD/sprig/flags/lastgame.lock /tmp/cmd_to_run.sh
     /tmp/cmd_to_run.sh
 fi
-
 
 # Fix timezone (why did Miyoo make this a /tmp file symlink?)
 timezone=$(jq -r '.timezone // empty' "/mnt/SDCARD/Saves/mini-flip-system.json")

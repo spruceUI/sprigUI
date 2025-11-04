@@ -68,7 +68,7 @@ run_drastic() {
 
 	cd $mydir
 
-	./cpuclock 1600
+	cpuclock 1600
 
 	./drastic "$ROM_FILE"
 	sync
@@ -152,7 +152,7 @@ run_pico8() {
 	killall audioserver
 	killall audioserver.mod
 	sync_pico8_volume
-
+	cpuclock 1600
 	if [ "${GAME##*.}" = "splore" ]; then
 		pico8_dyn -preblit_scale 3 -pixel_perfect 0 -splore -root_path "/mnt/SDCARD/Roms/PICO8/"
 	else
