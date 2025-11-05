@@ -402,8 +402,10 @@ init_volume_backlight() {
 BRIGHTNESS_FILE="/sys/devices/soc0/soc/1f003400.pwm/pwm/pwmchip0/pwm0/duty_cycle"
 SCREEN_BLANK_FILE="/proc/mi_modules/fb/mi_fb0"
 BUTTON_ENABLE_FILE="/sys/module/gpio_keys_polled/parameters/button_enable"
+EMU_LIST="retroarch scummvm pico8_dyn drastic OpenBOR OpenBOR_mod OpenBOR_new ffplay"
 
 enter_pseudo_sleep() {
+    killall -q -SIGSTOP $(echo $EMU_LIST) 2>/dev/null
     cat "$BRIGHTNESS_FILE" > /tmp/saved_brightness 2>/dev/null  # backup current brightness
     echo "GUI_SHOW 0 off" > "$SCREEN_BLANK_FILE" 2>/dev/null    # blank the screen
     echo "0" > "$BRIGHTNESS_FILE" 2>/dev/null                   # set brightness to 0
@@ -417,6 +419,7 @@ enter_pseudo_sleep() {
 }
 
 exit_pseudo_sleep() {
+    killall -q -SIGCONT $(echo $EMU_LIST) 2>/dev/null
     echo "GUI_SHOW 0 on" > "$SCREEN_BLANK_FILE" 2>/dev/null     # unblank screen
     if [ -f /tmp/saved_brightness ]; then
         cat /tmp/saved_brightness > "$BRIGHTNESS_FILE" 2>/dev/null  # restore previous brightness
