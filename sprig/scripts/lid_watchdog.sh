@@ -2,9 +2,20 @@
 
 . /mnt/SDCARD/sprig/helperFunctions.sh
 
+LID_TIMER="$(get_config_value '.menuOptions."Lid and Power Settings".lidPowerdownTimer.selected' "30s")"
+case $LID_TIMER in
+    "Off")  exit 10 ;;
+    "5s")   IDLE_TIMEOUT=5 ;; # seconds to wait in sleep before full poweroff 
+    "30s")  IDLE_TIMEOUT=30 ;;
+    "1m")   IDLE_TIMEOUT=60 ;;
+    "5m")   IDLE_TIMEOUT=300 ;;
+    "15m")  IDLE_TIMEOUT=900 ;;
+    "30m")  IDLE_TIMEOUT=1800 ;;
+    "1h")   IDLE_TIMEOUT=3600 ;;
+esac
+
 LID_HALL_FILE="/sys/devices/soc0/soc/soc:hall-mh248/hallvalue"
 POWER_OFF_SCRIPT="/mnt/SDCARD/sprig/scripts/save_poweroff.sh"
-IDLE_TIMEOUT=5  # seconds to wait in sleep before full poweroff
 BRIGHTNESS_FILE="/sys/devices/soc0/soc/1f003400.pwm/pwm/pwmchip0/pwm0/duty_cycle"
 SCREEN_BLANK_FILE="/proc/mi_modules/fb/mi_fb0"
 BUTTON_ENABLE_FILE="/sys/module/gpio_keys_polled/parameters/button_enable"
