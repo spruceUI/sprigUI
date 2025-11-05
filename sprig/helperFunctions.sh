@@ -416,9 +416,11 @@ enter_pseudo_sleep() {
     if [ "$KILL_WIFI" = "True" ]; then
         /mnt/SDCARD/sprig/scripts/network/kill_wifi.sh
     fi
+    cpuclock 100                                                # slow cpu to a crawl
 }
 
 exit_pseudo_sleep() {
+    cpuclock 1600                                               # wake up cpu speed
     killall -q -SIGCONT $(echo $EMU_LIST) 2>/dev/null
     echo "GUI_SHOW 0 on" > "$SCREEN_BLANK_FILE" 2>/dev/null     # unblank screen
     if [ -f /tmp/saved_brightness ]; then
@@ -437,6 +439,7 @@ exit_pseudo_sleep() {
         /mnt/SDCARD/sprig/scripts/network/start_wifi.sh
         /mnt/SDCARD/sprig/scripts/network/start_stop_services.sh
     fi
+    pgrep retroarch 2>/dev/null && /mnt/SDCARD/sprig/scripts/enforceSmartCPU.sh # return to smart mode
 }
 
 
