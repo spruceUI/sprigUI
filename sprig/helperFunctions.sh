@@ -428,7 +428,7 @@ exit_pseudo_sleep() {
 
     WIFI_ENABLED="$(get_pyui_config_value '.wifi' 1)"
     if [ "$WIFI_ENABLED" -eq 1 ]; then
-        start_wifi
+        /mnt/SDCARD/sprig/scripts/network/start_wifi.sh
         /mnt/SDCARD/sprig/scripts/network/start_stop_services.sh
     fi
 }
