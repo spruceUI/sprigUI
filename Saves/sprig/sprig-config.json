@@ -36,6 +36,14 @@
                     "1h"
                 ],
                 "selected": "30s"
+            },
+            "disableWifiInSleep": {
+                "display": "Disable Wi-Fi During Pseudosleep",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "selected": "False"
             }
         },
         "Network Settings": {

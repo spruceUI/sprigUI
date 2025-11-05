@@ -353,6 +353,41 @@ backlight_down() {
 }
 
 
+##########     DISPLAY AND COMMUNICATION     ##########
+
+PYUI_PIPE=/tmp/pyui_pipe
+
+start_pyui_message_writer(){
+    rm $PYUI_PIPE
+    [ -p $PYUI_PIPE ] || mkfifo $PYUI_PIPE
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplayRealtime True < $PYUI_PIPE &
+    exec 3> $PYUI_PIPE
+}
+
+stop_pyui_message_writer() {
+    if [ -e /proc/$$/fd/3 ]; then
+        echo "EXIT_APP" >&3
+        exec 3>&-
+    fi
+}
+
+display_message(){
+    echo $1 >&3
+}
+
+log_and_display_message(){
+    log_message "$1"
+    display_message "$1"
+}
+
+show() {
+    /customer/app/sdldisplay "$1"
+}
+
+vibrate() {
+    /mnt/SDCARD/sprig/scripts/vibrate.sh "$@" &
+}
+
 ##########     OTHER STUFF     ##########
 
 init_volume_backlight() {
@@ -363,7 +398,6 @@ init_volume_backlight() {
     log_message "Backlight initialized to $current_backlight."
     log_message "Volume initialized to $current_volume."
 }
-
 
 BRIGHTNESS_FILE="/sys/devices/soc0/soc/1f003400.pwm/pwm/pwmchip0/pwm0/duty_cycle"
 SCREEN_BLANK_FILE="/proc/mi_modules/fb/mi_fb0"
@@ -376,6 +410,10 @@ enter_pseudo_sleep() {
     [ -e "$BUTTON_ENABLE_FILE" ] && echo "N" > "$BUTTON_ENABLE_FILE" 2>/dev/null # disable input
     touch /tmp/screen_blanked                                   # create flag file
 
+    KILL_WIFI="$(get_config_value '.menuOptions."Lid and Power Settings".disableWifiInSleep.selected' "False")"
+    if [ "$KILL_WIFI" = "True" ]; then
+        /mnt/SDCARD/sprig/scripts/network/kill_wifi.sh
+    fi
 }
 
 exit_pseudo_sleep() {
@@ -388,6 +426,11 @@ exit_pseudo_sleep() {
     [ -e "$BUTTON_ENABLE_FILE" ] && echo "Y" > "$BUTTON_ENABLE_FILE" 2>/dev/null # re-enable input
     rm -f /tmp/screen_blanked /tmp/saved_brightness             # clean up temp files
 
+    WIFI_ENABLED="$(get_pyui_config_value '.wifi' 1)"
+    if [ "$WIFI_ENABLED" -eq 1 ]; then
+        start_wifi
+        /mnt/SDCARD/sprig/scripts/network/start_stop_services.sh
+    fi
 }
 
 
@@ -406,14 +449,10 @@ read_only_check() {
     fi
 }
 
-show() {
-    /customer/app/sdldisplay "$1"
-}
 
-vibrate() {
-    /mnt/SDCARD/sprig/scripts/vibrate.sh "$@" &
-}
-
+# Get sprig-specific settings from sprig-config.json
+# example usage:
+# ADB_ENABLED="$(get_config_value '.menuOptions."Network Settings".enableADB.selected' "True")"
 get_config_value() {
     local key="$1"
     local default="$2"
@@ -440,27 +479,3 @@ set_pyui_config_value() {
     jq "$key = $value" "$file" > "$tmpfile" && mv "$tmpfile" "$file"
 }
 
-PYUI_PIPE=/tmp/pyui_pipe
-
-start_pyui_message_writer(){
-    rm $PYUI_PIPE
-    [ -p $PYUI_PIPE ] || mkfifo $PYUI_PIPE
-    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplayRealtime True < $PYUI_PIPE &
-    exec 3> $PYUI_PIPE
-}
-
-stop_pyui_message_writer() {
-    if [ -e /proc/$$/fd/3 ]; then
-        echo "EXIT_APP" >&3
-        exec 3>&-
-    fi
-}
-
-display_message(){
-    echo $1 >&3
-}
-
-log_and_display_message(){
-    log_message "$1"
-    display_message "$1"
-}

@@ -1,6 +1,10 @@
 #!/bin/sh
 . /mnt/SDCARD/sprig/helperFunctions.sh
 
+# Early out if wifi is disabled in PyUI
+WIFI_ENABLED="$(get_pyui_config_value '.wifi' 1)"
+[ "$WIFI_ENABLED" -ne 1 ] && exit 0
+
 # Start network services if necessary
 ADB_ENABLED="$(get_config_value '.menuOptions."Network Settings".enableADB.selected' "True")"
 SSH_ENABLED="$(get_config_value '.menuOptions."Network Settings".enableSSH.selected' "False")"
