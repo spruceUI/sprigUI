@@ -23,6 +23,14 @@
             }
         },
         "Network Settings": {
+            "disableWifiInGame": {
+                "display": "Disable Wi-Fi In Game",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "selected": "False"
+            },
             "enableADB": {
                 "display": "Enable Wireless ADB",
                 "options": [
@@ -47,8 +55,8 @@
                 ],
                 "selected": "False"
             },
-            "disableWifiInGame": {
-                "display": "Disable Wi-Fi In Game",
+            "enableTelnet": {
+                "display": "Enable Telnet",
                 "options": [
                     "True",
                     "False"
