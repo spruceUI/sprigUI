@@ -193,7 +193,7 @@ get_core_override
 
 set_cpu_mode
 
-if [ "$DISABLE_WIFI" = "True" ]; then
+if [ "$DISABLE_WIFI" = "True" ] && [ ! "${GAME##*.}" = "splore" ]; then
 	/mnt/SDCARD/sprig/scripts/kill_wifi.sh &
 	log_message "Disabling Wi-Fi and network services while in game."
 fi
