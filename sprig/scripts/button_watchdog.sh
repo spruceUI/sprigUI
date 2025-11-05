@@ -11,10 +11,8 @@ BRIGHTNESS_FILE="/sys/devices/soc0/soc/1f003400.pwm/pwm/pwmchip0/pwm0/duty_cycle
 SCREEN_BLANK_FILE="/proc/mi_modules/fb/mi_fb0"
 BUTTON_ENABLE_FILE="/sys/module/gpio_keys_polled/parameters/button_enable"
 
-# Initialize volume on startup
-current_volume=$(get_volume)
-set_volume "$current_volume"
-log_message "Button watchdog started, volume initialized to $current_volume"
+init_volume_backlight
+log_message "Button watchdog started."
 
 # Wait until input is ready
 for i in $(seq 1 25); do
@@ -36,16 +34,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
             # Check if screen is blanked - if so, wake it up immediately
             if [ -f /tmp/screen_blanked ]; then
                 log_message "Power button pressed while screen blanked — restoring screen"
-                echo "GUI_SHOW 0 on" > "$SCREEN_BLANK_FILE" 2>/dev/null
-                # Re-enable buttons
-                [ -e "$BUTTON_ENABLE_FILE" ] && echo "Y" > "$BUTTON_ENABLE_FILE" 2>/dev/null
-                # Restore a default brightness if we don't have the saved value
-                if [ -f /tmp/saved_brightness ]; then
-                    cat /tmp/saved_brightness > "$BRIGHTNESS_FILE" 2>/dev/null
-                else
-                    echo "50" > "$BRIGHTNESS_FILE" 2>/dev/null
-                fi
-                rm -f /tmp/screen_blanked /tmp/saved_brightness
+                exit_pseudo_sleep
                 continue
             fi
             
@@ -73,13 +62,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
                     "$POWER_OFF_SCRIPT" &
                 elif [ "$duration" -lt "$HOLD_MIN" ]; then
                     log_message "Power button tapped (${duration}s) — blanking screen"
-                    # Save current brightness
-                    cat "$BRIGHTNESS_FILE" > /tmp/saved_brightness 2>/dev/null
-                    # Blank screen and disable buttons
-                    echo "GUI_SHOW 0 off" > "$SCREEN_BLANK_FILE" 2>/dev/null
-                    echo "0" > "$BRIGHTNESS_FILE" 2>/dev/null
-                    [ -e "$BUTTON_ENABLE_FILE" ] && echo "N" > "$BUTTON_ENABLE_FILE" 2>/dev/null
-                    touch /tmp/screen_blanked
+                    enter_pseudo_sleep
                 else
                     log_message "Power button held ${duration}s — ignored (outside range ${HOLD_MIN}-${HOLD_MAX}s)"
                 fi

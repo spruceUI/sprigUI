@@ -360,6 +360,34 @@ init_volume_backlight() {
     set_backlight "$current_backlight"
     current_volume=$(get_pyui_config_value ".vol" 10)
     set_volume "$current_volume"
+    log_message "Backlight initialized to $current_backlight."
+    log_message "Volume initialized to $current_volume."
+}
+
+
+BRIGHTNESS_FILE="/sys/devices/soc0/soc/1f003400.pwm/pwm/pwmchip0/pwm0/duty_cycle"
+SCREEN_BLANK_FILE="/proc/mi_modules/fb/mi_fb0"
+BUTTON_ENABLE_FILE="/sys/module/gpio_keys_polled/parameters/button_enable"
+
+enter_pseudo_sleep() {
+    cat "$BRIGHTNESS_FILE" > /tmp/saved_brightness 2>/dev/null  # backup current brightness
+    echo "GUI_SHOW 0 off" > "$SCREEN_BLANK_FILE" 2>/dev/null    # blank the screen
+    echo "0" > "$BRIGHTNESS_FILE" 2>/dev/null                   # set brightness to 0
+    [ -e "$BUTTON_ENABLE_FILE" ] && echo "N" > "$BUTTON_ENABLE_FILE" 2>/dev/null # disable input
+    touch /tmp/screen_blanked                                   # create flag file
+
+}
+
+exit_pseudo_sleep() {
+    echo "GUI_SHOW 0 on" > "$SCREEN_BLANK_FILE" 2>/dev/null     # unblank screen
+    if [ -f /tmp/saved_brightness ]; then
+        cat /tmp/saved_brightness > "$BRIGHTNESS_FILE" 2>/dev/null  # restore previous brightness
+    else
+        echo "50" > "$BRIGHTNESS_FILE" 2>/dev/null              # default if previous not found
+    fi
+    [ -e "$BUTTON_ENABLE_FILE" ] && echo "Y" > "$BUTTON_ENABLE_FILE" 2>/dev/null # re-enable input
+    rm -f /tmp/screen_blanked /tmp/saved_brightness             # clean up temp files
+
 }
 
 

@@ -34,9 +34,6 @@ if ! pgrep -f "/mnt/SDCARD/sprig/scripts/lid_watchdog.sh" >/dev/null; then
     /mnt/SDCARD/sprig/scripts/lid_watchdog.sh &
 fi
 
-# Vol init must occur somewhat late in the boot sequence or else unmute will fail
-init_volume_backlight
-
 # auto resume last app or game
 if [ -e /mnt/SDCARD/sprig/flags/lastgame.lock ]; then
     ./freemma
