@@ -46,6 +46,14 @@
                     "False"
                 ],
                 "selected": "False"
+            },
+            "disableWifiInGame": {
+                "display": "Disable Wi-Fi In Game",
+                "options": [
+                    "True",
+                    "False"
+                ],
+                "selected": "False"
             }
         },
         "OTA Settings": {

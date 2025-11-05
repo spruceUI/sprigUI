@@ -14,7 +14,7 @@ if [ ! -e /tmp/logs_rotated ]; then
     rotate_logs
     log_message "sprigUI has entered the chat"
     touch /tmp/logs_rotated
-    init_volume_backlight
+    init_volume_backlight &
     log_message "Volume and backlight set to last known values."
 fi
 
@@ -30,15 +30,15 @@ SSH_ENABLED="$(get_config_value '.menuOptions."Network Settings".enableSSH.selec
 SMB_ENABLED="$(get_config_value '.menuOptions."Network Settings".enableSMB.selected' "False")"
 
 if [ "$ADB_ENABLED" = "True" ] && ! pgrep adbd >/dev/null 2>&1; then
-    /mnt/SDCARD/sprig/scripts/start_adbd.sh
+    /mnt/SDCARD/sprig/scripts/start_adbd.sh &
     log_message "Started ADBD"
 fi
 if [ "$SSH_ENABLED" = "True" ] && ! pgrep dropbearmulti >/dev/null 2>&1; then
-    /mnt/SDCARD/sprig/scripts/start_dropbear.sh
+    /mnt/SDCARD/sprig/scripts/start_dropbear.sh &
     log_message "Started Dropbear"
 fi
 if [ "$SMB_ENABLED" = "True" ] && ! pgrep smbd >/dev/null 2>&1; then
-    /mnt/SDCARD/sprig/scripts/start_samba.sh
+    /mnt/SDCARD/sprig/scripts/start_samba.sh &
     log_message "started Samba"
 fi
 
@@ -70,7 +70,7 @@ if [ -n "$timezone" ] && [ "$timezone" != "null" ]; then
         log_message "Updating /tmp/localtime to $timezone"
         rm -f /tmp/localtime
         ln -s "$target" /tmp/localtime
-        exit 0
+        # exit 0  ### why was this here?
     fi
 fi
 
