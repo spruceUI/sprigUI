@@ -62,7 +62,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
                     "$POWER_OFF_SCRIPT" &
                 elif [ "$duration" -lt "$HOLD_MIN" ]; then
                     log_message "Power button tapped (${duration}s) — blanking screen"
-                    enter_pseudo_sleep
+                    enter_pseudo_sleep &
                 else
                     log_message "Power button held ${duration}s — ignored (outside range ${HOLD_MIN}-${HOLD_MAX}s)"
                 fi
