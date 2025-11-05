@@ -409,7 +409,7 @@ enter_pseudo_sleep() {
     echo "0" > "$BRIGHTNESS_FILE" 2>/dev/null                   # set brightness to 0
     [ -e "$BUTTON_ENABLE_FILE" ] && echo "N" > "$BUTTON_ENABLE_FILE" 2>/dev/null # disable input
     touch /tmp/screen_blanked                                   # create flag file
-
+    set_volume_raw "-60"                                        # set effective volume to 0
     KILL_WIFI="$(get_config_value '.menuOptions."Lid and Power Settings".disableWifiInSleep.selected' "False")"
     if [ "$KILL_WIFI" = "True" ]; then
         /mnt/SDCARD/sprig/scripts/network/kill_wifi.sh
@@ -425,6 +425,9 @@ exit_pseudo_sleep() {
     fi
     [ -e "$BUTTON_ENABLE_FILE" ] && echo "Y" > "$BUTTON_ENABLE_FILE" 2>/dev/null # re-enable input
     rm -f /tmp/screen_blanked /tmp/saved_brightness             # clean up temp files
+
+    VOLUME="$(get_pyui_config_value '.vol' 5)"
+    set_volume "$VOLUME"                                        # restore volume from settings
 
     WIFI_ENABLED="$(get_pyui_config_value '.wifi' 1)"
     if [ "$WIFI_ENABLED" -eq 1 ]; then

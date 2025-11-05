@@ -43,12 +43,15 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
             touch /tmp/pwrbtn
             (
                 sleep "$HOLD_MIN"
-                [ -f /tmp/pwrbtn ] && vibrate 0.03 3  # short triple after 1s
-
-                sleep $((3 - HOLD_MIN))
-                [ -f /tmp/pwrbtn ] && vibrate 0.1 2   # longer double after 3s
-                sleep 0.1
-                [ -f /tmp/cmd_to_run.sh ] && /customer/kill_apps.sh
+                if [ -f /tmp/pwrbtn ]; then
+                    vibrate 0.03 3  # short triple after 1s
+                    sleep $((3 - HOLD_MIN))
+                    if [ -f /tmp/pwrbtn ]; then
+                        vibrate 0.1 2   # longer double after 3s
+                        sleep 0.1
+                        [ -f /tmp/cmd_to_run.sh ] && /customer/kill_apps.sh
+                    fi
+                fi
             ) &
             ;;
 
