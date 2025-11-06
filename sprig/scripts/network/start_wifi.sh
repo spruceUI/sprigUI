@@ -1,5 +1,7 @@
 #!/bin/sh
 
+/customer/app/axp_test wifion
+
 # safe to attempt even if it's already up
 ifconfig wlan0 up 2>/dev/null
 sleep 1
@@ -11,5 +13,5 @@ fi
 
 # only bring up udhcpc if not already running.
 if ! killall -0 udhcpc 2>/dev/null; then
-    udhcpc -i wlan0 -q -t 5
+    udhcpc -i wlan0 -q -t 5 -s /etc/init.d/udhcpc.script
 fi
