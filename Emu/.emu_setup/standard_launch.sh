@@ -15,7 +15,7 @@ EMU_JSON_PATH="${EMU_DIR}/config.json"
 GAME="$(basename "$1")"
 CORE="$(jq -r '.menuOptions.Emulator.selected' "$EMU_JSON_PATH")"
 
-DISABLE_WIFI="$(get_config_value '.menuOptions."Network Settings".disableWifiInGame.selected' "False")"
+DISABLE_WIFI="$(get_config_value '.menuOptions."Lid and Power Settings".disableWifiInGame.selected' "False")"
 
 ##### GENERAL FUNCTIONS #####
 

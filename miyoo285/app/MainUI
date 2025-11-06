@@ -36,7 +36,7 @@ fi
 
 # auto resume last app or game
 if [ -e /mnt/SDCARD/sprig/flags/lastgame.lock ]; then
-    DISABLE_WIFI="$(get_config_value '.menuOptions."Network Settings".disableWifiInGame.selected' "False")"
+    DISABLE_WIFI="$(get_config_value '.menuOptions."Lid and Power Settings".disableWifiInGame.selected' "False")"
     WIFI_ENABLED="$(get_pyui_config_value '.wifi' 1)"
     if [ "$DISABLE_WIFI" = "False" ] && [ "$WIFI_ENABLED" -eq 1 ]; then
         /mnt/SDCARD/sprig/scripts/network/start_wifi.sh

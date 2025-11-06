@@ -44,9 +44,7 @@
                     "False"
                 ],
                 "selected": "False"
-            }
-        },
-        "Network Settings": {
+            },
             "disableWifiInGame": {
                 "display": "Disable Wi-Fi In Game",
                 "options": [
@@ -54,7 +52,10 @@
                     "False"
                 ],
                 "selected": "False"
-            },
+            }
+        },
+        "Network Settings": {
+
             "enableADB": {
                 "display": "Enable Wireless ADB",
                 "options": [
