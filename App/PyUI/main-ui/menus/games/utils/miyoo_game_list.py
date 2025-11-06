@@ -1,4 +1,5 @@
 import os
+import re
 import xml.etree.ElementTree as ET
 
 from utils.logger import PyUiLogger
@@ -28,11 +29,14 @@ class MiyooGameList:
             with open(xml_file, "r", encoding="utf-8") as f:
                 content = f.read().strip()
 
-            # Ensure there is at least a newline at the end of the file
+            # Ensure there is at least a newline at the end of the file``
             # This avoids ElementTree thinking there are multiple root elements
             if not content.endswith('\n'):
                 content += '\n'
 
+            # Fix invalid & that are not part of an entity (e.g., &amp;, &lt;, etc.)
+            content = re.sub(r'&(?![a-zA-Z]+;|#\d+;)', '&amp;', content)
+            
             # Parse the XML from the cleaned string
             root = ET.fromstring(content)
 
