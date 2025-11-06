@@ -201,10 +201,16 @@ preserve_sprig_config_settings() {
 complete_installation() {
 
     log_message "Killing main execution loop, powerbutton watchdog, and SSH."
-    killall -9 main button_watchdog.sh dropbearmulti # adbd    ### Keep adbd on for testing
-    umount /etc/profile >/dev/null 2>&1
-	umount /mnt/SDCARD/Emu/OPENBOR/Saves >/dev/null 2>&1
-
+    killall -9 main button_watchdog.sh lid_watchdog.sh dropbearmulti # adbd    ### Keep adbd on for testing
+    for dir in /etc/profile \
+                /etc/passwd \
+                /etc/group \
+                /mnt/SDCARD/Emu/OPENBOR/Saves \
+                /mnt/SDCARD/Emu/NDS/backup \
+                /mnt/SDCARD/Emu/NDS/config \
+                /mnt/SDCARD/Emu/NDS/savestates ; do
+        umount "$dir" >/dev/null 2>&1
+    done
 
     if [ "$DELETE_BEFORE_COPY" = true ]; then
         for dir in App Emu miyoo285 RetroArch sprig Themes RApp; do
