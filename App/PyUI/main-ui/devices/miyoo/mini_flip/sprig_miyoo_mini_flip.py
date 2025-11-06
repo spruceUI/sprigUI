@@ -161,13 +161,16 @@ class SprigMiyooMiniFlip(MiyooMiniFlip):
     def _set_screen_values_to_config(self):
         #Config is 1-20
         #Device is 0-100
-        brightness = self.system_config.brightness * 5
+        #max is to ensure screen isn't on but just black
+        #Do not need to worry about min all maxed as it still is usable
+        brightness = max(5,self.system_config.brightness) * 5
+        contrast = max(5,self.system_config.contrast) * 5
         saturation = self.system_config.saturation * 5
-        contrast = self.system_config.contrast * 5
         hue = self.system_config.hue * 5
-        red = self.get_disp_red()
-        green = self.get_disp_green()
-        blue = self.get_disp_blue()
+        red = max(48,self.get_disp_red())
+        green = max(48,self.get_disp_green())
+        blue = max(48,self.get_disp_blue())
+        
         ProcessRunner.run(["/mnt/SDCARD/sprig/scripts/display_control.sh", 
                            str(brightness),str(saturation),str(contrast),str(hue),
                            str(red),str(green),str(blue)])

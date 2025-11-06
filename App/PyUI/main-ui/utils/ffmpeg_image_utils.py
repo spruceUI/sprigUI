@@ -94,7 +94,6 @@ class FfmpegImageUtils(ImageUtils):
         Uses ffmpeg and writes to a temporary file before moving to output_path.
         """
         try:
-            additional_args = ""
             actual_width, actual_height = self.get_image_dimensions(input_path)
             if actual_width == 0 or actual_height == 0:
                 PyUiLogger().get_logger().warning(f"Can't determine dimensions for {input_path}; skipping resize.")
@@ -112,7 +111,6 @@ class FfmpegImageUtils(ImageUtils):
             else:
                 new_width = max_width
                 new_height = max_height
-                additional_args=",format=rgb24"
 
             # If already the desired size, just copy (or move) the file
             if new_width == actual_width and new_height == actual_height:
@@ -131,7 +129,7 @@ class FfmpegImageUtils(ImageUtils):
                 "ffmpeg",
                 "-y",                 # overwrite temp if exists
                 "-i", input_path,
-                "-vf", f"scale={new_width}:{new_height}{additional_args}",
+                "-vf", f"scale={new_width}:{new_height}",
                 tmp_output
             ]
 
