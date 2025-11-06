@@ -4,8 +4,8 @@
 
 LID_TIMER="$(get_config_value '.menuOptions."Lid and Power Settings".lidPowerdownTimer.selected' "30s")"
 case $LID_TIMER in
-    "Off")  exit 10 ;;
-    "5s")   IDLE_TIMEOUT=5 ;; # seconds to wait in sleep before full poweroff 
+    "Off")  IDLE_TIMEOUT=0 ;;
+    "5s")   IDLE_TIMEOUT=5 ;; # seconds to wait in sleep before full poweroff
     "30s")  IDLE_TIMEOUT=30 ;;
     "1m")   IDLE_TIMEOUT=60 ;;
     "5m")   IDLE_TIMEOUT=300 ;;
@@ -39,33 +39,43 @@ while true; do
     
     # Detect lid close event (transition from 1 to 0)
     if [ "$prev_state" = "1" ] && [ "$current_state" = "0" ]; then
-        log_message "Lid closed detected, blanking screen"
-        
+        log_message "Lid closed detected - entering pseudosleep"
         enter_pseudo_sleep &
-
-        log_message "Screen blanked, starting idle timeout countdown"
-        
-        # Start countdown - if lid stays closed for IDLE_TIMEOUT, poweroff
-        elapsed=0
-        while [ "$elapsed" -lt "$IDLE_TIMEOUT" ]; do
+        # Only start poweroff countdown if timeout is nonzero
+        if [ "$IDLE_TIMEOUT" -gt 0 ]; then
+            log_message "Starting idle timeout countdown: ${IDLE_TIMEOUT}s until poweroff if lid remains closed"
+            elapsed=0
+            while [ "$elapsed" -lt "$IDLE_TIMEOUT" ]; do
+                current_state=$(cat "$LID_HALL_FILE" 2>/dev/null | head -c 1)
+                
+                # If lid opened, restore screen and break out
+                if [ "$current_state" = "1" ]; then
+                    log_message "Lid opened - exiting pseudosleep"
+                    exit_pseudo_sleep
+                    break
+                fi
+                
+                sleep 1
+                elapsed=$((elapsed + 1))
+            done
+            
+            # If we reached the timeout with lid still closed, poweroff
             current_state=$(cat "$LID_HALL_FILE" 2>/dev/null | head -c 1)
-            
-            # If lid opened, restore screen and break out
-            if [ "$current_state" = "1" ]; then
-                log_message "Lid opened, restoring screen"
-                exit_pseudo_sleep
-                break
+            if [ "$current_state" = "0" ] && [ "$elapsed" -ge "$IDLE_TIMEOUT" ]; then
+                log_message "Lid closed for ${IDLE_TIMEOUT}s, triggering poweroff"
+                "$POWER_OFF_SCRIPT" &
             fi
-            
-            sleep 1
-            elapsed=$((elapsed + 1))
-        done
-        
-        # If we reached the timeout with lid still closed, poweroff
-        current_state=$(cat "$LID_HALL_FILE" 2>/dev/null | head -c 1)
-        if [ "$current_state" = "0" ] && [ "$elapsed" -ge "$IDLE_TIMEOUT" ]; then
-            log_message "Lid closed for ${IDLE_TIMEOUT}s, triggering poweroff"
-            "$POWER_OFF_SCRIPT" &
+        else
+            # Lid closed but no poweroff timer — just stay in pseudosleep
+            while true; do
+                current_state=$(cat "$LID_HALL_FILE" 2>/dev/null | head -c 1)
+                if [ "$current_state" = "1" ]; then
+                    log_message "Lid opened - exiting pseudosleep"
+                    exit_pseudo_sleep
+                    break
+                fi
+                sleep 1
+            done
         fi
     fi
     
