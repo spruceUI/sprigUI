@@ -69,4 +69,4 @@ else
 fi
 
 # relaunch game nursery at end of download
-/mnt/SDCARD/App/PyUI/launch.sh -optionListTitle "Game Nursery" -optionListFile "$CONFIG_DIR"/nursery_config
+/mnt/SDCARD/App/PyUI/launch.sh -optionListTitle "Game Nursery" -optionListFile /tmp/nursery-config/nursery_config

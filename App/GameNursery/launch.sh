@@ -16,6 +16,7 @@ is_wifi_connected() {
         log_message "Cloudflare ping successful; device is online."
         return 0
     else
+        start_pyui_message_writer
         log_and_display_message "Cloudflare ping failed; device is offline. Aborting."
         return 1
     fi
@@ -61,6 +62,7 @@ get_latest_jsons() {
     }
 
     if ! download_json "$JSON_URL"; then
+        start_pyui_message_writer
         log_and_display_message "Unable to download latest info files from repository. Please try again later."
         sleep 3
         exit 1
@@ -68,6 +70,7 @@ get_latest_jsons() {
     log_message "Game Nursery: Info cache downloaded successfully"
 
     if ! 7zr x -y -scsUTF-8 "$JSON_DIR/INFO.7z" >/dev/null 2>&1; then
+        start_pyui_message_writer
         log_and_display_message "Unable to extract latest game info files. Please try again later."
         sleep 3
         rm -f "$JSON_DIR/INFO.7z" >/dev/null 2>&1
@@ -139,10 +142,7 @@ construct_config() {
 
 ##### MAIN EXECUTION #####
 
-start_pyui_message_writer
-log_and_display_message "Welcome to the sprigUI Game Nursery!"
 if ! is_wifi_connected; then sleep 3; exit 1; fi
 get_latest_jsons
 construct_config
-stop_pyui_message_writer
 /mnt/SDCARD/App/PyUI/launch.sh -optionListTitle "Game Nursery" -optionListFile "$CONFIG_DIR"/nursery_config
