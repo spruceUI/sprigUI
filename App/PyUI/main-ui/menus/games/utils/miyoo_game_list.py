@@ -29,7 +29,7 @@ class MiyooGameList:
             with open(xml_file, "r", encoding="utf-8") as f:
                 content = f.read().strip()
 
-            # Ensure there is at least a newline at the end of the file``
+            # Ensure there is at least a newline at the end of the file
             # This avoids ElementTree thinking there are multiple root elements
             if not content.endswith('\n'):
                 content += '\n'
