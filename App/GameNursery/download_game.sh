@@ -32,7 +32,7 @@ AVAILABLE_SPACE="$(df -m "/mnt/SDCARD" | awk 'NR==2{print $4}')"
 log_message "Game Nursery: $AVAILABLE_SPACE MiB available; $REQUIRED_SPACE MiB required to install $GAME_NAME"
 if [ "$AVAILABLE_SPACE" -lt "$REQUIRED_SPACE" ]; then
 	log_and_display_message "You need at least $REQUIRED_SPACE MiB free to install $GAME_NAME. Please free up some space and try again later."
-    sleep 3
+    sleep 4
 	exit 1
 else
 	log_message "Game Nursery: Available space is sufficient. Proceeding to download $GAME_NAME"
@@ -49,7 +49,7 @@ rm -r ./* 2>/dev/null
 log_and_display_message "Now downloading $GAME_NAME!"
 if ! wget --quiet --no-check-certificate --output-document="$TMP_DIR/$ZIP_NAME" "$GAME_URL"; then
 	log_and_display_message "Unable to download $GAME_NAME from repository. Please try again later."
-    sleep 3
+    sleep 4
 	exit 1
 fi
 
@@ -60,7 +60,7 @@ cd "/mnt/SDCARD"
 if ! 7zr x -y -scsUTF-8 "$TMP_DIR/$ZIP_NAME" >/dev/null 2>&1; then
 	log_and_display_message "Unable to extract $GAME_NAME. Please try again later."
 	rm -f "$TMP_DIR/$ZIP_NAME" >/dev/null 2>&1
-    sleep 3
+    sleep 4
 	exit 1
 else
 	log_and_display_message "$GAME_NAME installed successfully!"
@@ -69,4 +69,4 @@ else
 fi
 
 # relaunch game nursery at end of download
-/mnt/SDCARD/App/PyUI/launch.sh -optionListTitle "Game Nursery" -optionListFile /tmp/nursery-config/nursery_config
+rm -f /tmp/exit_nursery

@@ -145,4 +145,8 @@ construct_config() {
 if ! is_wifi_connected; then sleep 3; exit 1; fi
 get_latest_jsons
 construct_config
-/mnt/SDCARD/App/PyUI/launch.sh -optionListTitle "Game Nursery" -optionListFile "$CONFIG_DIR"/nursery_config
+
+while [ ! -e /tmp/exit_nursery ]; do
+    touch /tmp/exit_nursery
+    /mnt/SDCARD/App/PyUI/launch.sh -optionListTitle "Game Nursery" -optionListFile "$CONFIG_DIR"/nursery_config
+done
