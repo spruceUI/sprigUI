@@ -26,13 +26,12 @@ fi
 # Start and stop network services as configured.
 /mnt/SDCARD/sprig/scripts/network/start_stop_services.sh &
 
-# Start lid and button watchdogs
-if ! pgrep -f "/mnt/SDCARD/sprig/scripts/button_watchdog.sh" >/dev/null; then
-    /mnt/SDCARD/sprig/scripts/button_watchdog.sh &
-fi
-if ! pgrep -f "/mnt/SDCARD/sprig/scripts/lid_watchdog.sh" >/dev/null; then
-    /mnt/SDCARD/sprig/scripts/lid_watchdog.sh &
-fi
+# Start battery, lid, and button watchdogs
+for thing in battery lid button; do
+    if ! pgrep -f "/mnt/SDCARD/sprig/scripts/${thing}_watchdog.sh" >/dev/null; then
+        /mnt/SDCARD/sprig/scripts/${thing}_watchdog.sh &
+    fi
+done
 
 # auto resume last app or game
 if [ -e /mnt/SDCARD/sprig/flags/lastgame.lock ]; then

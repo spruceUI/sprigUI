@@ -404,6 +404,10 @@ SCREEN_BLANK_FILE="/proc/mi_modules/fb/mi_fb0"
 BUTTON_ENABLE_FILE="/sys/module/gpio_keys_polled/parameters/button_enable"
 EMU_LIST="retroarch scummvm pico8_dyn drastic OpenBOR OpenBOR_mod OpenBOR_new ffplay"
 
+get_battery_percentage() {
+    axp_test 2>/dev/null | jq -r '.battery // empty'
+}
+
 enter_pseudo_sleep() {
     killall -q -SIGSTOP $(echo $EMU_LIST) 2>/dev/null
     cat "$BRIGHTNESS_FILE" > /tmp/saved_brightness 2>/dev/null  # backup current brightness
