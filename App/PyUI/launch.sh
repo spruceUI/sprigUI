@@ -1,6 +1,6 @@
 #!/bin/sh
 
-../../miyoo285/app/freemma
+freemma
 
 export PATH="/mnt/SDCARD/sprig/bin:$PATH"
 export LD_LIBRARY_PATH="/mnt/SDCARD/App/PyUI/libs/:/config/lib/:/customer/lib"

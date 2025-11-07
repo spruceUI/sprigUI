@@ -358,6 +358,7 @@ backlight_down() {
 PYUI_PIPE=/tmp/pyui_pipe
 
 start_pyui_message_writer(){
+    freemma
     rm $PYUI_PIPE
     [ -p $PYUI_PIPE ] || mkfifo $PYUI_PIPE
     /mnt/SDCARD/App/PyUI/launch.sh -msgDisplayRealtime True < $PYUI_PIPE &
@@ -369,6 +370,7 @@ stop_pyui_message_writer() {
         echo "EXIT_APP" >&3
         exec 3>&-
     fi
+    freemma
 }
 
 display_message(){
