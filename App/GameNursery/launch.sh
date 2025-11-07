@@ -146,6 +146,7 @@ if ! is_wifi_connected; then sleep 3; exit 1; fi
 get_latest_jsons
 construct_config
 
+rm -f /tmp/exit_nursery
 while [ ! -e /tmp/exit_nursery ]; do
     touch /tmp/exit_nursery
     /mnt/SDCARD/App/PyUI/launch.sh -optionListTitle "Game Nursery" -optionListFile "$CONFIG_DIR"/nursery_config
