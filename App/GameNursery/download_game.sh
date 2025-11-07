@@ -1,6 +1,8 @@
 #!/bin/sh
 
 . /mnt/SDCARD/sprig/helperFunctions.sh
+export PATH="/mnt/SDCARD/sprig/bin:$PATH"
+export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH:/mnt/SDCARD/App/PyUI/libs/:/config/lib/:/customer/lib"
 
 JSON_FILE="$1"
 TMP_DIR="/mnt/SDCARD/App/GameNursery/tmp"
@@ -18,7 +20,7 @@ ZIP_NAME="$(basename "$GAME_URL")"
 start_pyui_message_writer
 log_and_display_message "Now downloading $GAME_NAME!"
 
-TARGET_SIZE_BYTES="$(wget --spider --server-response --no-check-certificate -O "$GAME_URL" 2>&1 | grep -i 'Content-Length' | tail -n1 | awk '{print $2}' | tr -d '\r\n')"
+TARGET_SIZE_BYTES="$(wget --spider --server-response --no-check-certificate "$GAME_URL" 2>&1 | grep -i 'Content-Length' | tail -n1 | awk '{print $2}' | tr -d '\r\n')"
 TARGET_SIZE_KILO=$((TARGET_SIZE_BYTES / 1024))
 TARGET_SIZE_MEGA=$((TARGET_SIZE_KILO / 1024))
 REQUIRED_SPACE=$((TARGET_SIZE_MEGA * 3))
