@@ -92,7 +92,7 @@ interpret_json() {
     fi
 
     # add line for specific game
-    echo "\"$system/$display_name\": \"$DOWNLOAD $json_file\","
+    echo "\"$system/$display_name\": \"$DOWNLOAD '$json_file'\","
 }
 
 construct_config() {
