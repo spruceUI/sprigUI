@@ -164,7 +164,7 @@ get_system_icon_from_theme() {
         "ZX Spectrum")      icon_name="zxs";        emu_name="ZXS" ;;
         *) return 1 ;;
     esac
-    theme_dir="/mnt/SDCARD/Themes/${current_theme}/icons750x560"
+    theme_dir="/mnt/SDCARD/Themes/${current_theme}/icons_750x560"
     fallback_dir="/mnt/SDCARD/Emu/${emu_name}"
 
     if   [ -e "${theme_dir}/sel/${icon_name}.qoi" ]; then selected_icon="${theme_dir}/sel/${icon_name}.qoi"
