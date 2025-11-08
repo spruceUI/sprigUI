@@ -11,6 +11,10 @@ JSON_URL="https://github.com/spruceUI/Ports-and-Free-Games/releases/download/Sin
 DEV_JSON_URL="https://github.com/spruceUI/Ports-and-Free-Games/releases/download/Singles/_test.7z"
 JSON_CACHE_VALID_MINUTES=10
 
+while pgrep -x MainUI >/dev/null; do
+    sleep 0.5
+done
+
 is_wifi_connected() {
     if ping -c 3 -W 2 1.1.1.1 > /dev/null 2>&1; then
         log_message "Cloudflare ping successful; device is online."
@@ -146,8 +150,7 @@ if ! is_wifi_connected; then sleep 3; exit 1; fi
 get_latest_jsons
 construct_config
 
-rm -f /tmp/exit_nursery
-while [ ! -e /tmp/exit_nursery ]; do
-    touch /tmp/exit_nursery
-    /mnt/SDCARD/App/PyUI/launch.sh -optionListTitle "Game Nursery" -optionListFile "$CONFIG_DIR"/nursery_config
+while true; do
+    /mnt/SDCARD/App/PyUI/launch.sh -optionListTitle "Game Nursery" \
+        -optionListFile "$CONFIG_DIR/nursery_config" || break
 done
