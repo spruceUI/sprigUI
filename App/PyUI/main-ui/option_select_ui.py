@@ -67,7 +67,9 @@ class OptionSelectUI:
 
             option_list = []
             for key, val in menu_dict.items():
-                img_path = folder+"/Imgs/"+key+".png"
+                img_path = f"{folder}/Imgs/{key}.png"
+                if not os.path.exists(img_path):
+                    img_path = f"{folder}/Imgs/{key}.qoi"
                 option_list.append(
                     GridOrListEntry(
                         primary_text=key,
