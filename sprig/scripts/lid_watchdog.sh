@@ -63,6 +63,8 @@ while true; do
             current_state=$(cat "$LID_HALL_FILE" 2>/dev/null | head -c 1)
             if [ "$current_state" = "0" ] && [ "$elapsed" -ge "$IDLE_TIMEOUT" ]; then
                 log_message "Lid closed for ${IDLE_TIMEOUT}s, triggering poweroff"
+                exit_pseudo_sleep
+                sleep 0.1
                 "$POWER_OFF_SCRIPT" &
             fi
         else
