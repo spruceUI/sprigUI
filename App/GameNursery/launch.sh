@@ -257,7 +257,8 @@ while true; do
         content=$(cat "$RESULT_FILE" 2>/dev/null)
         
         if [ "$content" = "EXIT" ]; then
-            log_and_display_message "Good Bye"
+            log_and_display_message "happy gaming.........."
+            sleep 2
             break
         else
             log_message "$content"
