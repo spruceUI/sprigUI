@@ -5,7 +5,7 @@ export PATH="/mnt/SDCARD/sprig/bin:$PATH"
 export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH:/mnt/SDCARD/App/PyUI/libs/:/config/lib/:/customer/lib"
 
 DOWNLOAD="/mnt/SDCARD/App/GameNursery/download_game.sh"
-CONFIG_DIR="/tmp/nursery-config"
+CONFIG_DIR="/mnt/SDCARD/Saves/GameNursery"
 JSON_DIR="/tmp/nursery-json"
 JSON_URL="https://github.com/spruceUI/Ports-and-Free-Games/releases/download/Singles/_info.7z"
 DEV_JSON_URL="https://github.com/spruceUI/Ports-and-Free-Games/releases/download/Singles/_test.7z"
@@ -106,6 +106,12 @@ download_boxart() {
 
     # Construct local destination
     img_path="$CONFIG_DIR/Imgs/${display_name}.png"
+
+    log_message "Checking for cached boxart at: $img_path"
+    if [ -f "$img_path" ]; then
+        log_message "Game Nursery: Boxart for '$display_name' already cached"
+        return 0
+    fi
 
     # Construct GitHub raw URL for the boxart
     img_url="https://raw.githubusercontent.com/spruceUI/Ports-and-Free-Games/main/${group_name}/${display_name}/Roms/${system}/Imgs/${display_name}.png"
