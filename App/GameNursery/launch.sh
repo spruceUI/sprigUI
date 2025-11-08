@@ -145,6 +145,47 @@ resize_image() {
     return 0
 }
 
+get_system_icon_from_theme() {
+    local category="$1"
+    config="/mnt/SDCARD/Saves/mini-flip-system.json"
+    current_theme="$(jq -r '.theme // "spruce"' "$config")"
+
+    case "$category" in
+        "Arduboy")          icon_name="arduboy";    emu_name="ARDUBOY" ;;
+        "Commodore 64")     icon_name="c64";        emu_name="COMMODORE" ;;
+        "Doom")             icon_name="doom" ;      emu_name="DOOM" ;;
+        "EasyRPG")          icon_name="easyrpg";    emu_name="EASYRPG" ;;
+        "Game Boy family")  icon_name="gba";        emu_name="GBA" ;;
+        "Game Tank")        icon_name="gametank";   emu_name="GAMETANK" ;;
+        "NES")              icon_name="fc";         emu_name="FC" ;;
+        "Ports")            icon_name="ports";      emu_name="PORTS" ;;
+        "ZX Spectrum")      icon_name="zxs";        emu_name="ZXS" ;;
+        *) return 1 ;;
+    esac
+
+    theme_icon_path="/mnt/SDCARD/Themes/${current_theme}/icons750x560/${icon_name}.png"
+    theme_sel_path="/mnt/SDCARD/Themes/${current_theme}/icons750x560/sel/${icon_name}.png"
+    fallback_icon_path="/mnt/SDCARD/Emu/${emu_name}/${icon_name}.png"
+    fallback_sel_path="/mnt/SDCARD/Emu/${emu_name}/${icon_name}_sel.png"
+    destination_path="/mnt/SDCARD/Saves/GameNursery/Imgs/${category}.png"
+
+    if [ -e "$theme_sel_path" ]; then
+        selected_icon="$theme_sel_path"
+    elif [ -e "$theme_icon_path" ]; then
+        selected_icon="$theme_icon_path"
+    elif [ -e "$fallback_sel_path" ]; then
+        selected_icon="$fallback_sel_path"
+    elif [ -e "$fallback_icon_path" ]; then
+        selected_icon="$fallback_icon_path"
+    else 
+        return 1
+    fi
+    mkdir -p "/mnt/SDCARD/Saves/GameNursery/Imgs"
+    cp -f "$selected_icon" "$destination_path"
+    resize_image "$destination_path"
+}
+
+
 is_config_valid() {
     local config_file="$CONFIG_DIR/nursery_config"
 
@@ -184,6 +225,7 @@ construct_config() {
             tab_name="$(basename "$group_dir")"
             if [ ! "$tab_name" = "Ports" ]; then
                 # iterate through each json for the current group
+                get_system_icon_from_theme "$tab_name"
                 for filename in "$group_dir"/*.json; do
                     interpret_json "$filename" >> "$CONFIG_DIR"/nursery_config
                     download_boxart "$filename"
