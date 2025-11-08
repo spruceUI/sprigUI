@@ -92,17 +92,9 @@ class OptionSelectUI:
                     key = entry.get_value()
                     val = menu_dict[key]
                     if isinstance(val, str):
+                        # Final executable task
+                        subprocess.run(val, shell=True)
                         Display.deinit_display()
-                        # Final executable task (non-blocking, detached)
-                        subprocess.Popen(
-                            val,
-                            shell=True,
-                            stdin=None,
-                            stdout=None,
-                            stderr=None,
-                            close_fds=True,
-                            start_new_session=True  # key: fully detach from parent
-                        )
                         sys.exit(0)
                     else:
                         # Submenu
