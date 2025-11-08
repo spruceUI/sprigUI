@@ -109,10 +109,40 @@ download_boxart() {
 
     if wget --quiet --no-check-certificate -O "$img_path" "$img_url"; then
         log_message "Game Nursery: Successfully downloaded boxart for '$display_name'"
+        resize_image "$img_path"
     else
         log_message "Game Nursery: Failed to download boxart for '$display_name'"
         rm -f "$img_path"
     fi
+}
+
+resize_image() {
+    local image_path="$1"
+    local full_width=450
+    local full_height=450
+
+    # Ensure image exists
+    [ -f "$image_path" ] || { echo "File not found: $image_path"; return 1; }
+
+    local dir base tmp_path
+    dir=$(dirname "$image_path")
+    base=$(basename "$image_path")
+    tmp_path="$dir/tmp_$base"
+    
+    log_message "Resizing $image_path to $full_width x $full_height max."
+    # Resize while preserving aspect ratio
+    ffmpeg -y -i "$image_path" \
+        -vf "scale='min($full_width,iw)':'min($full_height,ih)':force_original_aspect_ratio=decrease" \
+        "$tmp_path"
+
+    if [ -f "$tmp_path" ]; then
+        mv "$tmp_path" "$image_path"
+    else
+        log_message "Resize failed — ffmpeg did not produce $tmp_path"
+        return 1
+    fi
+
+    return 0
 }
 
 is_config_valid() {
