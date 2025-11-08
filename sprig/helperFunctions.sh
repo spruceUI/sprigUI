@@ -369,6 +369,11 @@ stop_pyui_message_writer() {
     if [ -e /proc/$$/fd/3 ]; then
         echo "EXIT_APP" >&3
         exec 3>&-
+
+        # Wait until MainUI fully exits
+        while pgrep -x MainUI >/dev/null; do
+            sleep 0.2
+        done
     fi
     freemma
 }
