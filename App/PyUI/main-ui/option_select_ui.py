@@ -93,8 +93,8 @@ class OptionSelectUI:
                     val = menu_dict[key]
                     if isinstance(val, str):
                         # Final executable task
-                        subprocess.run(val, shell=True)
                         Display.deinit_display()
+                        subprocess.run(val, shell=True)
                         sys.exit(0)
                     else:
                         # Submenu
