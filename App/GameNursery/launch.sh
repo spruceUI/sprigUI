@@ -83,20 +83,45 @@ interpret_json() {
 
     json_file="$1"
     display_name="$(jq -r '.display' "$json_file")"
-    system="$(jq -r '.system' "$json_file")"
-    # file="$(jq -r '.file' "$json_file")"
+    group_name="$(basename "$(dirname "$json_file")")"    # file="$(jq -r '.file' "$json_file")"
     # description="$(jq -r '.description' "$json_file")"
     # requires_files="$(jq -r '.requires_files' "$json_file")"
     # version="$(jq -r '.version' "$json_file")"
-
     # add notice that additional files are needed
-    if [ "$requires_files" = "true" ]; then
-        description="$description Requires additional files."
-    fi
+    # if [ "$requires_files" = "true" ]; then
+    #     description="$description Requires additional files."
+    # fi
 
     # add line for specific game
-    echo "\"$system/$display_name\": \"$DOWNLOAD '$json_file'\","
+    echo "\"$group_name/$display_name\": \"$DOWNLOAD '$json_file'\","
 }
+
+download_boxart() {
+    local json_file="$1"
+    local display_name system group_name img_url img_path
+
+    display_name="$(jq -r '.display' "$json_file")"
+    system="$(jq -r '.system' "$json_file")"
+    group_name="$(basename "$(dirname "$json_file")")"
+
+    # Construct local destination
+    img_path="$CONFIG_DIR/Imgs/${display_name}.png"
+
+    # Construct GitHub raw URL for the boxart
+    img_url="https://raw.githubusercontent.com/spruceUI/Ports-and-Free-Games/main/${group_name}/${display_name}/Roms/${system}/Imgs/${display_name}.png"
+
+    # Ensure directory exists
+    mkdir -p "$(dirname "$img_path")"
+
+    # Try downloading (no output, but return code logged)
+    if wget --quiet --no-check-certificate -O "$img_path" "$img_url"; then
+        log_message "Game Nursery: Successfully downloaded boxart for '$display_name'"
+    else
+        log_message "Game Nursery: Failed to download boxart for '$display_name'"
+        rm -f "$img_path"
+    fi
+}
+
 
 construct_config() {
     mkdir "$CONFIG_DIR" 2>/dev/null
@@ -126,6 +151,7 @@ construct_config() {
                 # iterate through each json for the current group
                 for filename in "$group_dir"/*.json; do
                     interpret_json "$filename" >> "$CONFIG_DIR"/nursery_config
+                    download_boxart "$filename"
                 done
             fi
         fi
@@ -136,7 +162,6 @@ construct_config() {
 
     # Finish config json with a closing bracket
     echo "}" >> "$CONFIG_DIR"/nursery_config
-
 }
 
 

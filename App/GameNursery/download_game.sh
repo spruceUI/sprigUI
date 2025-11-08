@@ -68,5 +68,6 @@ else
 	rm -f "$TMP_DIR/$ZIP_NAME" 2>/dev/null
 fi
 
+stop_pyui_message_writer
 # relaunch game nursery at end of download
 rm -f /tmp/exit_nursery
