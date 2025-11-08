@@ -13,48 +13,6 @@ start_menu_button_watchdog() {
     export WATCHDOG_PID=$!
 }
 
-resize_image() {
-    local input_path="$1"
-    local med_path="$(printf '%s' "$input_path" | sed 's#/Imgs/#/Imgs_med/#')"
-    local small_path="$(printf '%s' "$input_path" | sed 's#/Imgs/#/Imgs_small/#')"
-    
-    local full_width=600
-    local full_height=600
-    local med_width=300
-    local med_height=300
-    local small_width=150
-    local small_height=150
-
-    # Ensure image exists
-    [ -f "$input_path" ] || { echo "File not found: $input_path"; return 1; }
-
-    log_message "$input_path ==> $med_path : $med_width x $med_height"
-    # Resize while preserving aspect ratio
-    ffmpeg -y -i "$input_path" \
-        -vf "scale='min($med_width,iw)':'min($med_height,ih)':force_original_aspect_ratio=decrease" \
-        "$med_path"
-
-    log_message "$input_path ==> $small_path : $small_width x $small_height"
-    ffmpeg -y -i "$input_path" \
-        -vf "scale='min($small_width,iw)':'min($small_height,ih)':force_original_aspect_ratio=decrease" \
-        "$small_path"
-
-    local dir base tmp_path
-    dir=$(dirname "$image_path")
-    base=$(basename "$image_path")
-    tmp_path="$dir/tmp_$base"
-    
-    log_message "$input_path ==> $input_path : $full_width x $full_height"
-    # Resize while preserving aspect ratio
-    ffmpeg -y -i "$input_path" \
-        -vf "scale='min($full_width,iw)':'min($full_height,ih)':force_original_aspect_ratio=decrease" \
-        "$tmp_path"
-
-    mv "$tmp_path" "$image_path"
-
-    return 0
-}
-
 # ==========================================================
 # Box Art Scraper Script
 # ==========================================================
@@ -262,18 +220,17 @@ for sys_dir in "$roms_dir"/*/; do
             continue
         fi
 
+        # Create Imgs directory if it doesn't exist
+        mkdir -p "${sys_dir}Imgs"
+
         rom_name="${rom_file_name%.*}"
         image_path="${sys_dir}Imgs/$rom_name.png"
 
-        # Create Imgs directory if it doesn't exist
-        mkdir -p "${sys_dir}Imgs"
-        mkdir -p "${sys_dir}Imgs_med"
-        mkdir -p "${sys_dir}Imgs_small"
-
-        if [ -f "$image_path" ]; then
+        if find "${sys_dir}Imgs" -maxdepth 1 -type f -name "$rom_name.*" | grep -q .; then
+            log_and_display_message "System: $sys_label - Boxart already exists for $rom_name."
             continue
         fi
-
+        
         remote_image_name=$(find_image_name "$sys_name" "$rom_file_name")
 
         if [ -z "$remote_image_name" ]; then
