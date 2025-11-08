@@ -357,30 +357,59 @@ backlight_down() {
 
 PYUI_PIPE=/tmp/pyui_pipe
 
-start_pyui_message_writer(){
+start_pyui_message_writer() {
+    # Check if PyUI is already running with the realtime port argument
+    if ps -ef | grep "[p]ython3.10.*-msgDisplayRealtimePort" >/dev/null; then
+        log_message "Real Time message listener already running."
+        return
+    fi
+
     freemma
-    rm $PYUI_PIPE
-    [ -p $PYUI_PIPE ] || mkfifo $PYUI_PIPE
-    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplayRealtime True < $PYUI_PIPE &
-    exec 3> $PYUI_PIPE
+    rm -f "$PYUI_PIPE"
+    [ -p "$PYUI_PIPE" ] || mkfifo "$PYUI_PIPE"
+
+    log_message "Starting Real Time message listener on port 50980"
+    /mnt/SDCARD/App/PyUI/launch.sh -msgDisplayRealtimePort 50980 &
+    sleep 3
+}
+
+kill_pyui_message_writer() {
+
+    # Check if PyUI is already running with the realtime port argument
+    pids=$(ps -ef | grep "[p]ython3.10.*-msgDisplayRealtimePort" | awk '{print $1}')
+
+    if [ -n "$pids" ]; then
+        log_message "Real Time message listener already running. Killing it..."
+        # Kill all matching PIDs
+        for pid in $pids; do
+            kill "$pid" 2>/dev/null
+        done
+        # Optionally wait for processes to exit
+        sleep 1
+    fi    
+
 }
 
 stop_pyui_message_writer() {
-    if [ -e /proc/$$/fd/3 ]; then
-        echo "EXIT_APP" >&3
-        exec 3>&-
-
-        # Wait until MainUI fully exits
-        while pgrep -x MainUI >/dev/null; do
-            sleep 0.2
-        done
-    fi
+    display_message "EXIT_APP"
+    sleep 0.5
+    kill_pyui_message_writer
     freemma
 }
 
-display_message(){
-    echo $1 >&3
+display_message() {
+    local message="$1"
+    /mnt/SDCARD/App/PyUI/python3.10/bin/python3.10 - "$message" <<'EOF'
+import socket, sys
+msg = sys.argv[1]
+try:
+    with socket.create_connection(("127.0.0.1", 50980), timeout=1) as s:
+        s.sendall((msg + "\n").encode("utf-8"))
+except Exception as e:
+    print(f"Error sending message: {e}", file=sys.stderr)
+EOF
 }
+
 
 log_and_display_message(){
     log_message "$1"
