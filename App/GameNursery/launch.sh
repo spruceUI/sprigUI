@@ -191,7 +191,7 @@ get_system_icon_from_theme() {
 
     ext="${selected_icon##*.}"
     dest_path="/mnt/SDCARD/Saves/GameNursery/Imgs/${category}.${ext}"
-    mkdir -p "/mnt/SDCARD/Saves/GameNursery/Imgs
+    mkdir -p "/mnt/SDCARD/Saves/GameNursery/Imgs"
     cp -f "$selected_icon" "$dest_path"
     log_message "Game Nursery: Copied system icon for '$category' from '$selected_icon' → '$dest_path'"
 }
