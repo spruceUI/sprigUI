@@ -176,11 +176,26 @@ if ! is_wifi_connected; then sleep 3; exit 1; fi
 if ! is_json_valid; then get_latest_jsons; fi
 if ! is_config_valid; then construct_config; fi
 
-stop_pyui_message_writer
+RESULT_FILE="/mnt/SDCARD/App/PyUI/selection.txt"
+rm -f "$RESULT_FILE"
 
-rm -f /tmp/exit_nursery
-while [ ! -e /tmp/exit_nursery ]; do
-    touch /tmp/exit_nursery
-    freemma
-    /mnt/SDCARD/App/PyUI/launch.sh -optionListTitle "Game Nursery" -optionListFile "$CONFIG_DIR"/nursery_config
+log_and_display_message "OPTION_LIST:$CONFIG_DIR"/nursery_config
+
+while true; do
+    if [ -f "$RESULT_FILE" ]; then
+        content=$(cat "$RESULT_FILE" 2>/dev/null)
+        
+        if [ "$content" = "EXIT" ]; then
+            log_and_display_message "Good Bye"
+            break
+        else
+            log_message "$content"
+            # Execute the content of the file as a command
+            eval "$content"
+            # Remove the file after running
+            rm -f "$RESULT_FILE"
+            log_and_display_message "OPTION_LIST:$CONFIG_DIR"/nursery_config
+        fi
+    fi
+
 done

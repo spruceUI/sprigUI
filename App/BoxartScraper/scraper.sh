@@ -191,7 +191,6 @@ for sys_dir in "$roms_dir"/*/; do
     fi
 
     sys_name="$(basename "$sys_dir")"
-    log_message "BoxartScraper: Scraping box art for $sys_name"
 
     # Get remote alias name
     get_ra_alias "$sys_name"
@@ -210,8 +209,14 @@ for sys_dir in "$roms_dir"/*/; do
         continue
     fi
 
+    first_game=0
+
     printf "$games" | while IFS= read -r file; do
 
+        if [ $first_game -eq 0 ]; then
+            log_and_display_message "BoxartScraper: Scraping box art for $sys_name"
+            first_game=1
+        fi
         rom_file_name="$(basename "$file")"
 
         # Skip directories, dot files, and non-supported files
@@ -227,7 +232,6 @@ for sys_dir in "$roms_dir"/*/; do
         image_path="${sys_dir}Imgs/$rom_name.png"
 
         if find "${sys_dir}Imgs" -maxdepth 1 -type f -name "$rom_name.*" | grep -q .; then
-            log_and_display_message "System: $sys_label - Boxart already exists for $rom_name."
             continue
         fi
         

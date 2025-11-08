@@ -18,10 +18,7 @@ if [ ! -e /tmp/logs_rotated ]; then
 fi
 
 # stop pyui real time message writer if left open.
-if [ -e /proc/$$/fd/3 ]; then
-    echo "EXIT_APP" >&3
-    exec 3>&-
-fi
+kill_pyui_message_writer
 
 # Start and stop network services as configured.
 /mnt/SDCARD/sprig/scripts/network/start_stop_services.sh &
