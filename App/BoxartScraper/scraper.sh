@@ -186,7 +186,6 @@ for sys_dir in "$roms_dir"/*/; do
         rm -f /tmp/kill_scraper
         log_and_display_message "Stopping scraping."
         sleep 2
-        kill_pyui_message_writer
         exit 5
     fi
 
@@ -211,7 +210,7 @@ for sys_dir in "$roms_dir"/*/; do
 
     first_game=0
 
-    printf "$games" | while IFS= read -r file; do
+    for file in $games ; do
 
         if [ $first_game -eq 0 ]; then
             log_and_display_message "BoxartScraper: Scraping box art for $sys_name"
@@ -260,7 +259,6 @@ for sys_dir in "$roms_dir"/*/; do
             rm -f /tmp/kill_scraper
             log_and_display_message "Stopping scraping."
             sleep 2
-            kill_pyui_message_writer
             exit 5
         fi
 
