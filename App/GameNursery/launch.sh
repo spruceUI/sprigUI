@@ -148,8 +148,8 @@ resize_image() {
 get_system_icon_from_theme() {
     local category="$1"
     local config="/mnt/SDCARD/Saves/mini-flip-system.json"
-    local current_theme icon_name emu_name selected_icon
-    local theme_dir fallback_dir
+    local current_theme icon_name emu_name selected_icon ext
+    local theme_dir fallback_dir dest_path
 
     current_theme="$(jq -r '.theme // "spruce"' "$config")"
 
@@ -189,9 +189,13 @@ get_system_icon_from_theme() {
         return 1
     fi
 
-    cp -f "$selected_icon" "/mnt/SDCARD/Saves/GameNursery/Imgs/${category}.png"
-    log_message "Game Nursery: Copied system icon for '$category' from '$selected_icon'"
+    ext="${selected_icon##*.}"
+    dest_path="/mnt/SDCARD/Saves/GameNursery/Imgs/${category}.${ext}"
+    mkdir -p "/mnt/SDCARD/Saves/GameNursery/Imgs
+    cp -f "$selected_icon" "$dest_path"
+    log_message "Game Nursery: Copied system icon for '$category' from '$selected_icon' → '$dest_path'"
 }
+
 
 
 
