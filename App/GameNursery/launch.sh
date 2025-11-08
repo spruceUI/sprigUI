@@ -8,7 +8,6 @@ DOWNLOAD="/mnt/SDCARD/App/GameNursery/download_game.sh"
 CONFIG_DIR="/mnt/SDCARD/Saves/GameNursery"
 JSON_DIR="/tmp/nursery-json"
 JSON_URL="https://github.com/spruceUI/Ports-and-Free-Games/releases/download/Singles/_info.7z"
-DEV_JSON_URL="https://github.com/spruceUI/Ports-and-Free-Games/releases/download/Singles/_test.7z"
 JSON_CACHE_VALID_MINUTES=10
 
 is_wifi_connected() {
@@ -16,18 +15,14 @@ is_wifi_connected() {
         log_message "Cloudflare ping successful; device is online."
         return 0
     else
-        start_pyui_message_writer
         log_and_display_message "Cloudflare ping failed; device is offline. Aborting."
         return 1
     fi
 }
 
-get_latest_jsons() {
+is_json_valid() {
     mkdir "$JSON_DIR" 2>/dev/null
     cd "$JSON_DIR"
-    
-    NEEDS_CONFIG_REBUILD=0
-
     if [ -f "$JSON_DIR/INFO.7z" ]; then
         file_age_minutes=$(( ($(date +%s) - $(date -r "$JSON_DIR/INFO.7z" +%s)) / 60 ))
         
@@ -41,42 +36,42 @@ get_latest_jsons() {
             log_message "Game Nursery: Cache exists but needs extraction"
             if ! 7zr x -y -scsUTF-8 "$JSON_DIR/INFO.7z" >/dev/null 2>&1; then
                 rm -f "$JSON_DIR/INFO.7z" >/dev/null 2>&1
-                NEEDS_CONFIG_REBUILD=1
+                log_message "Game Nursery: Existing cache could not be extracted."
+                return 1
             else
-                NEEDS_CONFIG_REBUILD=1
+                log_message "Game Nursery: Existing cache extracted successfully."
                 return 0
             fi
         fi
-    fi
-
-    # Clear directory only if we need to download new files
-    rm -r ./* 2>/dev/null
-    NEEDS_CONFIG_REBUILD=1
-
-    download_json() {
-        local url="$1"
-        if wget --quiet --no-check-certificate --max-redirect=20 -O "$JSON_DIR/INFO.7z" "$url"; then
-            return 0
-        fi
+    else        # no INFO.7z exists, so not valid.
         return 1
-    }
+    fi
+}
 
-    if ! download_json "$JSON_URL"; then
-        start_pyui_message_writer
+get_latest_jsons() {
+    # Clear directory only if we need to download new files
+    mkdir "$JSON_DIR" 2>/dev/null
+    cd "$JSON_DIR"
+    rm -r ./* 2>/dev/null
+
+    if ! wget --quiet --no-check-certificate --max-redirect=20 -O "$JSON_DIR/INFO.7z" "$JSON_URL"; then
         log_and_display_message "Unable to download latest info files from repository. Please try again later."
         sleep 3
         exit 1
     fi
+
     log_message "Game Nursery: Info cache downloaded successfully"
 
     if ! 7zr x -y -scsUTF-8 "$JSON_DIR/INFO.7z" >/dev/null 2>&1; then
-        start_pyui_message_writer
         log_and_display_message "Unable to extract latest game info files. Please try again later."
         sleep 3
         rm -f "$JSON_DIR/INFO.7z" >/dev/null 2>&1
         exit 1
     fi
     log_message "Game Nursery: JSON extraction process completed successfully"
+
+    # remove existing nursery_config so we can rebuild it with updated info
+    rm -f "$CONFIG_DIR/nursery_config" 2>/dev/null
 }
 
 interpret_json() {
@@ -84,13 +79,6 @@ interpret_json() {
     json_file="$1"
     display_name="$(jq -r '.display' "$json_file")"
     group_name="$(basename "$(dirname "$json_file")")"    # file="$(jq -r '.file' "$json_file")"
-    # description="$(jq -r '.description' "$json_file")"
-    # requires_files="$(jq -r '.requires_files' "$json_file")"
-    # version="$(jq -r '.version' "$json_file")"
-    # add notice that additional files are needed
-    # if [ "$requires_files" = "true" ]; then
-    #     description="$description Requires additional files."
-    # fi
 
     # add line for specific game
     echo "\"$group_name/$display_name\": \"$DOWNLOAD '$json_file'\","
@@ -100,16 +88,16 @@ download_boxart() {
     local json_file="$1"
     local display_name system group_name img_url img_path
 
-    display_name="$(jq -r '.display' "$json_file")"
+    display_name="$(jq -r '.display' "$json_file" | tr -d '\r\n')"
     system="$(jq -r '.system' "$json_file")"
     group_name="$(basename "$(dirname "$json_file")")"
 
     # Construct local destination
     img_path="$CONFIG_DIR/Imgs/${display_name}.png"
 
-    log_message "Checking for cached boxart at: $img_path"
-    if [ -f "$img_path" ]; then
-        log_message "Game Nursery: Boxart for '$display_name' already cached"
+    log_message "Checking for cached boxart at: $img_path" -v
+    if [ -e "$img_path" ]; then
+        log_message "Game Nursery: Box art for '$display_name' already cached. Skipping download."
         return 0
     fi
 
@@ -119,7 +107,6 @@ download_boxart() {
     # Ensure directory exists
     mkdir -p "$(dirname "$img_path")"
 
-    # Try downloading (no output, but return code logged)
     if wget --quiet --no-check-certificate -O "$img_path" "$img_url"; then
         log_message "Game Nursery: Successfully downloaded boxart for '$display_name'"
     else
@@ -128,19 +115,31 @@ download_boxart() {
     fi
 }
 
+is_config_valid() {
+    local config_file="$CONFIG_DIR/nursery_config"
+
+    # Check that the config file exists and isn't empty
+    if [ ! -f "$config_file" ] || [ ! -s "$config_file" ]; then
+        log_message "Game Nursery: nursery_config missing or empty. Rebuilding."
+        return 1
+    fi
+
+    # Validate JSON structure
+    if ! jq empty "$config_file" >/dev/null 2>&1; then
+        log_message "Game Nursery: nursery_config is invalid JSON. Rebuilding."
+        return 1
+    fi
+
+    log_message "Game Nursery: Existing nursery_config is valid."
+    return 0
+}
 
 construct_config() {
     mkdir "$CONFIG_DIR" 2>/dev/null
     cd "$CONFIG_DIR"
     
-    # Only keep existing config if we haven't downloaded new JSONs
-    if [ "$NEEDS_CONFIG_REBUILD" -eq 0 ] && [ -f "$CONFIG_DIR/nursery_config" ] && [ -s "$CONFIG_DIR/nursery_config" ]; then
-        log_message "Game Nursery: Using existing nursery_config"
-        return 0
-    fi
-
     # Clear and rebuild if we get here
-    rm -r ./* 2>/dev/null
+    rm -f "$CONFIG_DIR/nursery_config" 2>/dev/null
 
     # Initialize config json with open bracket
     echo "{" > "$CONFIG_DIR"/nursery_config
@@ -163,22 +162,25 @@ construct_config() {
         fi
     done
 
-    # strip away final trailing comma
-    sed -i '$ s/,$//' "$CONFIG_DIR"/nursery_config
-
-    # Finish config json with a closing bracket
-    echo "}" >> "$CONFIG_DIR"/nursery_config
+    sed -i '$ s/,$//' "$CONFIG_DIR"/nursery_config      # strip away final trailing comma
+    echo "}" >> "$CONFIG_DIR"/nursery_config            # Finish config json with a closing bracket
 }
 
 
 ##### MAIN EXECUTION #####
 
+start_pyui_message_writer
+log_and_display_message "Welcome to the sprigUI Game Nursery, where you can pick the freshest homegrown games! Please wait.........."
+
 if ! is_wifi_connected; then sleep 3; exit 1; fi
-get_latest_jsons
-construct_config
+if ! is_json_valid; then get_latest_jsons; fi
+if ! is_config_valid; then construct_config; fi
+
+stop_pyui_message_writer
 
 rm -f /tmp/exit_nursery
 while [ ! -e /tmp/exit_nursery ]; do
     touch /tmp/exit_nursery
+    freemma
     /mnt/SDCARD/App/PyUI/launch.sh -optionListTitle "Game Nursery" -optionListFile "$CONFIG_DIR"/nursery_config
 done
