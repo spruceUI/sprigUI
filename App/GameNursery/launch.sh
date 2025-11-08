@@ -147,13 +147,16 @@ resize_image() {
 
 get_system_icon_from_theme() {
     local category="$1"
-    config="/mnt/SDCARD/Saves/mini-flip-system.json"
+    local config="/mnt/SDCARD/Saves/mini-flip-system.json"
+    local current_theme icon_name emu_name selected_icon
+    local theme_dir fallback_dir
+
     current_theme="$(jq -r '.theme // "spruce"' "$config")"
 
     case "$category" in
         "Arduboy")          icon_name="arduboy";    emu_name="ARDUBOY" ;;
         "Commodore 64")     icon_name="c64";        emu_name="COMMODORE" ;;
-        "Doom")             icon_name="doom" ;      emu_name="DOOM" ;;
+        "Doom")             icon_name="doom";       emu_name="DOOM" ;;
         "EasyRPG")          icon_name="easyrpg";    emu_name="EASYRPG" ;;
         "Game Boy family")  icon_name="gba";        emu_name="GBA" ;;
         "Game Tank")        icon_name="gametank";   emu_name="GAMETANK" ;;
@@ -163,27 +166,33 @@ get_system_icon_from_theme() {
         *) return 1 ;;
     esac
 
-    theme_icon_path="/mnt/SDCARD/Themes/${current_theme}/icons750x560/${icon_name}.png"
-    theme_sel_path="/mnt/SDCARD/Themes/${current_theme}/icons750x560/sel/${icon_name}.png"
-    fallback_icon_path="/mnt/SDCARD/Emu/${emu_name}/${icon_name}.png"
-    fallback_sel_path="/mnt/SDCARD/Emu/${emu_name}/${icon_name}_sel.png"
-    destination_path="/mnt/SDCARD/Saves/GameNursery/Imgs/${category}.png"
+    theme_dir="/mnt/SDCARD/Themes/${current_theme}/icons750x560"
+    fallback_dir="/mnt/SDCARD/Emu/${emu_name}"
 
-    if [ -e "$theme_sel_path" ]; then
-        selected_icon="$theme_sel_path"
-    elif [ -e "$theme_icon_path" ]; then
-        selected_icon="$theme_icon_path"
-    elif [ -e "$fallback_sel_path" ]; then
-        selected_icon="$fallback_sel_path"
-    elif [ -e "$fallback_icon_path" ]; then
-        selected_icon="$fallback_icon_path"
-    else 
+    if [ -e "${theme_dir}/sel/${icon_name}.qoi" ]; then
+        selected_icon="${theme_dir}/sel/${icon_name}.qoi"
+    elif [ -e "${theme_dir}/sel/${icon_name}.png" ]; then
+        selected_icon="${theme_dir}/sel/${icon_name}.png"
+    elif [ -e "${theme_dir}/${icon_name}.qoi" ]; then
+        selected_icon="${theme_dir}/${icon_name}.qoi"
+    elif [ -e "${theme_dir}/${icon_name}.png" ]; then
+        selected_icon="${theme_dir}/${icon_name}.png"
+    elif [ -e "${fallback_dir}/${icon_name}_sel.qoi" ]; then
+        selected_icon="${fallback_dir}/${icon_name}_sel.qoi"
+    elif [ -e "${fallback_dir}/${icon_name}_sel.png" ]; then
+        selected_icon="${fallback_dir}/${icon_name}_sel.png"
+    elif [ -e "${fallback_dir}/${icon_name}.qoi" ]; then
+        selected_icon="${fallback_dir}/${icon_name}.qoi"
+    elif [ -e "${fallback_dir}/${icon_name}.png" ]; then
+        selected_icon="${fallback_dir}/${icon_name}.png"
+    else
         return 1
     fi
-    mkdir -p "/mnt/SDCARD/Saves/GameNursery/Imgs"
-    cp -f "$selected_icon" "$destination_path"
-    resize_image "$destination_path"
+
+    cp -f "$selected_icon" "/mnt/SDCARD/Saves/GameNursery/Imgs/${category}.png"
+    log_message "Game Nursery: Copied system icon for '$category' from '$selected_icon'"
 }
+
 
 
 is_config_valid() {
