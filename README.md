@@ -21,7 +21,7 @@ sprig is a custom operating system for the Miyoo Mini Flip, developed by the spr
 
 - Over-the-air updates to make updating your device a snap.
 
-- Apps borrowed from our friends on the Onion and MinUI teams, including a file manager, ebook reader, bootlogo flasher, and more.
+- The Game Nursery returns: an OTA free homebrew downloader, straight to your device.
 
 - SSH, Telnet, Samba, and ADB over wifi support for the advanced users.
 
