@@ -75,7 +75,6 @@ get_latest_jsons() {
 }
 
 interpret_json() {
-
     json_file="$1"
     display_name="$(jq -r '.display' "$json_file")"
     group_name="$(basename "$(dirname "$json_file")")"    # file="$(jq -r '.file' "$json_file")"
@@ -165,28 +164,18 @@ get_system_icon_from_theme() {
         "ZX Spectrum")      icon_name="zxs";        emu_name="ZXS" ;;
         *) return 1 ;;
     esac
-
     theme_dir="/mnt/SDCARD/Themes/${current_theme}/icons750x560"
     fallback_dir="/mnt/SDCARD/Emu/${emu_name}"
 
-    if [ -e "${theme_dir}/sel/${icon_name}.qoi" ]; then
-        selected_icon="${theme_dir}/sel/${icon_name}.qoi"
-    elif [ -e "${theme_dir}/sel/${icon_name}.png" ]; then
-        selected_icon="${theme_dir}/sel/${icon_name}.png"
-    elif [ -e "${theme_dir}/${icon_name}.qoi" ]; then
-        selected_icon="${theme_dir}/${icon_name}.qoi"
-    elif [ -e "${theme_dir}/${icon_name}.png" ]; then
-        selected_icon="${theme_dir}/${icon_name}.png"
-    elif [ -e "${fallback_dir}/${icon_name}_sel.qoi" ]; then
-        selected_icon="${fallback_dir}/${icon_name}_sel.qoi"
-    elif [ -e "${fallback_dir}/${icon_name}_sel.png" ]; then
-        selected_icon="${fallback_dir}/${icon_name}_sel.png"
-    elif [ -e "${fallback_dir}/${icon_name}.qoi" ]; then
-        selected_icon="${fallback_dir}/${icon_name}.qoi"
-    elif [ -e "${fallback_dir}/${icon_name}.png" ]; then
-        selected_icon="${fallback_dir}/${icon_name}.png"
-    else
-        return 1
+    if   [ -e "${theme_dir}/sel/${icon_name}.qoi" ]; then selected_icon="${theme_dir}/sel/${icon_name}.qoi"
+    elif [ -e "${theme_dir}/sel/${icon_name}.png" ]; then selected_icon="${theme_dir}/sel/${icon_name}.png"
+    elif [ -e "${theme_dir}/${icon_name}.qoi" ];     then selected_icon="${theme_dir}/${icon_name}.qoi"
+    elif [ -e "${theme_dir}/${icon_name}.png" ];     then selected_icon="${theme_dir}/${icon_name}.png"
+    elif [ -e "${fallback_dir}/${icon_name}_sel.qoi" ]; then selected_icon="${fallback_dir}/${icon_name}_sel.qoi"
+    elif [ -e "${fallback_dir}/${icon_name}_sel.png" ]; then selected_icon="${fallback_dir}/${icon_name}_sel.png"
+    elif [ -e "${fallback_dir}/${icon_name}.qoi" ];  then selected_icon="${fallback_dir}/${icon_name}.qoi"
+    elif [ -e "${fallback_dir}/${icon_name}.png" ];  then selected_icon="${fallback_dir}/${icon_name}.png"
+    else return 1
     fi
 
     ext="${selected_icon##*.}"
@@ -195,9 +184,6 @@ get_system_icon_from_theme() {
     cp -f "$selected_icon" "$dest_path"
     log_message "Game Nursery: Copied system icon for '$category' from '$selected_icon' → '$dest_path'"
 }
-
-
-
 
 is_config_valid() {
     local config_file="$CONFIG_DIR/nursery_config"
