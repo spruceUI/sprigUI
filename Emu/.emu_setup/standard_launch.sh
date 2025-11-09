@@ -2,7 +2,7 @@
 
 ##### DEFINE BASE VARIABLES #####
 
-. /mnt/SDCARD/sprig/helperFunctions.sh
+. /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
 set_performance
 

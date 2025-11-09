@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /mnt/SDCARD/sprig/helperFunctions.sh
+. /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
 LID_TIMER="$(get_config_value '.menuOptions."Lid and Power Settings".lidPowerdownTimer.selected' "30s")"
 case $LID_TIMER in
