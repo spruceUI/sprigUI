@@ -1,7 +1,7 @@
 {
     "theme": "spruce",
     "themeDir": "/mnt/SDCARD/Themes/",
-    "turboDelayMs": 150,
+    "turboDelayMs": 125,
     "enableButtonWatchers": false,
     "enableWifiMonitor": true,
     "mainMenuTitle": "sprigUI",
