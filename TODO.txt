@@ -1,6 +1,5 @@
 "Would be nice"s / ideas for future updates:
 
-- game nursery?
 - theme garden?
 - dufs
 - syncthing
