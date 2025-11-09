@@ -27,15 +27,19 @@ sprig is a custom operating system for the Miyoo Mini Flip, developed by the spr
 
 - Over-the-air updates to make updating your device a snap.
 
-- Apps borrowed from our friends on the Onion and MinUI teams, including a file manager, ebook reader, bootlogo flasher, and more.
+- The Game Nursery returns: an OTA free homebrew downloader, straight to your device.
 
-- SSH and ADB over wifi support for the advanced users.
+- SSH, Telnet, Samba, and ADB over wifi support for the advanced users.
 
 ## Required Firmware
 
 [Official Firmware From Miyoo](https://github.com/spruceUI/sprigUI/releases/download/Official_Miyoo_Firmware/miyoo285_fw.img)
 
 ## Operating Manual
+
+- Universal hotkeys:
+    - Launch Game Switcher: Hold MENU button
+    - Brightness up/down: SELECT + Volume keys
 
 - RetroArch hotkeys:
     - Screenshot: SELECT + A
@@ -51,15 +55,11 @@ sprig is a custom operating system for the Miyoo Mini Flip, developed by the spr
 - DraStic emulator hotkeys:
     - Please see [the readme on Steward Fu's nds repository](https://github.com/steward-fu/nds?tab=readme-ov-file#hotkey) for a list of hotkeys and other DraStic-Steward functions.
 
-- Game Switcher:
-    - Default behavior: Hold Menu button for 1 second to jump to your 5 most recent games.
-    - Button press time and number of recents is configurable from the Main Menu -> Settings -> Extra Settings -> Game Switcher Settings.
-
 - Power Button behavior:
     - Quick tap to sleep/wake.
     - Hold 1-2 seconds for quick save and shutdown; game will autoresume on boot. (short triple vibrate)
     - Hold 3 seconds to force close a frozen app or emulator. (longer double vibrate)
-    - Hold 10 seconds to hard shutdown a device as a last resort.
+    - Hold 10 seconds to hard shutdown the device as a last resort.
 
 - Changing emulator cores for a system:
     - Some systems, such as Game Boy, have multiple emulator options.
@@ -71,9 +71,11 @@ sprig is a custom operating system for the Miyoo Mini Flip, developed by the spr
     - Please note that without these commercial binaries, you can instead use the `Roms/FAKE08` folder, which allows you to emulate Pico-8, but without Splore access.
 
 - Wireless connectivity:
-    - sprigUI automatically enables wireless ADB and SSH access on boot. You can connect to your device using these services by running the following commands from your computer.
+    - sprigUI comes with wireless ADB enabled by default. You can also enable additional connectivity options by going to Settings -> CFW System Settings -> Network Settings. If set to "True", you can connect to your device using these services by running the following commands from your computer. (Reload the UI after toggling for the services to launch or close.) The username and password for each of these, if prompted, are `sprig` and `happygaming`, respectively.
         - ADB: `adb connect 192.168.x.x:5555`
         - SSH: `ssh root@192.168.x.x`
+        - Samba: Enter `smb://192.168.x.x/SDCARD` in your OS's file browser.
+        - Telnet: `telnet 192.168.x.x`
 
 - Box Art Scraper
     - Run this app to automatically search the LibRetro thumbnails database for box art matching the names of your Roms.
