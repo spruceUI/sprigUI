@@ -1,5 +1,5 @@
 #!/bin/sh
-. /mnt/SDCARD/sprig/helperFunctions.sh
+. /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
 # Early out if wifi is disabled in PyUI
 WIFI_ENABLED="$(get_pyui_config_value '.wifi' 1)"

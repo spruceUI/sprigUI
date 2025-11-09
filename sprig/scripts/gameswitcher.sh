@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /mnt/SDCARD/sprig/helperFunctions.sh
+. /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
 game_switcher_enabled="$(get_pyui_config_value '.gameSwitcherEnabled' "true")"
 

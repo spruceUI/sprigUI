@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /mnt/SDCARD/sprig/helperFunctions.sh
+. /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
 BAT_LOG="/mnt/SDCARD/Saves/sprig/battery.log"
 log_message "Battery watchdog started. Starting battery: $(get_battery_percentage)"

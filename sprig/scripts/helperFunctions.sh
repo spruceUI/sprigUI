@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Gain access to these functions in your script by adding the following line at the top:
-# . /mnt/SDCARD/sprig/helperFunctions.sh
+# . /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
 ##########     FLAG HANDLING     ##########
 
@@ -399,7 +399,7 @@ stop_pyui_message_writer() {
 
 display_message() {
     local message="$1"
-    /mnt/SDCARD/App/PyUI/python3.10/bin/python3.10 - "$message" <<'EOF'
+    python - "$message" <<'EOF'
 import socket, sys
 msg = sys.argv[1]
 try:

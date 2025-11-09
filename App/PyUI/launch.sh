@@ -3,8 +3,8 @@
 freemma
 
 export PATH="/mnt/SDCARD/sprig/bin:$PATH"
-export LD_LIBRARY_PATH="/mnt/SDCARD/App/PyUI/libs/:/config/lib/:/customer/lib"
-export PYSDL2_DLL_PATH="/mnt/SDCARD/App/PyUI/libs"
+export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib/:/config/lib/:/customer/lib"
+export PYSDL2_DLL_PATH="/mnt/SDCARD/sprig/lib"
 
 export SDL_VIDEODRIVER=mmiyoo
 export SDL_AUDIODRIVER=mmiyoo
@@ -13,7 +13,7 @@ export SDL_MMIYOO_DOUBLE_BUFFER=1
 
 rm /mnt/SDCARD/App/PyUI/run.txt
 
-/mnt/SDCARD/App/PyUI/python3.10/bin/MainUI \
+MainUI \
     /mnt/SDCARD/App/PyUI/main-ui/mainui.py \
     -device SPRIG_MIYOO_MINI_FLIP \
     -logDir "/mnt/SDCARD/App/PyUI/logs" \

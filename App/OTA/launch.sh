@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /mnt/SDCARD/sprig/helperFunctions.sh
+. /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
 export PATH="/mnt/SDCARD/sprig/bin:$PATH"
 export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH:/mnt/SDCARD/App/PyUI/libs/:/config/lib/:/customer/lib"
@@ -131,7 +131,7 @@ extract_archive() {
 
     new_dir="sprigUI-$BRANCH"
     new_ra_dir="$new_dir/RetroArch"
-    new_python3_dir="$new_dir/App/PyUI/python3.10"
+    new_python3_dir="$new_dir/sprig/lib/python3.10"
     new_themes_dir="$new_dir/Themes"
 
     excluded_files="$new_dir/build $new_dir/justfile $new_dir/.gitignore $new_dir/.gitattributes $new_dir/TODO.txt"
@@ -195,7 +195,7 @@ preserve_sprig_config_settings() {
 
     existing_config="/mnt/SDCARD/Saves/sprig/sprig-config.json"
     new_config="/mnt/SDCARD/sprigUI-$BRANCH/Saves/sprig/sprig-config.json"
-    /mnt/SDCARD/App/PyUI/python3.10/bin/python3.10 /mnt/SDCARD/App/OTA/merge_configs.py "$existing_config" "$new_config"
+    python /mnt/SDCARD/App/OTA/merge_configs.py "$existing_config" "$new_config"
 }
 
 complete_installation() {
