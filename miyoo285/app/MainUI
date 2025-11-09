@@ -20,8 +20,6 @@ if [ ! -e /tmp/logs_rotated ]; then
     log_message "Volume and backlight set to last known values."
 fi
 
-# stop pyui real time message writer if left open.
-kill_pyui_message_writer
 
 # Start and stop network services as configured.
 /mnt/SDCARD/sprig/scripts/network/start_stop_services.sh &
@@ -43,6 +41,8 @@ if [ -e /mnt/SDCARD/sprig/flags/lastgame.lock ]; then
     freemma
     mv /mnt/SDCARD/sprig/flags/lastgame.lock /tmp/cmd_to_run.sh
     /tmp/cmd_to_run.sh
+    rm /tmp/cmd_to_run.sh
+    freemma
 fi
 
 # Fix timezone (why did Miyoo make this a /tmp file symlink?)
@@ -62,6 +62,21 @@ if [ -n "$timezone" ] && [ "$timezone" != "null" ]; then
     fi
 fi
 
-# Actually launch the UI
-freemma
 /mnt/SDCARD/App/PyUI/launch.sh
+freemma
+
+while true; do
+    #Run any selection
+    chmod 777 /tmp/cmd_to_run.sh
+    /tmp/cmd_to_run.sh
+    rm /tmp/cmd_to_run.sh
+    
+    # stop pyui real time message writer if left open.
+    kill_pyui_message_writer
+
+    /mnt/SDCARD/sprig/scripts/audio_server.sh
+
+    #Restart PyUI
+    freemma
+    /mnt/SDCARD/App/PyUI/launch.sh
+done
