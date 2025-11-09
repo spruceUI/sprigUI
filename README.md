@@ -7,6 +7,12 @@ _a twig of spruce_
 ## What is sprigUI?
 sprig is a custom operating system for the Miyoo Mini Flip, developed by the spruceOS team. Our aim with this project is to find a niche somewhere between the intentional simplicity of MinUI and the more visually-oriented user interfaces of OnionOS or spruceOS.
 
+## Installation
+
+[Please check out our Wiki page for detailed instructions.](https://github.com/spruceUI/sprigUI/wiki/1.-Installation-Instructions)
+
+[You will also need to Flash the new Miyoo Firmware to fix shoulder button mappings being swapped on brand new units.](https://github.com/spruceUI/sprigUI/wiki/2.-Updating-the-Onboard-Miyoo-Firmware) 
+
 ## Features
 
 - Custom Python-based frontend that can shapeshift between the visual styles of Miyoo's MainUI, Daijisho, MinUI, or even EmulationStation, courtesy of chrisj951.
