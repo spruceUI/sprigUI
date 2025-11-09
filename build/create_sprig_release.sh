@@ -14,7 +14,7 @@ fi
 
 VERSION=$(< "$VERSION_FILE")
 
-if [ "$VERSION" == "" ]; then
+if [ -z "$VERSION" ]; then
     echo "Error: failed to retrieve version from $VERSION_FILE"
     exit 1
 fi
@@ -22,18 +22,50 @@ fi
 mkdir -p "$DESTINATION_DIR"
 
 OUTPUT_7Z="${DESTINATION_DIR}/${ARCHIVE_NAME}V${VERSION}.7z"
+OUTPUT_ZIP="${DESTINATION_DIR}/${ARCHIVE_NAME}V${VERSION}.zip"
 
-if [ -f "$OUTPUT_7Z" ]; then
-    echo "Removing already existing $OUTPUT_7Z"
-    rm "$OUTPUT_7Z"
-fi
+# Clean old archives if they exist
+for file in "$OUTPUT_7Z" "$OUTPUT_ZIP"; do
+    if [ -f "$file" ]; then
+        echo "Removing existing $file"
+        rm "$file"
+    fi
+done
 
-7z a -t7z -mx=9 -xr!.git* -xr!build -x!.gitignore -x!.gitattributes -x!justfile -x!main -x!TODO.txt "$OUTPUT_7Z" *
+# Common exclusion rules
+EXCLUDES=(
+    '-xr!.git*'
+    '-xr!build'
+    '-x!.gitignore'
+    '-x!.gitattributes'
+    '-x!justfile'
+    '-x!main'
+    '-x!TODO.txt'
+)
 
-if [ $? -ne 0 ]; then
+echo "Creating 7z archive..."
+7z a -t7z -mx=9 "${EXCLUDES[@]}" "$OUTPUT_7Z" * || {
     echo "Error: failed to create 7z archive"
     exit 1
-fi
+}
 
-echo "7z archive $OUTPUT_7Z created successfully"
+echo "Creating zip archive..."
+# zip uses different exclusion syntax
+zip -r -9 "$OUTPUT_ZIP" . -x \
+    "*.git*" \
+    "build/*" \
+    ".gitignore" \
+    ".gitattributes" \
+    "justfile" \
+    "main" \
+    "TODO.txt" \
+    "dist/*" || {
+    echo "Error: failed to create zip archive"
+    exit 1
+}
+
+echo
+echo "✅ Archives created successfully:"
+echo " - $OUTPUT_7Z"
+echo " - $OUTPUT_ZIP"
 exit 0
