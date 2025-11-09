@@ -4,6 +4,9 @@
 
 set_performance
 
+touch /mnt/SDCARD/sprig/bin/MainUI
+mount --bind /mnt/SDCARD/sprig/bin/python /mnt/SDCARD/sprig/bin/MainUI
+
 if ! mount | grep -q "/etc/profile"; then
     mount -o bind /mnt/SDCARD/sprig/etc/profile /etc/profile
     mount -o bind /mnt/SDCARD/sprig/etc/passwd /etc/passwd
