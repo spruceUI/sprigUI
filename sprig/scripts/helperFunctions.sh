@@ -359,7 +359,7 @@ PYUI_PIPE=/tmp/pyui_pipe
 
 start_pyui_message_writer() {
     # Check if PyUI is already running with the realtime port argument
-    if ps -ef | grep "[p]ython3.10.*-msgDisplayRealtimePort" >/dev/null; then
+    if ps -ef | grep "[m]sgDisplayRealtimePort" >/dev/null; then
         log_message "Real Time message listener already running."
         return
     fi
@@ -376,7 +376,7 @@ start_pyui_message_writer() {
 kill_pyui_message_writer() {
 
     # Check if PyUI is already running with the realtime port argument
-    pids=$(ps -ef | grep "[p]ython3.10.*-msgDisplayRealtimePort" | awk '{print $1}')
+    pids=$(ps -ef | grep "[m]sgDisplayRealtimePort" | awk '{print $1}')
 
     if [ -n "$pids" ]; then
         log_message "Real Time message listener already running. Killing it..."
