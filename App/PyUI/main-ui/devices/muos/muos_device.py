@@ -1,29 +1,20 @@
-from concurrent.futures import Future
 import json
 from pathlib import Path
-import re
 import shutil
 import subprocess
 import sys
-import time
-from apps.miyoo.miyoo_app_finder import MiyooAppFinder
 from apps.muos.muos_app_finder import MuosAppFinder
 from controller.controller_inputs import ControllerInput
-from controller.key_watcher_controller import KeyWatcherController
-from devices.bluetooth.bluetooth_scanner import BluetoothScanner
 from devices.charge.charge_status import ChargeStatus
 import os
 from devices.device_common import DeviceCommon
 from devices.miyoo.system_config import SystemConfig
-from devices.miyoo.trim_ui_joystick import TrimUIJoystick
-from devices.miyoo_trim_common import MiyooTrimCommon
 from devices.utils.process_runner import ProcessRunner
 from devices.wifi.wifi_connection_quality_info import WiFiConnectionQualityInfo
 from games.utils.device_specific.muos_game_system_utils import MuosGameSystemUtils
 from games.utils.game_entry import GameEntry
 from menus.games.utils.rom_info import RomInfo
 from menus.settings.button_remapper import ButtonRemapper
-import sdl2
 from utils import throttle
 from utils.config_copier import ConfigCopier
 from utils.logger import PyUiLogger
@@ -64,8 +55,17 @@ class MuosDevice(DeviceCommon):
     def reboot_cmd(self):
         return "reboot"
 
+    # Why does this break? Using the script should be better than just
+    # Running the direct command
+    #def power_off(self):
+    #    ProcessRunner.run(["/opt/muos/script/system/halt.sh", "poweroff"])
+    #def reboot(self):
+    #    ProcessRunner.run(["/opt/muos/script/system/halt.sh", "reboot"])
+
+
+
     def _set_volume(self, volume):
-        ProcessRunner.run(["/opt/muos/device/script/audio.sh", str(volume)])
+        ProcessRunner.run(["/opt/muos/script/device/audio.sh", str(volume)])
         return volume 
 
 
@@ -74,7 +74,7 @@ class MuosDevice(DeviceCommon):
 
     def _set_lumination_to_config(self):
         luminosity = self.map_backlight_from_10_to_full_255(self.system_config.backlight)
-        ProcessRunner.run(["/opt/muos/device/script/bright.sh", str(luminosity)])
+        ProcessRunner.run(["/opt/muos/script/device/bright.sh", str(luminosity)])
     
     def _set_contrast_to_config(self):
         pass
@@ -297,7 +297,7 @@ class MuosDevice(DeviceCommon):
         Loads the assign.json file from MUOS info path.
         If uppercase_keys is True, all keys are converted to uppercase.
         """
-        assign_path = "/mnt/mmc/MUOS/info/assign/assign.json"
+        assign_path = "/opt/muos/share/info/assign/assign.json"
         try:
             with open(assign_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
@@ -314,22 +314,26 @@ class MuosDevice(DeviceCommon):
         return data
 
     def add_app_launch_as_startup(self, input):
+        from display.display import Display
         if (ControllerInput.A == input):
             muos_frontend_sh_path = "/opt/muos/script/mux/frontend.sh"        
             updated_frontend = os.path.join(self.script_dir,"frontend.sh") 
             
             try:
                 shutil.copyfile(updated_frontend, muos_frontend_sh_path)
-                print(f"Copied {updated_frontend} to {muos_frontend_sh_path}")
+                PyUiLogger.get_logger().info(f"Copied {updated_frontend} to {muos_frontend_sh_path}")
             except OSError as e:
-                print(f"Failed to copy file: {e}")
+                PyUiLogger.get_logger().warning(f"Failed to copy file: {e}")
                 
             startup_path = "/opt/muos/config/settings/general/startup"
             try:
                 with open(startup_path, "w") as f:
                     f.write("lastapp\n")
+                
+                Display.display_message("Last muOS launched App will launch on startup",2000)
             except OSError as e:
-                print(f"Failed to write to {startup_path}: {e}")
+                PyUiLogger.get_logger().warning(f"Failed to write to {startup_path}: {e}")
+                Display.display_message("Error updating startup script",2000)
 
 
     def get_extra_settings_options(self):
@@ -349,3 +353,28 @@ class MuosDevice(DeviceCommon):
 
     def take_snapshot(self, path):
         return None
+    
+    def get_save_state_image(self, rom_info: RomInfo):
+        #TODO, where does it store this?
+        return None
+
+    def get_wpa_supplicant_conf_path(self):
+        return None
+
+    def supports_brightness_calibration(self):
+        return False
+
+    def supports_contrast_calibration(self):
+        return False
+
+    def supports_saturation_calibration(self):
+        return False
+
+    def supports_hue_calibration(self):
+        return False
+
+    def supports_qoi(self):
+        return False
+
+    def keep_running_on_error(self):
+        return False

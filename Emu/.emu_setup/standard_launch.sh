@@ -2,18 +2,20 @@
 
 ##### DEFINE BASE VARIABLES #####
 
-. /mnt/SDCARD/sprig/helperFunctions.sh
+. /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
 set_performance
 
 log_message "-----Launching Emulator-----"
 log_message "trying: $0 $@"
 
-export EMU_NAME="$(echo "$1" | cut -d'/' -f5)"
-export EMU_DIR="/mnt/SDCARD/Emu/${EMU_NAME}"
-export EMU_JSON_PATH="${EMU_DIR}/config.json"
-export GAME="$(basename "$1")"
-export CORE="$(jq -r '.menuOptions.Emulator.selected' "$EMU_JSON_PATH")"
+EMU_NAME="$(echo "$1" | cut -d'/' -f5)"
+EMU_DIR="/mnt/SDCARD/Emu/${EMU_NAME}"
+EMU_JSON_PATH="${EMU_DIR}/config.json"
+GAME="$(basename "$1")"
+CORE="$(jq -r '.menuOptions.Emulator.selected' "$EMU_JSON_PATH")"
+
+DISABLE_WIFI="$(get_config_value '.menuOptions."Lid and Power Settings".disableWifiInGame.selected' "False")"
 
 ##### GENERAL FUNCTIONS #####
 
@@ -36,6 +38,12 @@ set_cpu_mode() {
 	fi
 }
 
+update_stock_volume() {
+	# update stock system.json's volume from pyui's - drastic steward reads stock's. 
+	vol_val="$(jq '.vol // 10' /mnt/SDCARD/Saves/mini-flip-system.json)"
+	[ -n "$vol_val" ] && jq --argjson vol "$vol_val" '.vol = $vol' /appconfigs/system.json > /tmp/tmp.json && mv /tmp/tmp.json /appconfigs/system.json
+
+}
 
 ##### EMULATOR LAUNCH FUNCTIONS #####
 
@@ -59,7 +67,6 @@ run_drastic() {
 	export EGL_VIDEODRIVER=mmiyoo
 
 	killall audioserver
-	killall audioserver.mod
 
 	sv=`cat /proc/sys/vm/swappiness`
 
@@ -68,7 +75,7 @@ run_drastic() {
 
 	cd $mydir
 
-	./cpuclock 1600
+	cpuclock 1600
 
 	./drastic "$ROM_FILE"
 	sync
@@ -89,7 +96,6 @@ run_openbor() {
 	export SDL_AUDIODRIVER=mmiyoo
 
 	killall audioserver
-	killall audioserver.mod
 	
 	cd "$EMU_DIR"
 
@@ -150,9 +156,9 @@ run_pico8() {
 	export SDL_MMIYOO_DOUBLE_BUFFER=1
 
 	killall audioserver
-	killall audioserver.mod
-	sync_pico8_volume
 
+	sync_pico8_volume
+	cpuclock 1600
 	if [ "${GAME##*.}" = "splore" ]; then
 		pico8_dyn -preblit_scale 3 -pixel_perfect 0 -splore -root_path "/mnt/SDCARD/Roms/PICO8/"
 	else
@@ -191,19 +197,26 @@ get_core_override
 
 set_cpu_mode
 
+if [ "$DISABLE_WIFI" = "True" ] && [ ! "${GAME##*.}" = "splore" ]; then
+	/mnt/SDCARD/sprig/scripts/network/kill_wifi.sh &
+	log_message "Disabling Wi-Fi and network services while in game."
+fi
+
 # Sanitize the rom path
 ROM_FILE="$(echo "$1" | sed 's|/media/SDCARD0/|/mnt/SDCARD/|g')"
 export ROM_FILE="$(readlink -f "$ROM_FILE")"
 
 case $EMU_NAME in
 	"NDS")
+		update_stock_volume
 		run_drastic
 		;;
 	"OPENBOR")
+		update_stock_volume
 		run_openbor
 		;;
 	"PICO8")
-		# load_pico8_control_profile
+		update_stock_volume
 		run_pico8
 		;;
 	"PORTS")
@@ -214,7 +227,7 @@ case $EMU_NAME in
 		;;
 esac
 
-kill -9 $(pgrep -f enforceSmartCPU.sh)
+kill -9 $(pgrep -f enforceSmartCPU.sh) 2>/dev/null
 
 rm -f /tmp/cmd_to_run.sh # do this or else games will sometimes launch when you reload PyUI/change themes
 

@@ -2,6 +2,7 @@ import json
 import threading
 
 from controller.controller_inputs import ControllerInput
+from utils.consts import GAME_SWITCHER, RECENTS
 from utils.logger import PyUiLogger
 from utils.py_ui_config import PyUiConfig
 
@@ -75,6 +76,36 @@ class SystemConfig:
 
     def set_hue(self, value):
         self.config["hue"] = value
+
+    @property
+    def disp_red(self):
+        return self.config.get("disp_red", 128)
+
+    def get_disp_red(self):
+        return self.config.get("disp_red", 128)
+
+    def set_disp_red(self, value):
+        self.config["disp_red"] = value  
+        
+    @property
+    def disp_blue(self):
+        return self.config.get("disp_blue", 128)
+
+    def get_disp_blue(self):
+        return self.config.get("disp_blue", 128)
+
+    def set_disp_blue(self, value):
+        self.config["disp_blue"] = value   
+
+    @property
+    def disp_green(self):
+        return self.config.get("disp_green", 128)
+
+    def get_disp_green(self):
+        return self.config.get("disp_green", 128)
+
+    def set_disp_green(self, value):
+        self.config["disp_green"] = value        
     
     def set_volume(self, value):
         if(value == 0):
@@ -208,7 +239,7 @@ class SystemConfig:
                 val_enum = ControllerInput(v)
                 mapping[key_enum] = val_enum
             except ValueError:
-                print(f"Skipping invalid enum mapping: {k} -> {v}")
+                PyUiLogger.get_logger().info(f"Skipping invalid enum mapping: {k} -> {v}")
                 continue
 
         return mapping
@@ -232,3 +263,22 @@ class SystemConfig:
             self.save_config()
         else:
             PyUiLogger.get_logger().info("'theme' entry not found in user config; nothing to delete")
+
+    def use_savestate_screenshots(self, screen):
+        default_value_if_missing = False
+        if(RECENTS == screen or GAME_SWITCHER == screen):
+            default_value_if_missing = True
+            
+        return self.config.get("preferSaveStateScreenshots"+screen, default_value_if_missing)
+
+    def set_use_savestate_screenshots(self,screen, value):
+        self.config["preferSaveStateScreenshots"+screen] = value
+        self.save_config()
+
+
+    def get_timezone(self):
+        return self.config.get("timezone",'America/New_York')
+       
+    def set_timezone(self, value):
+        self.config["timezone"] = value
+        self.save_config()

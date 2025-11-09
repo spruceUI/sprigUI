@@ -29,7 +29,7 @@ TITLE=$(basename "$FILE")
 TITLE="${TITLE%.*}"
 
 # ---------- 4. Read assign.json and map to console/system ----------
-ASSIGN_JSON="/mnt/mmc/MUOS/info/assign/assign.json"
+ASSIGN_JSON="/opt/muos/share/info/assign/assign.json"
 if [ ! -f "$ASSIGN_JSON" ]; then
     echo "Error: $ASSIGN_JSON not found."
     exit 1
@@ -48,7 +48,7 @@ if [ -z "$CONSOLE" ] || [ "$CONSOLE" = "null" ]; then
 fi
 
 # ---------- 5. Read global.ini ----------
-TARGET_DIR="/mnt/mmc/MUOS/info/assign/$CONSOLE"
+TARGET_DIR="/opt/muos/share/info/assign/$CONSOLE"
 GLOBAL_INI="$TARGET_DIR/global.ini"
 
 if [ ! -f "$GLOBAL_INI" ]; then
@@ -62,14 +62,8 @@ DEFAULT_VALUE=$(awk -F= '
     found && $1=="default" {gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}
 ' "$GLOBAL_INI")
 
-GOVERNOR_VALUE=$(awk -F= '
-    /\[global\]/ {found=1; next}
-    /^\[/ && found {exit}
-    found && $1=="governor" {gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}
-' "$GLOBAL_INI")
-
-if [ -z "$DEFAULT_VALUE" ] || [ -z "$GOVERNOR_VALUE" ]; then
-    echo "Error: Could not parse 'default' or 'governor' from $GLOBAL_INI"
+if [ -z "$DEFAULT_VALUE" ]; then
+    echo "Error: Could not parse 'default' from $GLOBAL_INI"
     exit 1
 fi
 
@@ -79,6 +73,26 @@ if [ ! -f "$DEFAULT_FILE" ]; then
     echo "Error: Default ini file '$DEFAULT_FILE' not found."
     exit 1
 fi
+
+GOVERNOR_VALUE=$(awk -F= '
+    /\[global\]/ {found=1; next}
+    /^\[/ && found {exit}
+    found && $1=="governor" {gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}
+' "$DEFAULT_FILE")
+
+if [ -z "$GOVERNOR_VALUE" ]; then
+    GOVERNOR_VALUE=$(awk -F= '
+        /\[global\]/ {found=1; next}
+        /^\[/ && found {exit}
+        found && $1=="governor" {gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}
+    ' "$GLOBAL_INI")
+
+    if [ -z "$GOVERNOR_VALUE" ]; then
+        echo "No governor found, using performance."
+        GOVERNOR_VALUE="performance"
+    fi
+fi
+
 
 CORE_VALUE=$(awk -F= -v section="$DEFAULT_VALUE" '
     $0 ~ "\\["section"\\]" {found=1; next}
@@ -102,8 +116,9 @@ fi
 RELATIVE_PATH=$(echo "$FILE" | awk -F'/(R|r)(O|o)(M|m)(S|s)/' '{print $2}')
 
 # 2) Build equivalent folder structure under /mnt/mmc/MUOS/info/core
-CORE_BASE="/mnt/mmc/MUOS/info/core/$RELATIVE_PATH"
+CORE_BASE="/opt/muos/share/info/core/$RELATIVE_PATH"
 CORE_DIR=$(dirname "$CORE_BASE")
+echo "CORE_DIR: $CORE_DIR"
 
 # Ensure directory exists before checking files
 if [ -d "$CORE_DIR" ]; then
@@ -112,17 +127,17 @@ if [ -d "$CORE_DIR" ]; then
     # --- Core override files ---
     CFG_GAME="$CORE_DIR/${GAME_BASENAME}.cfg"   # Highest priority
     CFG_CORE="$CORE_DIR/${CORE_VALUE}.cfg"      # Middle priority
-    CFG_SYSTEM="$CORE_DIR/${SYSTEM_NAME}.cfg"   # Lowest priority
+    CFG_SYSTEM="$CORE_DIR/core.cfg"   # Lowest priority
 
     # --- Governor override files ---
     GOV_GAME="$CORE_DIR/${GAME_BASENAME}.gov"   # Highest priority
     GOV_CORE="$CORE_DIR/${CORE_VALUE}.gov"      # Middle priority
-    GOV_SYSTEM="$CORE_DIR/${SYSTEM_NAME}.gov"   # Lowest priority
+    GOV_SYSTEM="$CORE_DIR/core.gov"   # Lowest priority
 
     # Helper function to safely read the core value (second line only)
     read_core_from_cfg() {
         local cfg_file="$1"
-        sed -n '2p' "$cfg_file" | tr -d '\r\n'
+        sed -n '1p' "$cfg_file" | tr -d '\r\n'
     }
 
     # Helper function to read governor value (entire file, trim CRLF)

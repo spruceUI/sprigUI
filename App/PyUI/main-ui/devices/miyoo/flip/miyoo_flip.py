@@ -2,6 +2,7 @@ import inspect
 from pathlib import Path
 import subprocess
 import threading
+import time
 from controller.controller_inputs import ControllerInput
 from controller.key_watcher import KeyWatcher
 import os
@@ -16,13 +17,13 @@ from devices.utils.file_watcher import FileWatcher
 from devices.utils.process_runner import ProcessRunner
 from display.display import Display
 from menus.games.utils.rom_info import RomInfo
+from menus.settings.timezone_menu import TimezoneMenu
 import sdl2
 from utils import throttle
 from utils.config_copier import ConfigCopier
+from utils.ffmpeg_image_utils import FfmpegImageUtils
 from utils.logger import PyUiLogger
-from utils.pil_image_utils import PilImageUtils
 from utils.py_ui_config import PyUiConfig
-from concurrent.futures import ThreadPoolExecutor
 
 class MiyooFlip(MiyooDevice):
     OUTPUT_MIXER = 2
@@ -30,7 +31,6 @@ class MiyooFlip(MiyooDevice):
 
     def __init__(self, device_name):
         self.device_name = device_name
-        PyUiLogger.get_logger().info("Initializing Miyoo Flip")        
         
         self.sdl_button_to_input = {
             sdl2.SDL_CONTROLLER_BUTTON_A: ControllerInput.B,
@@ -118,6 +118,7 @@ class MiyooFlip(MiyooDevice):
         self.init_bluetooth()
         config_volume = self.system_config.get_volume()
         self._set_volume(config_volume)
+        self.apply_timezone(self.system_config.get_timezone())
 
     def init_bluetooth(self):
         if(self.system_config.is_bluetooth_enabled()):
@@ -431,7 +432,25 @@ class MiyooFlip(MiyooDevice):
         return True
 
     def get_image_utils(self):
-        return PilImageUtils()
+        return FfmpegImageUtils()
 
     def get_device_name(self):
         return self.device_name
+    
+    def supports_timezone_setting(self):
+        return True
+
+    def prompt_timezone_update(self):
+        timezone_menu = TimezoneMenu()
+        tz = timezone_menu.ask_user_for_timezone(timezone_menu.list_timezone_files('/usr/share/zoneinfo', verify_via_datetime=True))
+
+        if (tz is not None):
+            self.system_config.set_timezone(tz)
+            self.apply_timezone(tz)
+
+    def apply_timezone(self, timezone):
+        os.environ['TZ'] = timezone
+        time.tzset()  
+        #If we set the time be sure to
+        #export TZ='{timezone}'
+

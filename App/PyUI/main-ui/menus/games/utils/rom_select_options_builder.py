@@ -11,6 +11,7 @@ from games.utils.box_art_resizer import BoxArtResizer
 from games.utils.rom_utils import RomUtils
 from menus.games.utils.favorites_manager import FavoritesManager
 from menus.games.utils.miyoo_game_list import MiyooGameList
+from menus.games.utils.rom_file_name_utils import RomFileNameUtils
 from menus.games.utils.rom_info import RomInfo
 from themes.theme import Theme
 from utils.logger import PyUiLogger
@@ -25,24 +26,20 @@ class RomSelectOptionsBuilder:
         self.rom_utils : RomUtils= RomUtils(self.roms_path)
         
     
-    def get_rom_name_without_extensions(self, game_system, file_path) -> str:
-        # Remove all known extensions from the filename
-        base_name = os.path.splitext(os.path.basename(file_path))[0]
-        ext_list = game_system.game_system_config.get_extlist()
-        while True:
-            next_base, next_ext = os.path.splitext(base_name)
-            if next_ext.lower() in ext_list:
-                base_name = next_base
-            else:
-                break
-        return base_name
+    def get_image_path(self, rom_info: RomInfo, game_entry = None, prefer_savestate_screenshot = False) -> str:
 
-    def get_image_path(self, rom_info: RomInfo, game_entry = None) -> str:
+        if(prefer_savestate_screenshot):
+            # Use RA savestate image
+            save_state_image_path = Device.get_save_state_image(rom_info)
+            if save_state_image_path is not None and os.path.exists(save_state_image_path):
+                return save_state_image_path
+
+
         if(game_entry is not None):
             if(os.path.exists(game_entry.image)):
                 return game_entry.image
         # Get the base filename without extension
-        base_name = self.get_rom_name_without_extensions(rom_info.game_system, rom_info.rom_file_path)
+        base_name = RomFileNameUtils.get_rom_name_without_extensions(rom_info.game_system, rom_info.rom_file_path)
 
         # Normalize and split the path into components
         parts = os.path.normpath(rom_info.rom_file_path).split(os.sep)
@@ -56,20 +53,20 @@ class RomSelectOptionsBuilder:
         # Build path to the image using the extracted directory
         root_dir = os.sep.join(parts[:roms_index+2])  # base path before Roms
 
-        tga_path = os.path.join(root_dir, "Imgs", base_name + ".tga")
-        if os.path.exists(tga_path) and Device.supports_tga():
-            return tga_path
+        qoi_path = os.path.join(root_dir, "Imgs", base_name + ".qoi")
+        if os.path.exists(qoi_path) and Device.supports_qoi():
+            return qoi_path
 
         image_path = os.path.join(root_dir, "Imgs", base_name + ".png")
 
         if os.path.exists(image_path):
-            if(Device.supports_tga()):
+            if(Device.supports_qoi()):
                 if(not RomSelectOptionsBuilder._user_doesnt_want_to_resize):
                     if(Device.get_system_config().never_prompt_boxart_resize()):
                         RomSelectOptionsBuilder._user_doesnt_want_to_resize = True
                     else:
                         Display.display_message_multiline([f"Would you like to optimize boxart?",
-                                                           "Originals will be deleted, be sure to backup!",
+                                                           "Originals will be converted, be sure to backup!",
                                                            "A = Yes, B = No, X/Y = Never Prompt",
                                                            "",
                                                            "You can manually do this in:",
@@ -85,8 +82,8 @@ class RomSelectOptionsBuilder:
                 if(not RomSelectOptionsBuilder._user_doesnt_want_to_resize):
                     RomSelectOptionsBuilder._user_doesnt_want_to_resize = True
                     BoxArtResizer.process_rom_folders()
-                if os.path.exists(tga_path) and Device.supports_tga():
-                    return tga_path
+                if os.path.exists(qoi_path) and Device.supports_qoi():
+                    return qoi_path
                 else:
                     return image_path
             else:
@@ -139,6 +136,12 @@ class RomSelectOptionsBuilder:
         if rom_info.rom_file_path.lower().endswith(".png"):
             return rom_info.rom_file_path
         
+        if(not prefer_savestate_screenshot):
+            # Use RA savestate image
+            save_state_image_path = Device.get_save_state_image(rom_info)
+            if save_state_image_path is not None and os.path.exists(save_state_image_path):
+                return save_state_image_path
+        
         return None
 
     def _build_favorites_dict(self):
@@ -156,11 +159,12 @@ class RomSelectOptionsBuilder:
             return None
         
 
-    def build_rom_list(self, game_system,filter: Callable[[str, str], bool] = lambda a,b: True, subfolder = None) -> list[GridOrListEntry]:
+    def build_rom_list(self, game_system,filter: Callable[[str, str], bool] = lambda a,b: True, subfolder = None,
+                       prefer_savestate_screenshot: bool = False) -> list[GridOrListEntry]:
         file_rom_list = []
         folder_rom_list = []
         valid_files, valid_folders = self.rom_utils.get_roms(game_system, subfolder)
-        
+
 
         miyoo_game_list = MiyooGameList(self.rom_utils.get_miyoo_games_file(game_system.folder_name))
         
@@ -171,7 +175,7 @@ class RomSelectOptionsBuilder:
                 if(game_entry is not None):
                     display_name = game_entry.name
                 else:
-                    display_name = self.get_rom_name_without_extensions(game_system,rom_file_path)
+                    display_name = RomFileNameUtils.get_rom_name_without_extensions(game_system,rom_file_path)
 
                 rom_info = RomInfo(game_system,rom_file_path, display_name)
 
@@ -180,8 +184,8 @@ class RomSelectOptionsBuilder:
                         primary_text=display_name,
                         description=game_system.folder_name, 
                         value=rom_info,
-                        image_path_searcher= lambda rom_info=rom_info, game_entry=game_entry: self.get_image_path(rom_info, game_entry),
-                        image_path_selected_searcher= lambda rom_info=rom_info, game_entry=game_entry: self.get_image_path(rom_info, game_entry),
+                        image_path_searcher= lambda rom_info=rom_info, game_entry=game_entry: self.get_image_path(rom_info, game_entry, prefer_savestate_screenshot=prefer_savestate_screenshot),
+                        image_path_selected_searcher= lambda rom_info=rom_info, game_entry=game_entry: self.get_image_path(rom_info, game_entry, prefer_savestate_screenshot=prefer_savestate_screenshot),
                         icon_searcher=lambda rom_info=rom_info: self._get_favorite_icon(rom_info)
                     )
                 )
@@ -197,7 +201,8 @@ class RomSelectOptionsBuilder:
                         description=game_system.folder_name, 
                         value=rom_info,
                         image_path_searcher=lambda rom_info: self.get_image_path(rom_info),
-                        image_path_selected_searcher=lambda rom_info: self.get_image_path(rom_info),
+                        image_path_selected_searcher=lambda rom_info: self.get_image_path(
+                            rom_info, prefer_savestate_screenshot=prefer_savestate_screenshot),
                         icon_searcher=lambda rom_info: self._get_favorite_icon(rom_info)
                     )
                 )
@@ -206,3 +211,11 @@ class RomSelectOptionsBuilder:
         folder_rom_list.sort(key=lambda entry: entry.get_primary_text())   
 
         return folder_rom_list + file_rom_list
+
+_rom_select_options_builder_instance = None
+
+def get_rom_select_options_builder():
+    global _rom_select_options_builder_instance
+    if _rom_select_options_builder_instance is None:
+        _rom_select_options_builder_instance = RomSelectOptionsBuilder()
+    return _rom_select_options_builder_instance

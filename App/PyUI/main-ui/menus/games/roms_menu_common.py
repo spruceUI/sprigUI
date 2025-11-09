@@ -10,8 +10,9 @@ from menus.games.game_select_menu_popup import GameSelectMenuPopup
 from menus.games.in_game_menu_listener import InGameMenuListener
 from menus.games.utils.collections_manager import CollectionsManager
 from menus.games.utils.recents_manager import RecentsManager
+from menus.games.utils.rom_file_name_utils import RomFileNameUtils
 from menus.games.utils.rom_info import RomInfo
-from menus.games.utils.rom_select_options_builder import RomSelectOptionsBuilder
+from menus.games.utils.rom_select_options_builder import get_rom_select_options_builder
 from themes.theme import Theme
 from utils.logger import PyUiLogger
 from utils.py_ui_state import PyUiState
@@ -25,7 +26,6 @@ from views.view_type import ViewType
 
 class RomsMenuCommon(ABC):
     def __init__(self):
-        self.rom_select_options_builder = RomSelectOptionsBuilder()
         self.in_game_menu_listener = InGameMenuListener()
         self.popup_menu = GameSelectMenuPopup()
 
@@ -34,7 +34,7 @@ class RomsMenuCommon(ABC):
     
     def _get_image_path(self, rom_path):
         # Get the base filename without extension (e.g., "DKC")
-        return self.rom_select_options_builder.get_image_path(rom_path)
+        return get_rom_select_options_builder().get_image_path(rom_path, prefer_savestate_screenshot=self.prefer_savestate_screenshot())
         
     def _extract_game_system(self, rom_path):
         rom_path = os.path.abspath(os.path.normpath(rom_path))
@@ -56,7 +56,6 @@ class RomsMenuCommon(ABC):
 
 
     def _load_collection_menu(self, rom_info : RomInfo) -> list[GridOrListEntry]:
-        from menus.games.game_select_menu import GameSelectMenu
         self.current_collection = rom_info.rom_file_path
         PyUiState.set_in_game_selection_screen(True)
         rom_list = self.build_rom_selection_for_collection(self.current_collection)
@@ -72,7 +71,7 @@ class RomsMenuCommon(ABC):
         rom_list = []
 
         for rom_info in raw_rom_list:
-            rom_file_name = self.rom_select_options_builder.get_rom_name_without_extensions(rom_info.game_system, rom_info.rom_file_path)
+            rom_file_name = RomFileNameUtils.get_rom_name_without_extensions(rom_info.game_system, rom_info.rom_file_path)
             img_path = self._get_image_path(rom_info)
             rom_list.append(
                 GridOrListEntry(
@@ -238,7 +237,8 @@ class RomsMenuCommon(ABC):
                         view = self.create_view(page_name,rom_list,selected)
                 elif(ControllerInput.B == selected.get_input()):
                     
-                    if(selected is not None):
+                    #What is happening on muOS where this is becoming None?
+                    if(selected is not None and selected.get_selection() is not None and selected.get_selection().get_value() is not None):
                         PyUiState.set_last_game_selection(
                             page_name,
                             selected.get_selection().get_value().rom_file_path,

@@ -1,7 +1,5 @@
 
-from controller.controller_inputs import ControllerInput
 from display.display import Display
-from display.font_purpose import FontPurpose
 from menus.settings.theme.theme_settings_menu_common import ThemeSettingsMenuCommon
 from themes.theme import Theme
 from views.grid_or_list_entry import GridOrListEntry
@@ -24,5 +22,18 @@ class ThemeSettingsTopBar(ThemeSettingsMenuCommon):
                 set_value_func=Theme.set_top_bar_initial_x_offset
             )
         )
+                
+        option_list.append(
+            self.build_enabled_disabled_entry("Show Battery Percent",
+                                              Theme.display_battery_percent,
+                                              Theme.set_display_battery_percent)
+        )
+
+        option_list.append(
+            self.build_enabled_disabled_entry("Show Battery Icon",
+                                              Theme.display_battery_icon,
+                                              Theme.set_display_battery_icon)
+        )
+
                 
         return option_list

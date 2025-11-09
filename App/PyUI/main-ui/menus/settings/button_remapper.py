@@ -13,7 +13,7 @@ class ButtonRemapper:
     def __init__(self, system_config : SystemConfig):
         self.system_config = system_config
         self.button_mapping = self.system_config.get_button_mapping()
-        PyUiLogger.get_logger().info(f"Button Mapping = {self.button_mapping}")
+        #PyUiLogger.get_logger().info(f"Button Mapping = {self.button_mapping}")
     
     def get_mappping(self, controller_input):
         if(controller_input in self.button_mapping):
@@ -87,7 +87,7 @@ class ButtonRemapper:
             selected = list_view.get_selection(control_options)
 
             if(selected.get_input() in control_options):
-                print(f"Remapping {button.name} to {selected.get_selection().get_value().name}")
+                PyUiLogger.get_logger().info(f"Remapping {button.name} to {selected.get_selection().get_value().name}")
                 self.button_mapping[button] = selected.get_selection().get_value()
                 self.system_config.set_button_mapping(self.button_mapping)
                 self.system_config.save_config()

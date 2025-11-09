@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /mnt/SDCARD/sprig/helperFunctions.sh
+. /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
 start_pyui_message_writer
 

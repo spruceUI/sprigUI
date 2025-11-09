@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. "/mnt/SDCARD/sprig/helperFunctions.sh"
+. "/mnt/SDCARD/sprig/scripts/helperFunctions.sh"
 
 CPU_DIR="/sys/devices/system/cpu/cpufreq"
 POLICY_DIR="$CPU_DIR/policy0"

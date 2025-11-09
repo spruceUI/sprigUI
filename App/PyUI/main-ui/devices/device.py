@@ -1,5 +1,6 @@
 from devices.abstract_device import AbstractDevice
 from devices.miyoo.system_config import SystemConfig
+from menus.games.utils.rom_info import RomInfo
 from utils.image_utils import ImageUtils
 
 
@@ -357,6 +358,34 @@ class Device:
         return Device._impl.supports_saturation_calibration()
 
     @staticmethod
+    def supports_rgb_calibration():
+        return Device._impl.supports_rgb_calibration()
+
+    @staticmethod
+    def set_disp_red(value):
+        return Device._impl.set_disp_red(value)
+
+    @staticmethod
+    def get_disp_red():
+        return Device._impl.get_disp_red()
+
+    @staticmethod
+    def set_disp_blue(value):
+        return Device._impl.set_disp_blue(value)
+
+    @staticmethod
+    def get_disp_blue():
+        return Device._impl.get_disp_blue()
+
+    @staticmethod
+    def set_disp_green(value):
+        return Device._impl.set_disp_green(value)
+
+    @staticmethod
+    def get_disp_green():
+        return Device._impl.get_disp_green()
+
+    @staticmethod
     def supports_hue_calibration():
         return Device._impl.supports_hue_calibration()
 
@@ -385,7 +414,31 @@ class Device:
         return Device._impl.get_device_name()
 
     @staticmethod
-    def supports_tga():
-        return Device._impl.supports_tga()
+    def supports_qoi():
+        return Device._impl.supports_qoi()
 
+    @staticmethod
+    def get_save_state_image(rom_info: RomInfo):
+        return Device._impl.get_save_state_image(rom_info)
 
+    @staticmethod
+    def supports_timezone_setting():
+        return Device._impl.supports_timezone_setting()
+
+    @staticmethod
+    def prompt_timezone_update():
+        return Device._impl.prompt_timezone_update()
+    
+    @staticmethod
+    def apply_timezone(timezone):
+        return Device._impl.apply_timezone(timezone)
+
+    @staticmethod
+    def supports_caching_rom_lists():
+        return Device._impl.supports_caching_rom_lists()
+
+    @staticmethod
+    def keep_running_on_error():
+        return Device._impl.keep_running_on_error()
+
+    

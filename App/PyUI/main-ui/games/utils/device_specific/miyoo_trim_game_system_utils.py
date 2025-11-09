@@ -6,6 +6,8 @@ from games.game_system_utils import GameSystemUtils
 from games.utils.game_system import GameSystem 
 from games.utils.rom_utils import RomUtils
 from menus.games.file_based_game_system_config import FileBasedGameSystemConfig
+from menus.games.utils.rom_file_name_utils import RomFileNameUtils
+from menus.games.utils.rom_info import RomInfo
 from utils.logger import PyUiLogger
 from utils.py_ui_config import PyUiConfig
 
@@ -18,7 +20,6 @@ class MiyooTrimGameSystemUtils(GameSystemUtils):
             
         if(os.path.exists("/media/sdcard1/Roms/")):
             self.roms_paths.append("/media/sdcard1/Roms/")
-        PyUiLogger().get_logger().info(f"Emu folder is {self.emu_path}")
         self.rom_utils = RomUtils(self.roms_paths[0])
     
     def get_game_system_by_name(self, system_name) -> GameSystem:
@@ -120,3 +121,20 @@ class MiyooTrimGameSystemUtils(GameSystemUtils):
                 return False  # This group failed
         
         return True  # All groups passed
+    
+    def get_save_state_image(self, rom_info: RomInfo):
+        # Get the base filename without extension
+        base_name = RomFileNameUtils.get_rom_name_without_extensions(rom_info.game_system, rom_info.rom_file_path)
+        # Normalize and split the path into components
+        parts = os.path.normpath(rom_info.rom_file_path).split(os.sep)
+        try:
+            roms_index = next(i for i, part in enumerate(parts) if part.lower() == "roms")
+        except (ValueError, IndexError):
+            PyUiLogger.get_logger().info(f"Roms not found in {rom_info.rom_file_path}")
+            return None  # "Roms" not in path or nothing after "Roms"
+
+        saves_root = os.sep.join(parts[:roms_index]) + os.sep + "Saves" + os.sep + "states"
+        for root, dirs, files in os.walk(saves_root):
+            state_png = os.path.join(root, base_name + ".state.auto.png")
+            if os.path.exists(state_png):
+                return state_png

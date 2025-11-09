@@ -1,13 +1,13 @@
 
-import os
-import subprocess
 import sys
 from devices.device import Device
 from menus.games.roms_menu_common import RomsMenuCommon
 from menus.games.utils.recents_manager import RecentsManager
+from menus.games.utils.rom_file_name_utils import RomFileNameUtils
 from menus.games.utils.rom_info import RomInfo
+from utils.consts import RECENTS
 from views.grid_or_list_entry import GridOrListEntry
-
+from menus.games.utils.rom_select_options_builder import get_rom_select_options_builder
 
 class RecentsMenu(RomsMenuCommon):
     def __init__(self):
@@ -27,7 +27,7 @@ class RecentsMenu(RomsMenuCommon):
 
             display_name = rom_info.display_name
             if(display_name is None):
-                display_name =  self.rom_select_options_builder.get_rom_name_without_extensions(rom_info.game_system, rom_info.rom_file_path)
+                display_name =  RomFileNameUtils.get_rom_name_without_extensions(rom_info.game_system, rom_info.rom_file_path)
 
             rom_list.append(
                 GridOrListEntry(
@@ -42,3 +42,7 @@ class RecentsMenu(RomsMenuCommon):
 
     def run_rom_selection(self) :
         return self._run_rom_selection("Recents")
+
+
+    def prefer_savestate_screenshot(self):
+        return Device.get_system_config().use_savestate_screenshots(RECENTS)

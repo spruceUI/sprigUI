@@ -70,8 +70,8 @@ class BoxArtResizer():
 
 
                             full_path = os.path.join(root, file)
-                            tga_full_path = os.path.splitext(full_path)[0] + ".tga"
-                            if os.path.exists(tga_full_path):
+                            qoi_full_path = os.path.splitext(full_path)[0] + ".qoi"
+                            if os.path.exists(qoi_full_path):
                                 #If so this has been already optimized
                                 continue
 
@@ -89,12 +89,12 @@ class BoxArtResizer():
                                     os.path.join(folder_path, "Imgs"),
                                     os.path.join(folder_path, "Imgs_large"),
                                 )
-                                tga_large_path = tga_full_path                                
-                                if(not cls.scale_and_convert_image(full_path,large_image_path, target_large_width, target_large_height,tga_large_path)):
+                                qoi_large_path = qoi_full_path                                
+                                if(not cls.scale_and_convert_image(full_path,large_image_path, target_large_width, target_large_height,qoi_large_path)):
                                     #Convert it
                                     try:
-                                        Device.get_image_utils().convert_from_png_to_tga(full_path)
-                                        tga_full_path = os.path.splitext(full_path)[0] + ".tga"
+                                        Device.get_image_utils().convert_from_png_to_qoi(full_path)
+                                        qoi_full_path = os.path.splitext(full_path)[0] + ".qoi"
                                     except Exception as e:
                                         PyUiLogger().get_logger().warning(f"Unable to convert {full_path} : {e}")
                                         continue
@@ -102,11 +102,11 @@ class BoxArtResizer():
                                    
                                     large_image_path = full_path
                                 else:
-                                    tga_full_path = os.path.splitext(full_path)[0] + ".tga"
-                                    shutil.move(tga_full_path, tga_large_path)
+                                    qoi_full_path = os.path.splitext(full_path)[0] + ".qoi"
+                                    shutil.move(qoi_full_path, qoi_large_path)
 
                             except Exception as e:
-                                print(f"Error converting for large image {full_path} : {e}")
+                                PyUiLogger.get_logger().warning(f"Issue converting for large image {full_path} : {e}")
                                 continue
 
 
@@ -119,7 +119,7 @@ class BoxArtResizer():
                                 if(not cls.scale_and_convert_image(large_image_path,medium_image_path, target_medium_width, target_medium_height)):
                                     medium_image_path = full_path
                             except Exception as e:
-                                print(f"Error converting for medium image {full_path} : {e}")
+                                PyUiLogger.get_logger().warning(f"Issue converting for medium image {full_path} : {e}")
                                 continue
 
                             try:
@@ -130,15 +130,15 @@ class BoxArtResizer():
                                 )
                                 cls.scale_and_convert_image(medium_image_path,small_image_path, target_small_width, target_small_height)
                             except Exception as e:
-                                print(f"Error converting for small image {full_path} : {e}")
+                                PyUiLogger.get_logger().warning(f"Issue converting for small image {full_path} : {e}")
                                 continue
 
-                            # os.remove(full_path)
+                            os.remove(full_path)
                             for output_path in cls._to_delete:
                                 try:
                                     os.remove(output_path)
                                 except Exception as e:
-                                    print(f"Error deleting {output_path}")
+                                    PyUiLogger.get_logger().warning(f"Issue deleting {output_path}")
 
 
                 #This is always temporary
@@ -157,25 +157,24 @@ class BoxArtResizer():
 
     #Don't want to clean this up but be aware resize_png_path will be deleted
     @classmethod
-    def scale_and_convert_image(cls, image_file, resize_png_path, target_width, target_height, tga_path=None):
+    def scale_and_convert_image(cls, image_file, resize_png_path, target_width, target_height, qoi_path=None):
         """Open an image and shrink it (preserving aspect ratio) to fit within target size."""
 
-        if(tga_path is None):
-            # Early return if the TGA version already exists
-            tga_path = os.path.splitext(resize_png_path)[0] + ".tga"
+        if(qoi_path is None):
+            # Early return if the QOI version already exists
+            qoi_path = os.path.splitext(resize_png_path)[0] + ".qoi"
 
-        if os.path.exists(tga_path):
+        if os.path.exists(qoi_path):
             return True
         
 
         needed_shrink = Device.get_image_utils().shrink_image_if_needed(image_file,resize_png_path,target_width, target_height)
         if(needed_shrink):
             try:
-                Device.get_image_utils().convert_from_png_to_tga(resize_png_path,tga_path)
+                Device.get_image_utils().convert_from_png_to_qoi(resize_png_path,qoi_path)
                 cls._to_delete.append(resize_png_path)
                 return needed_shrink
             except Exception as e:
                 PyUiLogger().get_logger().warning(f"Unable to convert {resize_png_path} : {e}")
-
 
         return needed_shrink

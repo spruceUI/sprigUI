@@ -1,17 +1,16 @@
 import argparse
 import os
 from pathlib import Path
-import shutil
 import signal
 import sys
 import threading
 from devices.device import Device
-from devices.miyoo.system_config import SystemConfig
 from menus.app.hidden_apps_manager import AppsManager
 from menus.games.utils.collections_manager import CollectionsManager
 from menus.games.utils.favorites_manager import FavoritesManager
 from menus.games.utils.recents_manager import RecentsManager
 from menus.language.language import Language
+from option_select_ui import OptionSelectUI
 import sdl2
 import sdl2.ext
 
@@ -24,6 +23,7 @@ from utils.config_copier import ConfigCopier
 from utils.logger import PyUiLogger
 from utils.py_ui_config import PyUiConfig
 from utils.py_ui_state import PyUiState
+from utils.realtime_message_network_listener import RealtimeMessageNetworkListener
 
 
 
@@ -36,6 +36,9 @@ def parse_arguments():
     parser.add_argument('-msgDisplay', type=str, default=None, help='A message to display and then exit')
     parser.add_argument('-msgDisplayTimeMs', type=str, default=None, help='How long to display the message')
     parser.add_argument('-msgDisplayRealtime', type=str, default=None, help='Reads from stdin to display messages')
+    parser.add_argument('-msgDisplayRealtimePort', type=str, default=None, help='Reads from the passed in port to display messages')
+    parser.add_argument('-optionListFile', type=str, default=None, help='Runs in a mode to just display a list of options')
+    parser.add_argument('-optionListTitle', type=str, default=None, help='Title to display if option list is provided')
     return parser.parse_args()
 
 def log_renderer_info():
@@ -43,19 +46,22 @@ def log_renderer_info():
     for i in range(num):
         info = sdl2.SDL_RendererInfo()
         sdl2.SDL_GetRenderDriverInfo(i, info)
-        print(f"Found Renderer {i}: {info.name.decode()}")
+        PyUiLogger.get_logger().info(f"Found Renderer {i}: {info.name.decode()}")
 
     num = sdl2.SDL_GetNumVideoDrivers()
     for i in range(num):
-        print(f"Found Video Decoder {i}: {sdl2.SDL_GetVideoDriver(i).decode()}")
+        PyUiLogger.get_logger().info(f"Found Video Decoder {i}: {sdl2.SDL_GetVideoDriver(i).decode()}")
 
 def initialize_device(device):
     if "MIYOO_FLIP" == device or "SPRUCE_MIYOO_FLIP" == device:
         from devices.miyoo.flip.miyoo_flip import MiyooFlip
         Device.init(MiyooFlip(device))
-    elif "MIYOO_MINI_FLIP" == device or "SPRIG_MIYOO_MINI_FLIP" == device:
+    elif "MIYOO_MINI_FLIP" == device:
         from devices.miyoo.mini_flip.miyoo_mini_flip import MiyooMiniFlip
         Device.init(MiyooMiniFlip(device))
+    elif "SPRIG_MIYOO_MINI_FLIP" == device:
+        from devices.miyoo.mini_flip.sprig_miyoo_mini_flip import SprigMiyooMiniFlip
+        Device.init(SprigMiyooMiniFlip(device))
     elif "TRIMUI_BRICK" == device or "SPRUCE_TRIMUI_BRICK" == device:
         from devices.trimui.trim_ui_brick import TrimUIBrick
         Device.init(TrimUIBrick(device))
@@ -115,6 +121,10 @@ def check_for_msg_display(args):
 
         sys.exit(0)
 
+def check_for_option_list_file(args):
+    if(args.optionListFile):
+        OptionSelectUI.display_option_list(args.optionListTitle,args.optionListFile, True)
+
 def check_for_msg_display_realtime(args):
     if(args.msgDisplayRealtime):
         try:
@@ -126,9 +136,13 @@ def check_for_msg_display_realtime(args):
                     break
 
                 if message.startswith("RENDER_IMAGE:"):
-                    image_path = message[len("RENDER_IMAGE:"):].strip()
-                    PyUiLogger.get_logger().info(f"Rendering image from path: {image_path}")
-                    Display.display_image(image_path)
+                    option_list_file = message[len("RENDER_IMAGE:"):].strip()
+                    PyUiLogger.get_logger().info(f"Rendering image from path: {option_list_file}")
+                    Display.display_image(option_list_file)
+                elif message.startswith("OPTION_LIST:"):
+                    option_list_file = message[len("OPTION_LIST:"):].strip()
+                    PyUiLogger.get_logger().info(f"Option list file: {option_list_file}")
+                    OptionSelectUI.display_option_list("",option_list_file, False)
                 else:
                     Display.display_message(message)
                     
@@ -137,15 +151,21 @@ def check_for_msg_display_realtime(args):
         PyUiLogger.get_logger().info(f"Exitting...")
         sys.exit(0)
 
+def check_for_msg_display_socket_based(args):
+    if(args.msgDisplayRealtimePort):
+        RealtimeMessageNetworkListener(args.msgDisplayRealtimePort).start()
+
+
 def main():
     args = parse_arguments()
 
     PyUiLogger.init(args.logDir, "PyUI")
-    PyUiLogger.get_logger().info(f"logDir: {args.logDir}")
-    PyUiLogger.get_logger().info(f"pyUiConfig: {args.pyUiConfig}")
-    PyUiLogger.get_logger().info(f"device: {args.device}")
+    PyUiLogger.get_logger().info(f"{args}")
+    #PyUiLogger.get_logger().info(f"logDir: {args.logDir}")
+    #PyUiLogger.get_logger().info(f"pyUiConfig: {args.pyUiConfig}")
+    #PyUiLogger.get_logger().info(f"device: {args.device}")
 
-    log_renderer_info()
+    #log_renderer_info()
 
     verify_config_exists(args.pyUiConfig)
     PyUiConfig.init(args.pyUiConfig)
@@ -155,34 +175,34 @@ def main():
     PyUiState.init(Device.get_state_path())
 
     selected_theme = os.path.join(PyUiConfig.get("themeDir"), Device.get_system_config().get_theme())
-    PyUiLogger.get_logger().info(f"{selected_theme}")
 
     Theme.init(selected_theme, Device.screen_width(), Device.screen_height())
     Display.init()
     #2nd init is just to allow scaling if needed
     Theme.convert_theme_if_needed(selected_theme, Device.screen_width(), Device.screen_height())
-    Display.clear_image_cache()
-    Display.clear_text_cache()
     Controller.init()
     Language.init()
 
     check_for_msg_display(args)
     check_for_msg_display_realtime(args)
-    
+    check_for_msg_display_socket_based(args)
+    check_for_option_list_file(args)
     
     main_menu = MainMenu()
 
     start_background_threads()
-
-    while(True):
+    keep_running = True
+    while(keep_running):
         try:
             main_menu.run_main_menu_selection()
         except Exception as e:
             PyUiLogger.get_logger().exception("Unhandled exception occurred")
             PyUiState.clear()
+            if(not Device.keep_running_on_error()):
+                keep_running = False
 
 def sigterm_handler(signum, frame):
-    print(f"Received SIGTERM (Signal {signum}). Shutting down...")
+    PyUiLogger.get_logger().info(f"Received SIGTERM (Signal {signum}). Shutting down...")
     sys.exit() # Exit gracefully
 
 if __name__ == "__main__":

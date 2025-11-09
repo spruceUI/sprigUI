@@ -4,6 +4,7 @@ from devices.device import Device
 from menus.games.roms_menu_common import RomsMenuCommon
 from menus.games.utils.collections_manager import CollectionsManager
 from menus.games.utils.rom_info import RomInfo
+from utils.consts import COLLECTIONS
 from utils.logger import PyUiLogger
 from utils.py_ui_state import PyUiState
 from views.grid_or_list_entry import GridOrListEntry
@@ -13,10 +14,10 @@ class CollectionsMenu(RomsMenuCommon):
     def __init__(self, current_collection = None):
         super().__init__()
         self.current_collection = current_collection
-        PyUiLogger.get_logger().info("CollectionsMenu.init(" + str(self.current_collection) +")")
+        #PyUiLogger.get_logger().info("CollectionsMenu.init(" + str(self.current_collection) +")")
 
     def _get_rom_list(self) -> list[GridOrListEntry]:
-        PyUiLogger.get_logger().info("_get_rom_list self.current_collection = " + str(self.current_collection) +")")
+        #PyUiLogger.get_logger().info("_get_rom_list self.current_collection = " + str(self.current_collection) +")")
         if(self.current_collection is None):
             rom_list = []
             collections = CollectionsManager.get_collection_names()
@@ -30,7 +31,7 @@ class CollectionsMenu(RomsMenuCommon):
                         primary_text=collection,
                         image_path=img_path,
                         image_path_selected=img_path,
-                        description="Collections", 
+                        description=None, 
                         icon=None,
                         value=rom_info)
                 )
@@ -71,3 +72,6 @@ class CollectionsMenu(RomsMenuCommon):
                         getattr(self, 'subfolder', '') or ''
                     )
             return None
+        
+    def prefer_savestate_screenshot(self):
+        return Device.get_system_config().use_savestate_screenshots(COLLECTIONS)

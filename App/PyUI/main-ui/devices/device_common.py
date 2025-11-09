@@ -6,7 +6,6 @@ import sys
 import time
 from controller.controller_inputs import ControllerInput
 from devices.abstract_device import AbstractDevice
-from devices.device import Device
 from devices.utils.process_runner import ProcessRunner
 from devices.wifi.wifi_status import WifiStatus
 from display.display import Display
@@ -32,11 +31,17 @@ class DeviceCommon(AbstractDevice):
             Display.present()
             if(Controller.get_input()):
                 if(Controller.last_input() == ControllerInput.A):
-                    self.run_cmd([self.power_off_cmd])
+                    self.power_off()
                 elif(Controller.last_input() == ControllerInput.X and self.reboot_cmd is not None):
-                    self.run_cmd([self.reboot_cmd])
+                    self.reboot()
                 elif(Controller.last_input() == ControllerInput.B):
                     return
+
+    def power_off(self):
+        self.run_cmd([self.power_off_cmd])
+
+    def reboot(self):
+        self.run_cmd([self.reboot_cmd])
 
     @property
     def input_timeout_default(self):
@@ -333,6 +338,22 @@ class DeviceCommon(AbstractDevice):
     
     def supports_popup_menu(self):
         return True
+    
+    def supports_timezone_setting(self):
+        return False
+
+    def apply_timezone(self, timezone):
+        pass
+
+    def prompt_timezone_update(self):
+        #Unsupported by default
+        pass
+
+    def supports_caching_rom_lists(self):
+        return True
+
+    def keep_running_on_error(self):
+        return True
 
     def get_boxart_small_resize_dimensions(self):
         return 640, 480
@@ -343,5 +364,45 @@ class DeviceCommon(AbstractDevice):
     def get_boxart_large_resize_dimensions(self):
         return 640, 480
 
-    def supports_tga(self):
+    def supports_qoi(self):
         return True
+
+    def set_disp_red(self,value):
+        self.system_config.reload_config()
+        self.system_config.set_disp_red(value)
+        self.system_config.save_config()
+        self._set_disp_red_to_config()
+
+    def set_disp_blue(self,value):
+        self.system_config.reload_config()
+        self.system_config.set_disp_blue(value)
+        self.system_config.save_config()
+        self._set_disp_blue_to_config()
+
+    def set_disp_green(self,value):
+        self.system_config.reload_config()
+        self.system_config.set_disp_green(value)
+        self.system_config.save_config()
+        self._set_disp_green_to_config()
+
+    def supports_rgb_calibration(self):
+        return False
+    
+    def _set_disp_red_to_config(self):
+        pass
+
+    def _set_disp_blue_to_config(self):
+        pass
+
+    def _set_disp_green_to_config(self):
+        pass
+
+    def get_disp_red(self):
+        return self.system_config.get_disp_red()
+
+    def get_disp_blue(self):
+        return self.system_config.get_disp_blue()
+
+    def get_disp_green(self):
+        return self.system_config.get_disp_green()
+

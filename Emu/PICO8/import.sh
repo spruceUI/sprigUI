@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /mnt/SDCARD/sprig/helperFunctions.sh
+. /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
 BBS_PATH="/mnt/SDCARD/Emu/PICO8/.lexaloffle/pico-8/bbs"
 ROM_PATH="/mnt/SDCARD/Roms/PICO8"

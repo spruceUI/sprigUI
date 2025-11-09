@@ -30,15 +30,13 @@ class Theme():
 
     @classmethod
     def set_theme_path(cls,path, width = 0, height = 0):
-        cls.load_defaults_so_user_can_see_at_least(path)
+        #Uneeded due to moving where we convert?
+        #cls.load_defaults_so_user_can_see_at_least(path)
 
         resolution_specific_config = f"config_{width}x{height}.json"
         config_path = os.path.join(path, resolution_specific_config)
-        if os.path.exists(config_path):
-            PyUiLogger.get_logger().info(f"Resolution specific config found, using {resolution_specific_config}")
-        else:
+        if not os.path.exists(config_path):
             config_path = "config.json"
-            PyUiLogger.get_logger().info(f"No resolution specific config {config_path} found, using config.json")
 
 
         cls._data.clear()
@@ -53,14 +51,13 @@ class Theme():
         if os.path.exists(daijisho_theme_index_file):
             try:
                 cls._daijisho_theme_index = DaijishoThemeIndex(daijisho_theme_index_file)
-                PyUiLogger.get_logger().info(f"Using DaijishoThemeIndex from {daijisho_theme_index_file}")
+                #PyUiLogger.get_logger().info(f"Using DaijishoThemeIndex from {daijisho_theme_index_file}")
             except Exception:
-                PyUiLogger.get_logger().error(f"Failed to load DaijishoThemeIndex from {daijisho_theme_index_file}:")
-                logging.exception(f"Failed to load DaijishoThemeIndex from {daijisho_theme_index_file}")
+                PyUiLogger.get_logger().exception(f"Failed to load DaijishoThemeIndex from {daijisho_theme_index_file}")
                 cls._daijisho_theme_index = None
         else:
-            PyUiLogger.get_logger().info(f"DaijishoThemeIndex does not exist at: {daijisho_theme_index_file} (Assuming non daijisho theme)")
             cls._daijisho_theme_index = None
+            #PyUiLogger.get_logger().info(f"Using Miyoo style theme")
 
         scale_width = Device.screen_width() / width
         scale_height = Device.screen_height() / height
@@ -78,9 +75,12 @@ class Theme():
         elif ThemePatcher.patch_theme(path,width, height) and os.path.exists(config_path):
             resolution_converted = True
 
-        tga_converted = ThemePatcher.convert_to_tga(path)
+        #qoi_converted = ThemePatcher.convert_to_qoi(path)
 
-        if(resolution_converted or tga_converted):
+        if(resolution_converted): # or qoi_converted):
+            from display.display import Display
+            Display.clear_image_cache()
+            Display.clear_text_cache()
             cls.set_theme_path(path,width,height)
 
     @classmethod
@@ -104,10 +104,10 @@ class Theme():
         folder = f"{base_folder}_{width}x{height}"
         full_path = os.path.join(cls._path, folder)
         if os.path.isdir(full_path):
-            PyUiLogger.get_logger().info(f"Resolution specific assets found, using {folder}")
+            #PyUiLogger.get_logger().info(f"Resolution specific assets found, using {folder}")
             return folder
         else:
-            PyUiLogger.get_logger().info(f"No resolution specific assets {folder} found, using {base_folder}")
+            #PyUiLogger.get_logger().info(f"No resolution specific assets {folder} found, using {base_folder}")
             return base_folder
 
     @classmethod
@@ -121,7 +121,6 @@ class Theme():
             with open(file_path, 'r', encoding='utf-8') as f:
                 cls._data.update(json.load(f))
             desc = cls._data.get("description", "UNKNOWN")
-            PyUiLogger.get_logger().info(f"Loaded Theme : {desc}")
         except Exception as e:
             PyUiLogger.get_logger().error(
                 f"Unexpected error while loading {file_path}: {e}\n{traceback.format_exc()}"
@@ -144,11 +143,15 @@ class Theme():
     @classmethod
     def _asset(cls, *parts):
         path = os.path.join(cls._path, cls._skin_folder, *parts)
-        # If the file doesn't exist and ends with .tga, try the PNG fallback
-        if not os.path.exists(path) or not Device.supports_tga():
+        # If the file doesn't exist and ends with .qoi, try the PNG fallback
+        if not os.path.exists(path):
             png_path = path[:-4] + ".png" 
             if os.path.exists(png_path):
                 return png_path
+
+            tga_path = path[:-4] + ".tga" 
+            if os.path.exists(tga_path):
+                return tga_path
 
         # Otherwise return the original path
         return path
@@ -156,72 +159,75 @@ class Theme():
     @classmethod
     def _icon(cls, *parts):
         path = os.path.join(cls._path, cls._icon_folder, *parts)
-        # If the file doesn't exist and ends with .tga, try the PNG fallback
-        if not os.path.exists(path) or not Device.supports_tga():
+        # If the file doesn't exist and ends with .qoi, try the PNG fallback
+        if not os.path.exists(path):
             png_path = path[:-4] + ".png" 
             if os.path.exists(png_path):
                 return png_path
-
+            tga_path = path[:-4] + ".tga" 
+            if os.path.exists(tga_path):
+                return tga_path
+        
         # Otherwise return the original path
         return path
 
     @classmethod
     def background(cls, page = None):
         if(page is None):
-            return cls._asset("background.tga")
+            return cls._asset("background.qoi")
         else:
-            return cls._asset(f"{page.lower()}-background.tga")
+            return cls._asset(f"{page.lower()}-background.qoi")
     
     @classmethod
-    def favorite(cls): return cls._asset("ic-favorite-n.tga")
+    def favorite(cls): return cls._asset("ic-favorite-n.qoi")
     
     @classmethod
-    def favorite_selected(cls): return cls._asset("ic-favorite-f.tga")
+    def favorite_selected(cls): return cls._asset("ic-favorite-f.qoi")
     
     @classmethod
-    def recent(cls): return cls._asset("ic-recent-n.tga")
+    def recent(cls): return cls._asset("ic-recent-n.qoi")
     
     @classmethod
-    def recent_selected(cls): return cls._asset("ic-recent-f.tga")
+    def recent_selected(cls): return cls._asset("ic-recent-f.qoi")
 
     @classmethod
-    def collection(cls): return cls._asset("ic-collection-n.tga")
+    def collection(cls): return cls._asset("ic-collection-n.qoi")
     
     @classmethod
-    def collection_selected(cls): return cls._asset("ic-collection-f.tga")
+    def collection_selected(cls): return cls._asset("ic-collection-f.qoi")
     
     @classmethod
-    def game(cls): return cls._asset("ic-game-n.tga")
+    def game(cls): return cls._asset("ic-game-n.qoi")
     
     @classmethod
-    def game_selected(cls): return cls._asset("ic-game-f.tga")
+    def game_selected(cls): return cls._asset("ic-game-f.qoi")
     
     @classmethod
-    def app(cls): return cls._asset("ic-app-n.tga")
+    def app(cls): return cls._asset("ic-app-n.qoi")
     
     @classmethod
-    def app_selected(cls): return cls._asset("ic-app-f.tga")
+    def app_selected(cls): return cls._asset("ic-app-f.qoi")
     
     @classmethod
-    def settings(cls): return cls._asset("ic-setting-n.tga")
+    def settings(cls): return cls._asset("ic-setting-n.qoi")
     
     @classmethod
-    def settings_selected(cls): return cls._asset("ic-setting-f.tga")
+    def settings_selected(cls): return cls._asset("ic-setting-f.qoi")
     
     @classmethod
-    def get_title_bar_bg(cls): return cls._asset("bg-title.tga")
+    def get_title_bar_bg(cls): return cls._asset("bg-title.qoi")
     
     @classmethod
-    def bottom_bar_bg(cls): return cls._asset("tips-bar-bg.tga")
+    def bottom_bar_bg(cls): return cls._asset("tips-bar-bg.qoi")
     
     @classmethod
-    def confirm_icon(cls): return cls._asset("icon-A-54.tga")
+    def confirm_icon(cls): return cls._asset("icon-A-54.qoi")
     
     @classmethod
-    def back_icon(cls): return cls._asset("icon-B-54.tga")
+    def back_icon(cls): return cls._asset("icon-B-54.qoi")
     
     @classmethod
-    def start_icon(cls): return cls._asset("icon-START.tga")
+    def start_icon(cls): return cls._asset("icon-START.qoi")
     
     @classmethod
     def show_bottom_bar(cls): return cls._data.get("showBottomBar", True) is not False
@@ -242,102 +248,102 @@ class Theme():
     def back_text(cls): return "Back"
     
     @classmethod
-    def favorite_icon(cls): return cls._asset("ic-favorite-mark.tga")
+    def favorite_icon(cls): return cls._asset("ic-favorite-mark.qoi")
     
     @classmethod
-    def get_list_large_selected_bg(cls): return cls._asset("bg-list-l.tga")
+    def get_list_large_selected_bg(cls): return cls._asset("bg-list-l.qoi")
    
     @classmethod
-    def menu_popup_bg_large(cls): return cls._asset("bg-pop-menu-4.tga")
+    def menu_popup_bg_large(cls): return cls._asset("bg-pop-menu-4.qoi")
     
     @classmethod
-    def keyboard_bg(cls): return cls._asset("bg-grid-s.tga")
+    def keyboard_bg(cls): return cls._asset("bg-grid-s.qoi")
     
     @classmethod
-    def keyboard_entry_bg(cls): return cls._asset("bg-list-l.tga")
+    def keyboard_entry_bg(cls): return cls._asset("bg-list-l.qoi")
     
     @classmethod
-    def key_bg(cls): return cls._asset("bg-btn-01-n.tga")
+    def key_bg(cls): return cls._asset("bg-btn-01-n.qoi")
     
     @classmethod
-    def key_selected_bg(cls): return cls._asset("bg-btn-01-f.tga")
+    def key_selected_bg(cls): return cls._asset("bg-btn-01-f.qoi")
     
     @classmethod
-    def get_list_small_selected_bg(cls): return cls._asset("bg-list-s.tga")
+    def get_list_small_selected_bg(cls): return cls._asset("bg-list-s.qoi")
     
     @classmethod
-    def get_popup_menu_selected_bg(cls): return cls._asset("bg-list-s2.tga")
+    def get_popup_menu_selected_bg(cls): return cls._asset("bg-list-s2.qoi")
     
     @classmethod
-    def get_missing_image_path(cls): return cls._asset("missing_image.tga")
+    def get_missing_image_path(cls): return cls._asset("missing_image.qoi")
     
     @classmethod
     def get_battery_icon(cls, charging, battery_percent):
         if ChargeStatus.CHARGING == charging:
             if battery_percent > 97:
-                return cls._asset("ic-power-charge-100%.tga")
+                return cls._asset("ic-power-charge-100%.qoi")
             elif battery_percent >= 75:
-                return cls._asset("ic-power-charge-75%.tga")
+                return cls._asset("ic-power-charge-75%.qoi")
             elif battery_percent >= 50:
-                return cls._asset("ic-power-charge-50%.tga")
+                return cls._asset("ic-power-charge-50%.qoi")
             elif battery_percent >= 25:
-                return cls._asset("ic-power-charge-25%.tga")
+                return cls._asset("ic-power-charge-25%.qoi")
             else:
-                return cls._asset("ic-power-charge-0%.tga")
+                return cls._asset("ic-power-charge-0%.qoi")
         else:
             if battery_percent >= 97:
-                return cls._asset("power-full-icon.tga")
+                return cls._asset("power-full-icon.qoi")
             elif battery_percent >= 80:
-                return cls._asset("power-80%-icon.tga")
+                return cls._asset("power-80%-icon.qoi")
             elif battery_percent >= 50:
-                return cls._asset("power-50%-icon.tga")
+                return cls._asset("power-50%-icon.qoi")
             elif battery_percent >= 20:
-                return cls._asset("power-20%-icon.tga")
+                return cls._asset("power-20%-icon.qoi")
             else:
-                return cls._asset("power-0%-icon.tga")
+                return cls._asset("power-0%-icon.qoi")
             
     @classmethod
     def get_wifi_icon(cls, status):
         if status == WifiStatus.OFF:
-            return cls._asset("icon-wifi-locked.tga")
+            return cls._asset("icon-wifi-locked.qoi")
         elif status == WifiStatus.BAD:
-            return cls._asset("icon-wifi-signal-01.tga")
+            return cls._asset("icon-wifi-signal-01.qoi")
         elif status == WifiStatus.OKAY:
-            return cls._asset("icon-wifi-signal-02.tga")
+            return cls._asset("icon-wifi-signal-02.qoi")
         elif status == WifiStatus.GOOD:
-            return cls._asset("icon-wifi-signal-03.tga")
+            return cls._asset("icon-wifi-signal-03.qoi")
         elif status == WifiStatus.GREAT:
-            return cls._asset("icon-wifi-signal-04.tga")
+            return cls._asset("icon-wifi-signal-04.qoi")
         else:
-            return cls._asset("icon-wifi-locked.tga")
+            return cls._asset("icon-wifi-locked.qoi")
 
     @classmethod
     def get_volume_indicator(cls, volume):
-        return cls._asset(f"icon-volume-{volume:02d}.tga")
+        return cls._asset(f"icon-volume-{volume:02d}.qoi")
 
 
     @classmethod
     def _grid_multi_row_selected_bg(cls):
-        return cls._asset("bg-game-item-f.tga")
+        return cls._asset("bg-game-item-f.qoi")
     
     @classmethod
     def _grid_multi_row_unselected_bg(cls):
-        return cls._asset("bg-game-item-n.tga")
+        return cls._asset("bg-game-item-n.qoi")
 
     @classmethod
     def _grid_single_row_selected_bg(cls):
-        return cls._asset("bg-game-item-single-f.tga")
+        return cls._asset("bg-game-item-single-f.qoi")
 
     @classmethod
     def get_grid_game_selected_bg(cls):
-        return cls._asset("grid-game-selected.tga")
+        return cls._asset("grid-game-selected.qoi")
 
     @classmethod
     def get_system_icon(cls, system):
         if(cls._daijisho_theme_index is not None):
             return cls._daijisho_theme_index.get_file_name_for_system(system)
         else:
-            return cls._icon(system + ".tga")
+            return cls._icon(system + ".qoi")
 
     @classmethod
     def get_default_system_icon(cls):
@@ -351,7 +357,7 @@ class Theme():
         if(cls._daijisho_theme_index is not None):
             return cls._daijisho_theme_index.get_file_name_for_system(system)
         else:
-            return cls._icon("sel",system + ".tga")
+            return cls._icon("sel",system + ".qoi")
 
     @classmethod
     def get_font(cls, font_purpose : FontPurpose):
@@ -391,7 +397,7 @@ class Theme():
             else:
                 return Theme.get_fallback_font()
         except Exception as e:
-            PyUiLogger.get_logger().warning(f"No font specified for {font_purpose} or error loading it {e}. Using fallback font.")
+            #PyUiLogger.get_logger().warning(f"No font specified for {font_purpose} or error loading it {e}. Using fallback font.")
             return Theme.get_fallback_font()
 
     @classmethod
@@ -452,8 +458,8 @@ class Theme():
                 case _:
                     return cls._data["list"]["font"]
         except Exception as e:
-            PyUiLogger.get_logger().warning(f"No font specified for {font_purpose} or error loading it {e}. Using fallback value of 20.")
-            return 20
+            # PyUiLogger.get_logger().warning(f"No font specified for {font_purpose} or error loading it {e}. Using fallback value of 20.")
+            return int(20 * cls._default_multiplier)
 
 
     @classmethod
@@ -894,7 +900,7 @@ class Theme():
     @classmethod
     def get_game_select_img_width(cls):
         from devices.device import Device
-        return cls._data.get("gameSelectImgWidth", int(Device.screen_width() * 294 / 640))
+        return cls._data.get("gameSelectImgWidth", int(Device.screen_width() * 320 / 640))
     
     @classmethod
     def set_game_select_img_width(cls, value):
@@ -1031,8 +1037,8 @@ class Theme():
 
     @classmethod
     def get_app_icon(cls, app_name):
-        tga_name = os.path.splitext(app_name)[0] + ".tga"
-        return cls._icon("app",tga_name)
+        qoi_name = os.path.splitext(app_name)[0] + ".qoi"
+        return cls._icon("app",qoi_name)
 
     @classmethod
     def include_index_text(cls):
@@ -1050,8 +1056,8 @@ class Theme():
 
     @classmethod
     def get_resize_type_for_game_switcher(cls):
-        view_type_str = cls._data.get("gameSwitcherResizeType", "FIT")
-        return getattr(ResizeType, view_type_str, ResizeType.FIT)
+        view_type_str = cls._data.get("gameSwitcherResizeType", "ZOOM")
+        return getattr(ResizeType, view_type_str, ResizeType.ZOOM)
 
     @classmethod
     def set_resize_type_for_game_switcher(cls, resize_type):
@@ -1076,3 +1082,22 @@ class Theme():
     def set_set_top_bar_text_to_game_selection_for_game_switcher(cls, value):
         cls._data["gameSwitcherSetTopBarTextToGameSelection"] = value
         cls.save_changes()
+
+    @classmethod
+    def display_battery_percent(cls):
+        return cls._data.get("displayBatteryPercent", True)
+    
+    @classmethod
+    def set_display_battery_percent(cls, value):
+        cls._data["displayBatteryPercent"] = value
+        cls.save_changes()
+
+    @classmethod
+    def display_battery_icon(cls):
+        return cls._data.get("displayBatteryIcon", True)
+    
+    @classmethod
+    def set_display_battery_icon(cls, value):
+        cls._data["displayBatteryIcon"] = value
+        cls.save_changes()
+

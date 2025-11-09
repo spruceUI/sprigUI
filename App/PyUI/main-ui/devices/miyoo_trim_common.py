@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 import re
 import subprocess
-import sys
 import time
 from devices.device import Device
 from devices.utils.process_runner import ProcessRunner
@@ -16,10 +15,10 @@ class MiyooTrimCommon():
         
     @staticmethod
     def convert_game_path_to_miyoo_path(original_path, remap_sdcard_path):
-        # Define the possible base directories
+        # Define the base directories we want to convert
+        # (currently do not update/map secondary sdcards)
         base_dirs = {
-            "/mnt/SDCARD/": "/media/sdcard0/",
-            "/media/sdcard1/": "/media/sdcard1/"
+            "/mnt/SDCARD/": "/media/sdcard0/"
         }
         for base_dir, sdcard_mount in base_dirs.items():
             # Check if the original path starts with the base directory
@@ -142,8 +141,6 @@ class MiyooTrimCommon():
                 with conf_path.open("w") as f:
                     f.write(conf_content)
                 PyUiLogger.get_logger().info("Created missing wpa_supplicant.conf.")
-            else:
-                PyUiLogger.get_logger().info("wpa_supplicant.conf already exists.")
         except Exception as e:
             PyUiLogger.get_logger().error(f"Error creating /userdata/cfg/wpa_supplicant.conf: {e}")
 
@@ -186,8 +183,8 @@ class MiyooTrimCommon():
         Display.present()
 
         centered_stats = joystick.sample_axes_stats()
-        print("rotate_stats keys:", rotate_stats.keys())
-        print("centered_stats keys:", rotate_stats.keys())
+        PyUiLogger.get_logger().info("rotate_stats keys:", rotate_stats.keys())
+        PyUiLogger.get_logger().info("centered_stats keys:", rotate_stats.keys())
         
         x_min = f"x_min={round(rotate_stats['axisX'+leftOrRight]['min'])}"
         x_max = f"x_max={round(rotate_stats['axisX'+leftOrRight]['max'])}"

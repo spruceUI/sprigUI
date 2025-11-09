@@ -7,7 +7,6 @@ from controller.controller import Controller
 from controller.controller_inputs import ControllerInput
 from devices.device import Device
 from display.display import Display
-from games.utils.game_system import GameSystem
 from menus.games.in_game_menu_popup import InGameMenuPopup
 from menus.games.retroarch_in_game_menu_popup import RetroarchInGameMenuPopup
 from menus.games.utils.rom_info import RomInfo
@@ -67,7 +66,11 @@ class InGameMenuListener:
                     if(held_down):
                         PyUiLogger.get_logger().debug(f"Held down detected, ignoring menu button")
                     else:
-                        self.send_signal(game_process, signal.SIGSTOP)
+                        if(uses_retroarch):
+                            self.ra_popup_menu.send_cmd_to_ra(b'PAUSE_TOGGLE')
+                        else:
+                            self.send_signal(game_process, signal.SIGSTOP)
+
                         PyUiLogger.get_logger().info(f"Taking snapshot before in-game menu")
                         snapshot = Device.take_snapshot("/tmp/screenshot.png")
                         PyUiLogger.get_logger().info(f"Finished Taking snapshot before in-game menu")

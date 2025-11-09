@@ -1,40 +1,67 @@
 #!/bin/sh
 
+. /mnt/SDCARD/sprig/scripts/helperFunctions.sh
+
+set_performance
+
+touch /mnt/SDCARD/sprig/bin/MainUI
+mount --bind /mnt/SDCARD/sprig/bin/python /mnt/SDCARD/sprig/bin/MainUI
+
 if ! mount | grep -q "/etc/profile"; then
     mount -o bind /mnt/SDCARD/sprig/etc/profile /etc/profile
+    mount -o bind /mnt/SDCARD/sprig/etc/passwd /etc/passwd
+    mount -o bind /mnt/SDCARD/sprig/etc/group /etc/group
 fi
 
 if [ ! -e /tmp/logs_rotated ]; then
-    . /mnt/SDCARD/sprig/helperFunctions.sh
     rotate_logs
     log_message "sprigUI has entered the chat"
     touch /tmp/logs_rotated
+    log_message "Volume and backlight set to last known values."
 fi
 
 # stop pyui real time message writer if left open.
-if [ -e /proc/$$/fd/3 ]; then
-    echo "EXIT_APP" >&3
-    exec 3>&-
-fi
+kill_pyui_message_writer
 
-if ! pgrep adbd >/dev/null 2>&1; then
-    /mnt/SDCARD/sprig/scripts/start_adbd.sh
-fi
+# Start and stop network services as configured.
+/mnt/SDCARD/sprig/scripts/network/start_stop_services.sh &
 
-if ! pgrep dropbearmulti >/dev/null 2>&1; then
-    /mnt/SDCARD/sprig/scripts/start_dropbear.sh
-fi
-
-if ! pgrep -f "/mnt/SDCARD/sprig/scripts/button_watchdog.sh" >/dev/null; then
-    /mnt/SDCARD/sprig/scripts/button_watchdog.sh &
-fi
+# Start battery, lid, and button watchdogs
+for thing in battery lid button; do
+    if ! pgrep -f "/mnt/SDCARD/sprig/scripts/${thing}_watchdog.sh" >/dev/null; then
+        /mnt/SDCARD/sprig/scripts/${thing}_watchdog.sh &
+    fi
+done
 
 # auto resume last app or game
 if [ -e /mnt/SDCARD/sprig/flags/lastgame.lock ]; then
-    ./freemma
+    DISABLE_WIFI="$(get_config_value '.menuOptions."Lid and Power Settings".disableWifiInGame.selected' "False")"
+    WIFI_ENABLED="$(get_pyui_config_value '.wifi' 1)"
+    if [ "$DISABLE_WIFI" = "False" ] && [ "$WIFI_ENABLED" -eq 1 ]; then
+        /mnt/SDCARD/sprig/scripts/network/start_wifi.sh
+    fi
+    freemma
     mv /mnt/SDCARD/sprig/flags/lastgame.lock /tmp/cmd_to_run.sh
     /tmp/cmd_to_run.sh
 fi
 
-./freemma
+# Fix timezone (why did Miyoo make this a /tmp file symlink?)
+timezone=$(jq -r '.timezone // empty' "/mnt/SDCARD/Saves/mini-flip-system.json")
+
+if [ -n "$timezone" ] && [ "$timezone" != "null" ]; then
+    target="/mnt/SDCARD/miyoo285/zoneinfo/$timezone"
+
+    # Check if /tmp/localtime already points to the correct target
+    if [ "$(readlink -f /tmp/localtime)" = "$target" ]; then
+        log_message "/tmp/localtime is already linked to $timezone"
+    else
+        log_message "Updating /tmp/localtime to $timezone"
+        rm -f /tmp/localtime
+        ln -s "$target" /tmp/localtime
+        # exit 0  ### why was this here?
+    fi
+fi
+
+# Actually launch the UI
+freemma
 /mnt/SDCARD/App/PyUI/launch.sh

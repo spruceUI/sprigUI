@@ -1,18 +1,15 @@
 
 import os
-import subprocess
 from devices.device import Device
 from menus.games.roms_menu_common import RomsMenuCommon
-from menus.games.utils.rom_info import RomInfo
-from menus.games.utils.rom_select_options_builder import RomSelectOptionsBuilder
-from utils.logger import PyUiLogger
+from menus.games.utils.rom_select_options_builder import get_rom_select_options_builder
+from utils.consts import GAME_SELECT
 from views.grid_or_list_entry import GridOrListEntry
 
 
 class SearchedRomsMenu(RomsMenuCommon):
     def __init__(self, search_str):
         super().__init__()
-        self.rom_select_options_builder = RomSelectOptionsBuilder()
         self.search_str = search_str
 
     def include_rom(self,rom_file_name, rom_file_path):
@@ -25,10 +22,11 @@ class SearchedRomsMenu(RomsMenuCommon):
         def _collect_roms_recursively(game_system, directory=None):
 
             """Recursively collect roms for a given game_system and directory."""
-            rom_list = self.rom_select_options_builder.build_rom_list(
+            rom_list = get_rom_select_options_builder().build_rom_list(
                 game_system,
                 self.include_rom,
-                subfolder=directory
+                subfolder=directory, 
+                prefer_savestate_screenshot=self.prefer_savestate_screenshot()
             )
             all_roms = []
 
@@ -55,3 +53,6 @@ class SearchedRomsMenu(RomsMenuCommon):
         return roms
     def run_rom_selection(self) :
         return self._run_rom_selection("Game Search")
+
+    def prefer_savestate_screenshot(self):
+        return Device.get_system_config().use_savestate_screenshots(GAME_SELECT)

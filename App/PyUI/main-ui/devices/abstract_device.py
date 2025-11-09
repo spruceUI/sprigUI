@@ -3,6 +3,7 @@ import subprocess
 
 from devices.miyoo.system_config import SystemConfig
 from games.utils.game_entry import GameEntry
+from menus.games.utils.rom_info import RomInfo
 from utils.image_utils import ImageUtils
 
 class AbstractDevice(ABC):
@@ -313,11 +314,59 @@ class AbstractDevice(ABC):
         pass
 
     @abstractmethod
+    def supports_rgb_calibration(self):
+        pass
+
+    @abstractmethod
+    def set_disp_red(self,value):
+        pass
+
+    @abstractmethod
+    def set_disp_blue(self,value):
+        pass
+
+    @abstractmethod
+    def set_disp_green(self,value):
+        pass
+
+    @abstractmethod
+    def get_disp_red(self):
+        pass
+
+    @abstractmethod
+    def get_disp_blue(self):
+        pass
+
+    @abstractmethod
+    def get_disp_green(self):
+        pass
+
+    @abstractmethod
     def supports_hue_calibration(self):
         pass
 
     @abstractmethod
     def supports_popup_menu(self):
+        pass
+
+    @abstractmethod
+    def supports_timezone_setting(self):
+        pass
+
+    @abstractmethod
+    def apply_timezone(self, timezone):
+        pass
+
+    @abstractmethod
+    def prompt_timezone_update(self):
+        pass
+
+    @abstractmethod
+    def supports_caching_rom_lists(self):
+        pass
+
+    @abstractmethod
+    def keep_running_on_error(self):
         pass
 
     @abstractmethod
@@ -341,9 +390,10 @@ class AbstractDevice(ABC):
         pass
 
     @abstractmethod
-    def supports_tga(self):
+    def supports_qoi(self):
         pass
 
-
-
+    @abstractmethod
+    def get_save_state_image(self, rom_info: RomInfo):
+        pass
 

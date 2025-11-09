@@ -3,7 +3,6 @@
 from dataclasses import dataclass
 import os
 import struct
-import select
 import threading
 import time
 from typing import OrderedDict
@@ -47,7 +46,7 @@ class KeyWatcherControllerMiyooMini(ControllerInterface):
         try:
             self.fd = os.open(self.event_path, os.O_RDONLY)
         except OSError as e:
-            print(f"Error opening {self.event_path}: {e}")
+            PyUiLogger.get_logger().warning(f"Could not open {self.event_path}: {e}")
             self.fd = None
         
         self.last_held_input = None

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /mnt/SDCARD/sprig/helperFunctions.sh
+. /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
 ROMS_DIR="/mnt/SDCARD/Roms"
 DISC_EXTS="cue|gdi|chd|pbp|iso|dsk"

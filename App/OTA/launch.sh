@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /mnt/SDCARD/sprig/helperFunctions.sh
+. /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
 export PATH="/mnt/SDCARD/sprig/bin:$PATH"
 export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH:/mnt/SDCARD/App/PyUI/libs/:/config/lib/:/customer/lib"
@@ -131,14 +131,14 @@ extract_archive() {
 
     new_dir="sprigUI-$BRANCH"
     new_ra_dir="$new_dir/RetroArch"
-    new_python3_dir="$new_dir/App/PyUI/python3.10"
+    new_python3_dir="$new_dir/sprig/lib/python3.10"
     new_themes_dir="$new_dir/Themes"
 
-    excluded_files="$new_dir/create_sprig_release.sh $new_dir/create_sprig_release.bat $new_dir/TODO.txt"
+    excluded_files="$new_dir/build $new_dir/justfile $new_dir/.gitignore $new_dir/.gitattributes $new_dir/TODO.txt"
 
     if [ "$OVERWRITE_RA_CONFIGS" = "False" ]; then
         log_message "Will not overwrite RA configs."
-        excluded_files="$excluded_files $new_ra_dir/config $new_ra_dir/retroarchV4.cfg"
+        excluded_files="$excluded_files $new_ra_dir/config $new_ra_dir/retroarchV4.cfg $new_dir/Saves/NDS/config"
     fi
 
     if [ "$OVERWRITE_PYTHON3_DIR" = "False" ]; then
@@ -195,16 +195,22 @@ preserve_sprig_config_settings() {
 
     existing_config="/mnt/SDCARD/Saves/sprig/sprig-config.json"
     new_config="/mnt/SDCARD/sprigUI-$BRANCH/Saves/sprig/sprig-config.json"
-    /mnt/SDCARD/App/PyUI/python3.10/bin/python3.10 /mnt/SDCARD/App/OTA/merge_configs.py "$existing_config" "$new_config"
+    python /mnt/SDCARD/App/OTA/merge_configs.py "$existing_config" "$new_config"
 }
 
 complete_installation() {
 
     log_message "Killing main execution loop, powerbutton watchdog, and SSH."
-    killall -9 main button_watchdog.sh dropbearmulti # adbd    ### Keep adbd on for testing
-    umount /etc/profile >/dev/null 2>&1
-	umount /mnt/SDCARD/Emu/OPENBOR/Saves >/dev/null 2>&1
-
+    killall -9 main button_watchdog.sh lid_watchdog.sh dropbearmulti # adbd    ### Keep adbd on for testing
+    for dir in /etc/profile \
+                /etc/passwd \
+                /etc/group \
+                /mnt/SDCARD/Emu/OPENBOR/Saves \
+                /mnt/SDCARD/Emu/NDS/backup \
+                /mnt/SDCARD/Emu/NDS/config \
+                /mnt/SDCARD/Emu/NDS/savestates ; do
+        umount "$dir" >/dev/null 2>&1
+    done
 
     if [ "$DELETE_BEFORE_COPY" = true ]; then
         for dir in App Emu miyoo285 RetroArch sprig Themes RApp; do

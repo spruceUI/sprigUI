@@ -1,4 +1,3 @@
-from asyncio import Future
 import ctypes
 import fcntl
 import math
@@ -15,6 +14,7 @@ from devices.utils.process_runner import ProcessRunner
 from devices.wifi.wifi_connection_quality_info import WiFiConnectionQualityInfo
 from games.utils.device_specific.miyoo_trim_game_system_utils import MiyooTrimGameSystemUtils
 from games.utils.game_entry import GameEntry
+from menus.games.utils.rom_info import RomInfo
 from menus.settings.button_remapper import ButtonRemapper
 from utils import throttle
 from utils.logger import PyUiLogger
@@ -23,6 +23,7 @@ class TrimUIDevice(DeviceCommon):
     
     def __init__(self):
         self.button_remapper = ButtonRemapper(self.system_config)
+        self.game_utils = MiyooTrimGameSystemUtils()
 
     def get_controller_interface(self):
         return Sdl2ControllerInterface()
@@ -303,7 +304,7 @@ class TrimUIDevice(DeviceCommon):
         return True
     
     def get_game_system_utils(self):
-        return MiyooTrimGameSystemUtils()
+        return self.game_utils
     
     def get_roms_dir(self):
         return "/mnt/SDCARD/Roms/"
@@ -328,3 +329,6 @@ class TrimUIDevice(DeviceCommon):
 
     def supports_hue_calibration():
         return True
+
+    def get_save_state_image(self, rom_info: RomInfo):
+        return self.get_game_system_utils().get_save_state_image(rom_info)
