@@ -38,6 +38,12 @@ set_cpu_mode() {
 	fi
 }
 
+update_stock_volume() {
+	# update stock system.json's volume from pyui's - drastic steward reads stock's. 
+	vol_val="$(jq '.vol // 10' /mnt/SDCARD/Saves/mini-flip-system.json)"
+	[ -n "$vol_val" ] && jq --argjson vol "$vol_val" '.vol = $vol' /appconfigs/system.json > /tmp/tmp.json && mv /tmp/tmp.json /appconfigs/system.json
+
+}
 
 ##### EMULATOR LAUNCH FUNCTIONS #####
 
@@ -61,7 +67,6 @@ run_drastic() {
 	export EGL_VIDEODRIVER=mmiyoo
 
 	killall audioserver
-	killall audioserver.mod
 
 	sv=`cat /proc/sys/vm/swappiness`
 
@@ -91,7 +96,6 @@ run_openbor() {
 	export SDL_AUDIODRIVER=mmiyoo
 
 	killall audioserver
-	killall audioserver.mod
 	
 	cd "$EMU_DIR"
 
@@ -152,7 +156,7 @@ run_pico8() {
 	export SDL_MMIYOO_DOUBLE_BUFFER=1
 
 	killall audioserver
-	killall audioserver.mod
+
 	sync_pico8_volume
 	cpuclock 1600
 	if [ "${GAME##*.}" = "splore" ]; then
@@ -204,13 +208,15 @@ export ROM_FILE="$(readlink -f "$ROM_FILE")"
 
 case $EMU_NAME in
 	"NDS")
+		update_stock_volume
 		run_drastic
 		;;
 	"OPENBOR")
+		update_stock_volume
 		run_openbor
 		;;
 	"PICO8")
-		# load_pico8_control_profile
+		update_stock_volume
 		run_pico8
 		;;
 	"PORTS")
