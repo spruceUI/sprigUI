@@ -271,3 +271,6 @@ while true; do
     fi
 
 done
+
+touch /mnt/SDCARD/App/PyUI/pyui_resize_boxart_trigger
+

@@ -270,3 +270,5 @@ rm -f /tmp/kill_scraper
 
 log_and_display_message "Scraping complete!"
 sleep 2
+
+touch /mnt/SDCARD/App/PyUI/pyui_resize_boxart_trigger
