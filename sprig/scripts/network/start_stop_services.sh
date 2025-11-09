@@ -14,7 +14,7 @@ TEL_ENABLED="$(get_config_value '.menuOptions."Network Settings".enableTelnet.se
 # ADB
 if [ "$ADB_ENABLED" = "True" ]; then
     if ! pgrep adbd >/dev/null 2>&1; then
-        /mnt/SDCARD/sprig/scripts/start_adbd.sh &
+        /mnt/SDCARD/sprig/scripts/network/start_adbd.sh &
         log_message "Started ADB daemon"
     fi
 else
@@ -24,7 +24,7 @@ fi
 # SSH (Dropbear)
 if [ "$SSH_ENABLED" = "True" ]; then
     if ! pgrep dropbear >/dev/null 2>&1; then
-        /mnt/SDCARD/sprig/scripts/start_dropbear.sh &
+        /mnt/SDCARD/sprig/scripts/network/start_dropbear.sh &
         log_message "Started Dropbear"
     fi
 else
@@ -34,7 +34,7 @@ fi
 # SMB
 if [ "$SMB_ENABLED" = "True" ]; then
     if ! pgrep smbd >/dev/null 2>&1; then
-        /mnt/SDCARD/sprig/scripts/start_samba.sh &
+        /mnt/SDCARD/sprig/scripts/network/start_samba.sh &
         log_message "Started Samba daemon"
     fi
 else
