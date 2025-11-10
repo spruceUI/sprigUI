@@ -77,12 +77,6 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
         *"code 1 (KEY_ESC), value 1"*)
             if [ -z "$menu_hold_pid" ]; then
 
-            	if pgrep "retroarch" >/dev/null; then
-                    log_message "Triggering RA in game menu"
-                    send_event 42:1 97:1
-                    sleep 0.2
-                    send_event 42:0 97:0
-                fi
                 menu_btn_press_time=$(date +%s)
                 log_message "Menu button pressed at $menu_btn_press_time" -v
                 touch /tmp/menubtn
@@ -98,6 +92,13 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
                     fi
                 ) &
                 menu_hold_pid=$!
+
+                if pgrep "retroarch" >/dev/null; then
+                    log_message "Triggering RA in game menu"
+                    send_event 42:1 97:1
+                    sleep 0.2
+                    send_event 42:0 97:0
+                fi
             fi
             ;;
             
