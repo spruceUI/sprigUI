@@ -76,6 +76,7 @@ sprig is a custom operating system for the Miyoo Mini Flip, developed by the spr
         - SSH: `ssh root@192.168.x.x`
         - Samba: Enter `smb://192.168.x.x/SDCARD` in your OS's file browser.
         - Telnet: `telnet 192.168.x.x`
+        - Syncthing: `http://192.168.x.x:8384` in your web browser.
 
 - Box Art Scraper
     - Run this app to automatically search the LibRetro thumbnails database for box art matching the names of your Roms.

@@ -2,7 +2,6 @@
 
 - theme garden?
 - dufs
-- syncthing
 - ebook "Emu"
 - MEDIA "Emu"
 - PORTS "Emu"
