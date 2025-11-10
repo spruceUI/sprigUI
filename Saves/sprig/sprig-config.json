@@ -87,6 +87,14 @@
                     "False"
                 ],
                 "selected": "False"
+            },
+            "enableSyncthing": {
+              "display": "Enable Syncthing",
+              "options": [
+                "True",
+                "False"
+              ],
+              "selected": "False"
             }
         },
         "OTA Settings": {

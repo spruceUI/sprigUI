@@ -5,3 +5,5 @@ dist/
 # Build artifacts
 main
 
+# IDE
+.idea
