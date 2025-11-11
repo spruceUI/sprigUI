@@ -25,6 +25,8 @@ mount -o bind /mnt/SDCARD/sprig/etc/group /etc/group
 
 rotate_logs && log_message "sprigUI has entered the chat"
 
+/mnt/SDCARD/sprig/scripts/importRAC.sh
+
 # set up auto resume for last app or game
 if [ -e /mnt/SDCARD/sprig/flags/lastgame.lock ]; then
     DISABLE_WIFI="$(get_config_value '.menuOptions."Lid and Power Settings".disableWifiInGame.selected' "False")"

@@ -1,0 +1,2 @@
+export USERNAME=""
+export PASSWORD=""
