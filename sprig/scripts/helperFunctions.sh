@@ -424,40 +424,12 @@ vibrate() {
     /mnt/SDCARD/sprig/scripts/vibrate.sh "$@" &
 }
 
-##########     OTHER STUFF     ##########
-
-init_volume_backlight() {
-    current_backlight=$(get_pyui_config_value ".backlight" 5)
-    set_backlight "$current_backlight"
-    current_volume=$(get_pyui_config_value ".vol" 10)
-    set_volume "$current_volume"
-    log_message "Backlight initialized to $current_backlight."
-    log_message "Volume initialized to $current_volume."
-}
+##########     POWER MANAGEMENT     ##########
 
 BRIGHTNESS_FILE="/sys/devices/soc0/soc/1f003400.pwm/pwm/pwmchip0/pwm0/duty_cycle"
 SCREEN_BLANK_FILE="/proc/mi_modules/fb/mi_fb0"
 BUTTON_ENABLE_FILE="/sys/module/gpio_keys_polled/parameters/button_enable"
 EMU_LIST="retroarch scummvm pico8_dyn drastic OpenBOR OpenBOR_mod OpenBOR_new ffplay MainUI"
-
-# returns the battery percentage (0-100)
-get_battery_percentage() {
-    axp_test 2>/dev/null | jq -r '.battery // empty'
-}
-
-# returns the charging state.
-# 0 = not plugged in
-# 3 = plugged in
-get_charging_state() {
-    axp_test 2>/dev/null | jq -r '.charging // 0'
-}
-
-# returns current lid state
-# 0 = lid closed
-# 1 = lid open
-get_lid_state() {
-    cat "/sys/devices/soc0/soc/soc:hall-mh248/hallvalue"
-}
 
 enter_pseudo_sleep() {
     killall -q -SIGSTOP $(echo $EMU_LIST) 2>/dev/null
@@ -497,6 +469,37 @@ exit_pseudo_sleep() {
     pgrep retroarch 2>/dev/null && /mnt/SDCARD/sprig/scripts/enforceSmartCPU.sh # return to smart mode
 }
 
+# returns the battery percentage (0-100)
+get_battery_percentage() {
+    axp_test 2>/dev/null | jq -r '.battery // empty'
+}
+
+# returns the charging state.
+# 0 = not plugged in
+# 3 = plugged in
+get_charging_state() {
+    axp_test 2>/dev/null | jq -r '.charging // 0'
+}
+
+# returns current lid state
+# 0 = lid closed
+# 1 = lid open
+get_lid_state() {
+    cat "/sys/devices/soc0/soc/soc:hall-mh248/hallvalue"
+}
+
+
+
+##########     OTHER STUFF     ##########
+
+init_volume_backlight() {
+    current_backlight=$(get_pyui_config_value ".backlight" 5)
+    set_backlight "$current_backlight"
+    current_volume=$(get_pyui_config_value ".vol" 10)
+    set_volume "$current_volume"
+    log_message "Backlight initialized to $current_backlight."
+    log_message "Volume initialized to $current_volume."
+}
 
 read_only_check() {
     log_message "Performing read-only check"
