@@ -440,8 +440,23 @@ SCREEN_BLANK_FILE="/proc/mi_modules/fb/mi_fb0"
 BUTTON_ENABLE_FILE="/sys/module/gpio_keys_polled/parameters/button_enable"
 EMU_LIST="retroarch scummvm pico8_dyn drastic OpenBOR OpenBOR_mod OpenBOR_new ffplay MainUI"
 
+# returns the battery percentage (0-100)
 get_battery_percentage() {
     axp_test 2>/dev/null | jq -r '.battery // empty'
+}
+
+# returns the charging state.
+# 0 = not plugged in
+# 3 = plugged in
+get_charging_state() {
+    axp_test 2>/dev/null | jq -r '.charging // 0'
+}
+
+# returns current lid state
+# 0 = lid closed
+# 1 = lid open
+get_lid_state() {
+    cat "/sys/devices/soc0/soc/soc:hall-mh248/hallvalue"
 }
 
 enter_pseudo_sleep() {

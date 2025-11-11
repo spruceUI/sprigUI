@@ -8,6 +8,13 @@
 
 . /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
+# auto shutdown if device powers on while lid is shut and plugged in
+CHARGING="$(get_charging_state)"
+LID="$(get_lid_state)"
+if [ "$CHARGING" -ne 0 ] && [ "$LID" -eq 0 ]; then
+    poweroff
+fi
+
 set_performance
 
 touch /mnt/SDCARD/sprig/bin/MainUI
