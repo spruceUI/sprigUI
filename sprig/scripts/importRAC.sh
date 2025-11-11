@@ -45,4 +45,6 @@ grep -q '^cheevos_password' "$tmpfile" || echo "cheevos_password = \"${PASSWORD}
 mv "$tmpfile" "$RA_V4_CFG"
 
 log_message "RetroAchievements credentials and settings applied successfully."
+rm -f "$RAC_CFG" && log_message "Removed spent RetroAchievementsLogin.cfg"
+
 exit 0
