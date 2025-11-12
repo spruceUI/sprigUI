@@ -7,3 +7,8 @@ main
 
 # IDE
 .idea
+.vscode
+
+# MAC junk
+.DS_Store
+._*
