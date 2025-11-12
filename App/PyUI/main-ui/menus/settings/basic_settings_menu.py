@@ -9,6 +9,7 @@ from menus.settings import settings_menu
 from menus.settings.cfw_system_settings_menu import CfwSystemSettingsMenu
 from menus.settings.extra_settings_menu import ExtraSettingsMenu
 from menus.settings.bluetooth_menu import BluetoothMenu
+from menus.settings.sound_settings import SoundSettings
 from menus.settings.theme.list_of_options_selection_menu import ListOfOptionsSelectionMenu
 from menus.settings.theme.theme_settings_menu import ThemeSettingsMenu
 from menus.settings.wifi_menu import WifiMenu
@@ -100,6 +101,7 @@ class BasicSettingsMenu(settings_menu.SettingsMenu):
             Theme.set_theme_path(os.path.join(PyUiConfig.get("themeDir"), theme_folders[selected_index]), Device.screen_width(), Device.screen_height())
             Display.init_fonts()   
             Device.get_system_config().set_theme(theme_folders[selected_index])
+            Device.set_theme(os.path.join(PyUiConfig.get("themeDir"), theme_folders[selected_index]))
             self.theme_changed = True
             Display.restore_bg()
 
@@ -120,6 +122,12 @@ class BasicSettingsMenu(settings_menu.SettingsMenu):
     def exit(self,input):
         if(ControllerInput.A == input):
             sys.exit()
+
+            
+    def launch_sound_options(self, input):
+        if (input == ControllerInput.A):
+            SoundSettings().show_menu()
+
 
     def build_options_list(self):
         option_list = []
@@ -207,6 +215,18 @@ class BasicSettingsMenu(settings_menu.SettingsMenu):
                         value=self.launch_theme_settings
                     )
             )
+
+        option_list.append(
+            GridOrListEntry(
+                primary_text="Sound Settings",
+                value_text="",
+                image_path=None,
+                image_path_selected=None,
+                description=None,
+                icon=None,
+                value=self.launch_sound_options
+            )
+        )
 
         if(len(CfwSystemConfig.get_categories()) > 0):
             option_list.append(
