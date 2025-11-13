@@ -3,6 +3,7 @@
         "Game Switcher Settings": {
             "menuHoldTime": {
                 "display": "Menu Hold Time",
+                "description": "in seconds",
                 "options": [
                     "0",
                     "0.5",
@@ -15,6 +16,7 @@
             },
             "menuShouldVibrate": {
                 "display": "Vibrate on Menu Hold",
+                "description": "haptic feedback when launching game switcher",
                 "options": [
                     "True",
                     "False"
@@ -25,6 +27,7 @@
         "Lid and Power Settings": {
             "lidPowerdownTimer": {
                 "display": "Powerdown After Closing Lid",
+                "description": "device enters pseudosleep between close and shutdown",
                 "options": [
                     "Off",
                     "5s",
@@ -39,6 +42,7 @@
             },
             "disableWifiInSleep": {
                 "display": "Disable Wi-Fi During Pseudosleep",
+                "description": "reduces power consumption",
                 "options": [
                     "True",
                     "False"
@@ -47,6 +51,7 @@
             },
             "disableWifiInGame": {
                 "display": "Disable Wi-Fi In Game",
+                "description": "reduces power consumption",
                 "options": [
                     "True",
                     "False"
@@ -58,6 +63,7 @@
 
             "enableADB": {
                 "display": "Enable Wireless ADB",
+                "description": "adb connect <IP>; adb shell",
                 "options": [
                     "True",
                     "False"

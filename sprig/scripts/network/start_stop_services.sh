@@ -24,7 +24,7 @@ fi
 
 # SSH (Dropbear)
 if [ "$SSH_ENABLED" = "True" ]; then
-    if ! pgrep dropbear >/dev/null 2>&1; then
+    if ! pgrep dropbearmulti >/dev/null 2>&1; then
         /mnt/SDCARD/sprig/scripts/network/start_dropbear.sh &
         log_message "Started Dropbear"
     fi
