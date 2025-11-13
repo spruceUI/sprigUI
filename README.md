@@ -73,7 +73,7 @@ sprig is a custom operating system for the Miyoo Mini Flip, developed by the spr
 - Wireless connectivity:
     - sprigUI comes with wireless ADB enabled by default. You can also enable additional connectivity options by going to Settings -> CFW System Settings -> Network Settings. If set to "True", you can connect to your device using these services by running the following commands from your computer. (Reload the UI after toggling for the services to launch or close.) The username and password for each of these, if prompted, are `sprig` and `happygaming`, respectively.
         - ADB: `adb connect 192.168.x.x:5555`
-        - SSH: `ssh root@192.168.x.x`
+        - SSH: `ssh sprig@192.168.x.x`
         - Samba: Enter `smb://192.168.x.x/SDCARD` in your OS's file browser.
         - Telnet: `telnet 192.168.x.x`
         - Syncthing: `http://192.168.x.x:8384` in your web browser.
