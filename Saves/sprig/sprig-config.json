@@ -63,7 +63,7 @@
 
             "enableADB": {
                 "display": "Enable Wireless ADB",
-                "description": "adb connect <IP>; adb shell",
+                "description": "adb connect <IP>; adb shell (from commandline)",
                 "options": [
                     "True",
                     "False"
@@ -72,6 +72,7 @@
             },
             "enableSSH": {
                 "display": "Enable SSH",
+                "description": "currently broken :devastated:",
                 "options": [
                     "True",
                     "False"
@@ -80,6 +81,7 @@
             },
             "enableSMB": {
                 "display": "Enable Samba",
+                "description": "smb://<IP>/SDCARD (in file browser)",
                 "options": [
                     "True",
                     "False"
@@ -88,6 +90,7 @@
             },
             "enableTelnet": {
                 "display": "Enable Telnet",
+                "description": "telnet <IP> (from commandline)",
                 "options": [
                     "True",
                     "False"
@@ -96,6 +99,7 @@
             },
             "enableSyncthing": {
               "display": "Enable Syncthing",
+              "description": "http://<IP>:8384 (in internet browser)",
               "options": [
                 "True",
                 "False"
@@ -106,6 +110,7 @@
         "OTA Settings": {
             "branch": {
                 "display": "Target Branch",
+                "description": "which branch to download from sprig's GitHub",
                 "options": [
                     "release",
                     "development"
@@ -114,6 +119,7 @@
             },
             "bypassVersionChecks": {
                 "display": "Bypass Version Checks",
+                "description": "allow OTA to same version",
                 "options": [
                     "True",
                     "False"
@@ -122,6 +128,7 @@
             },
             "overwriteEmuDir": {
                 "display": "Reset Core Preferences",
+                "description": "as part of OTA",
                 "options": [
                     "True",
                     "False"
@@ -130,6 +137,7 @@
             },
             "overwriteRAconfigs": {
                 "display": "Reset RetroArch/DraStic Configurations",
+                "description": "as part of OTA",
                 "options": [
                     "True",
                     "False"
@@ -138,6 +146,7 @@
             },
             "overwriteThemesDir": {
                 "display": "Reinstall Base Themes",
+                "description": "overwrites any modifications",
                 "options": [
                     "True",
                     "False"
@@ -146,6 +155,7 @@
             },
             "overwritePythonDir": {
                 "display": "Reinstall Python",
+                "description": "rarely necessary",
                 "options": [
                     "True",
                     "False"
@@ -154,5 +164,4 @@
             }
         }
     }
-    
 }
