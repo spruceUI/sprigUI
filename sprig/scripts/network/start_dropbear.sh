@@ -14,4 +14,4 @@ mkdir -p "$DROPBEAR_KEY_DIR"
     -r "$DROPBEAR_KEY_DIR/dropbear_rsa_host_key" \
     -r "$DROPBEAR_KEY_DIR/dropbear_ecdsa_host_key" \
     -r "$DROPBEAR_KEY_DIR/dropbear_ed25519_host_key" \
-    -c "./ssh_wrapper"
+    -c "/mnt/SDCARD/sprig/bin/ssh_wrapper"
