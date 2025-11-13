@@ -63,7 +63,7 @@
 
             "enableADB": {
                 "display": "Enable Wireless ADB",
-                "description": "adb connect <IP>; adb shell (from commandline)",
+                "description": "(from commandline) adb connect <IP>; adb shell",
                 "options": [
                     "True",
                     "False"
@@ -72,7 +72,7 @@
             },
             "enableSSH": {
                 "display": "Enable SSH",
-                "description": "currently broken :devastated:",
+                "description": "(from commandline) ssh sprig@<IP> (password=happygaming)",
                 "options": [
                     "True",
                     "False"
@@ -81,7 +81,7 @@
             },
             "enableSMB": {
                 "display": "Enable Samba",
-                "description": "smb://<IP>/SDCARD (in file browser)",
+                "description": "(in file browser) smb://<IP>/SDCARD (user/pass=sprig/happygaming)",
                 "options": [
                     "True",
                     "False"
@@ -90,7 +90,7 @@
             },
             "enableTelnet": {
                 "display": "Enable Telnet",
-                "description": "telnet <IP> (from commandline)",
+                "description": "(from commandline) telnet <IP>",
                 "options": [
                     "True",
                     "False"
@@ -99,7 +99,7 @@
             },
             "enableSyncthing": {
               "display": "Enable Syncthing",
-              "description": "http://<IP>:8384 (in internet browser)",
+              "description": "(in internet browser) http://<IP>:8384",
               "options": [
                 "True",
                 "False"
@@ -110,7 +110,7 @@
         "OTA Settings": {
             "branch": {
                 "display": "Target Branch",
-                "description": "which branch to download from sprig's GitHub",
+                "description": "to download from sprigUI GitHub",
                 "options": [
                     "release",
                     "development"
@@ -146,7 +146,7 @@
             },
             "overwriteThemesDir": {
                 "display": "Reinstall Base Themes",
-                "description": "overwrites any modifications",
+                "description": "resets any modifications",
                 "options": [
                     "True",
                     "False"
