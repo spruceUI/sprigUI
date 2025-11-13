@@ -11,6 +11,24 @@ BRIGHTNESS_FILE="/sys/devices/soc0/soc/1f003400.pwm/pwm/pwmchip0/pwm0/duty_cycle
 SCREEN_BLANK_FILE="/proc/mi_modules/fb/mi_fb0"
 BUTTON_ENABLE_FILE="/sys/module/gpio_keys_polled/parameters/button_enable"
 
+reset_poweroff_timer() {
+    [ -n "$POWER_PID" ] && kill -9 "$POWER_PID"
+    start_poweroff_timer &
+    export POWER_PID=$!
+}
+
+
+start_poweroff_timer() {
+    POWEROFF_TIME="$(get_config_value '.menuOptions."Lid and Power Settings".idlePowerdownTimer.selected' "Off")"
+    case "$POWEROFF_TIME" in
+        "Off") ;;
+        "15m") sleep 900; "$POWER_OFF_SCRIPT" ;;
+        "30m") sleep 1800; "$POWER_OFF_SCRIPT" ;;
+        "1h") sleep 3600; "$POWER_OFF_SCRIPT" ;;
+        "2h") sleep 7200; "$POWER_OFF_SCRIPT" ;;
+    esac
+}
+
 init_volume_backlight
 log_message "Button watchdog started."
 
@@ -27,6 +45,8 @@ fi
 
 # Start evtest in background and read its output line-by-line
 evtest "$DEVICE" 2>/dev/null | while read -r line; do
+
+    reset_sleep_poweroff_timers
 
     case "$line" in
 

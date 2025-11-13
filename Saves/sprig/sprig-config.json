@@ -40,6 +40,18 @@
                 ],
                 "selected": "30s"
             },
+            "idlePowerdownTimer": {
+                "display": "Powerdown After Inactivity",
+                "description": "applies with lid open or shut",
+                "options": [
+                    "Off",
+                    "15m",
+                    "30m",
+                    "1h",
+                    "2h"
+                ],
+                "selected": "Off"
+            },
             "disableWifiInSleep": {
                 "display": "Disable Wi-Fi During Pseudosleep",
                 "description": "reduces power consumption",
