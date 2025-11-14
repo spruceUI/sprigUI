@@ -11,21 +11,29 @@ BRIGHTNESS_FILE="/sys/devices/soc0/soc/1f003400.pwm/pwm/pwmchip0/pwm0/duty_cycle
 SCREEN_BLANK_FILE="/proc/mi_modules/fb/mi_fb0"
 BUTTON_ENABLE_FILE="/sys/module/gpio_keys_polled/parameters/button_enable"
 
+is_not_mid_update() {
+    if pgrep -f "App/OTA" >/dev/null 2>&1; then
+        log_message "Update currently in progress. Idle poweroff aborted."
+        return 1
+    else
+        return 0
+    fi
+}
+
 reset_poweroff_timer() {
     [ -n "$POWER_PID" ] && kill -9 "$POWER_PID"
     start_poweroff_timer &
     export POWER_PID=$!
 }
 
-
 start_poweroff_timer() {
     POWEROFF_TIME="$(get_config_value '.menuOptions."Lid and Power Settings".idlePowerdownTimer.selected' "Off")"
     case "$POWEROFF_TIME" in
         "Off") return 0 ;;
-        "15m") sleep 900; "$POWER_OFF_SCRIPT" ;;
-        "30m") sleep 1800; "$POWER_OFF_SCRIPT" ;;
-        "1h") sleep 3600; "$POWER_OFF_SCRIPT" ;;
-        "2h") sleep 7200; "$POWER_OFF_SCRIPT" ;;
+        "15m") sleep 900; is_not_mid_update && "$POWER_OFF_SCRIPT" ;;
+        "30m") sleep 1800; is_not_mid_update && "$POWER_OFF_SCRIPT" ;;
+        "1h") sleep 3600; is_not_mid_update && "$POWER_OFF_SCRIPT" ;;
+        "2h") sleep 7200; is_not_mid_update && "$POWER_OFF_SCRIPT" ;;
     esac
 }
 
