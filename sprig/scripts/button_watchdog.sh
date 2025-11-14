@@ -25,6 +25,7 @@ is_mid_update() {
 }
 
 reset_poweroff_timer() {
+    touch "$IDLE_TIMER_FILE"
     POWEROFF_TIME="$(get_config_value '.menuOptions."Lid and Power Settings".idlePowerdownTimer.selected' "Off")"
     case "$POWEROFF_TIME" in
         "5m") starting_time=300 ;;
@@ -32,7 +33,7 @@ reset_poweroff_timer() {
         "30m") starting_time=1800 ;;
         "1h") starting_time=3600 ;;
         "2h") starting_time=7200 ;;
-        *) starting_time="Off" ;;
+        *) starting_time=0 ;;
     esac
     echo "$starting_time" > "$IDLE_TIMER_FILE"
 }
@@ -40,16 +41,17 @@ reset_poweroff_timer() {
 monitor_poweroff_timer() {
 
     while true; do
-        time_left="$(cat "$IDLE_TIMER_FILE)"
-        if [ "$time_left" = "Off" ]; then
-            sleep 30
+        POWEROFF_TIME="$(get_config_value '.menuOptions."Lid and Power Settings".idlePowerdownTimer.selected' "Off")"
+        time_left="$(cat "$IDLE_TIMER_FILE")"
+        if [ "$POWEROFF_TIME" = "Off" ]; then
+            sleep 5
+        elif is_mid_update; then
+            log_message "Ongoing sprigUI update detected. Resetting idle timer."
+            break # device will reset when OTA is complete. We don't want to interrupt.
         elif [ "$time_left" -gt 0 ]; then
             sleep 5
             new_time_left=$((time_left - 5))
             echo $new_time_left > "$IDLE_TIMER_FILE"
-        elif is_mid_update; then
-            log_message "Ongoing sprigUI update detected. Resetting idle timer."
-            reset_poweroff_timer
         else # time left -le 0
             log_message "Idle timer has elapsed. Saving and shutting down."
             "$POWER_OFF_SCRIPT"
