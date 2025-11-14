@@ -24,6 +24,7 @@ is_mid_update() {
 
 reset_poweroff_timer() {
     [ -n "$POWER_PID" ] && kill "$POWER_PID"
+    sleep 0.5
     start_poweroff_timer &
     export POWER_PID=$!
 }
@@ -31,12 +32,12 @@ reset_poweroff_timer() {
 start_poweroff_timer() {
     POWEROFF_TIME="$(get_config_value '.menuOptions."Lid and Power Settings".idlePowerdownTimer.selected' "Off")"
     case "$POWEROFF_TIME" in
-        "Off") return 0 ;;
         "5m") sleep 300 ;;
         "15m") sleep 900 ;;
         "30m") sleep 1800 ;;
         "1h") sleep 3600 ;;
         "2h") sleep 7200 ;;
+        *) sleep 1; return 0 ;;
     esac
     if is_mid_update; then
         log_message "Update currently in progress. Idle poweroff aborted."
