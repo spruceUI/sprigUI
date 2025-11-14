@@ -2,6 +2,8 @@
 
 . /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
+##########     CONSTANTS     ##########
+
 DEVICE="/dev/input/event0"
 POWER_OFF_SCRIPT="/mnt/SDCARD/sprig/scripts/save_poweroff.sh"
 GAMESWITCHER_SCRIPT="/mnt/SDCARD/sprig/scripts/gameswitcher.sh"
@@ -10,7 +12,7 @@ HOLD_MAX=2   # maximum seconds to trigger
 BRIGHTNESS_FILE="/sys/devices/soc0/soc/1f003400.pwm/pwm/pwmchip0/pwm0/duty_cycle"
 SCREEN_BLANK_FILE="/proc/mi_modules/fb/mi_fb0"
 BUTTON_ENABLE_FILE="/sys/module/gpio_keys_polled/parameters/button_enable"
-
+IDLE_TIMER_FILE="/tmp/idle_timer"
 
 ##########     IDLE TIMER FUNCTIONS     ##########
 
@@ -23,37 +25,36 @@ is_mid_update() {
 }
 
 reset_poweroff_timer() {
-    [ -n "$POWER_PID" ] && kill "$POWER_PID"
-    sleep 0.5
-    start_poweroff_timer &
-    export POWER_PID=$!
-}
-
-start_poweroff_timer() {
     POWEROFF_TIME="$(get_config_value '.menuOptions."Lid and Power Settings".idlePowerdownTimer.selected' "Off")"
     case "$POWEROFF_TIME" in
-        "5m") sleep 300 ;;
-        "15m") sleep 900 ;;
-        "30m") sleep 1800 ;;
-        "1h") sleep 3600 ;;
-        "2h") sleep 7200 ;;
-        *) sleep 1; return 0 ;;
+        "5m") starting_time=300 ;;
+        "15m") starting_time=900 ;;
+        "30m") starting_time=1800 ;;
+        "1h") starting_time=3600 ;;
+        "2h") starting_time=7200 ;;
+        *) starting_time="Off" ;;
     esac
-    # get setting again after sleep so we can abort if they have since turned the setting off.
-    POWEROFF_TIME="$(get_config_value '.menuOptions."Lid and Power Settings".idlePowerdownTimer.selected' "Off")"
-    if is_mid_update; then
-        log_message "Update currently in progress. Idle poweroff aborted."
-        reset_poweroff_timer
-        return 1
-    elif [ "$POWEROFF_TIME" = "Off" ]; then
-        log_message "User has disabled idle poweroff; aborting."
-        reset_poweroff_timer
-        return 2
-    else
-        vibrate 0.02 2 0.08
-        "$POWER_OFF_SCRIPT" 
-        return 0
-    fi  
+    echo "$starting_time" > "$IDLE_TIMER_FILE"
+}
+
+monitor_poweroff_timer() {
+
+    while true; do
+        time_left="$(cat "$IDLE_TIMER_FILE)"
+        if [ "$time_left" = "Off" ]; then
+            sleep 30
+        elif [ "$time_left" -gt 0 ]; then
+            sleep 5
+            new_time_left=$((time_left - 5))
+            echo $new_time_left > "$IDLE_TIMER_FILE"
+        elif is_mid_update; then
+            log_message "Ongoing sprigUI update detected. Resetting idle timer."
+            reset_poweroff_timer
+        else # time left -le 0
+            log_message "Idle timer has elapsed. Saving and shutting down."
+            "$POWER_OFF_SCRIPT"
+        fi
+    done
 }
 
 
@@ -75,6 +76,7 @@ fi
 
 # start timer even before any buttons pressed
 reset_poweroff_timer
+monitor_poweroff_timer &
 
 # Start evtest in background and read its output line-by-line
 evtest "$DEVICE" 2>/dev/null | while read -r line; do
