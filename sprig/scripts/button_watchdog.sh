@@ -39,10 +39,16 @@ start_poweroff_timer() {
         "2h") sleep 7200 ;;
         *) sleep 1; return 0 ;;
     esac
+    # get setting again after sleep so we can abort if they have since turned the setting off.
+    POWEROFF_TIME="$(get_config_value '.menuOptions."Lid and Power Settings".idlePowerdownTimer.selected' "Off")"
     if is_mid_update; then
         log_message "Update currently in progress. Idle poweroff aborted."
         reset_poweroff_timer
         return 1
+    elif [ "$POWEROFF_TIME" = "Off" ]; then
+        log_message "User has disabled idle poweroff; aborting."
+        reset_poweroff_timer
+        return 2
     else
         vibrate 0.02 2 0.08
         "$POWER_OFF_SCRIPT" 
