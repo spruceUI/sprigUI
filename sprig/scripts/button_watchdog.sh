@@ -24,8 +24,23 @@ is_mid_update() {
     fi
 }
 
+is_mid_scrape() {
+    if pgrep -f "App/BoxartScraper" >/dev/null 2>&1; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+is_mid_nursery_download() {
+    if pgrep -f "App/GameNursery" >/dev/null 2>&1 && pgrep -f "wget"; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 reset_poweroff_timer() {
-    touch "$IDLE_TIMER_FILE"
     POWEROFF_TIME="$(get_config_value '.menuOptions."Lid and Power Settings".idlePowerdownTimer.selected' "Off")"
     case "$POWEROFF_TIME" in
         "5m") starting_time=300 ;;
@@ -45,6 +60,9 @@ monitor_poweroff_timer() {
         time_left="$(cat "$IDLE_TIMER_FILE")"
         if [ "$POWEROFF_TIME" = "Off" ]; then
             sleep 5
+        elif is_mid_scrape || is_mid_nursery_download; then
+            log_message "Currently downloading content. Idle timer will be paused an additional 30 seconds."
+            sleep 30
         elif is_mid_update; then
             log_message "Ongoing sprigUI update detected. Resetting idle timer."
             break # device will reset when OTA is complete. We don't want to interrupt.
