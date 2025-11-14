@@ -43,6 +43,7 @@ start_poweroff_timer() {
         reset_poweroff_timer
         return 1
     else
+        vibrate 0.02 2 0.08
         "$POWER_OFF_SCRIPT" 
         return 0
     fi  
