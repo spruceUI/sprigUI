@@ -21,7 +21,7 @@ reset_poweroff_timer() {
 start_poweroff_timer() {
     POWEROFF_TIME="$(get_config_value '.menuOptions."Lid and Power Settings".idlePowerdownTimer.selected' "Off")"
     case "$POWEROFF_TIME" in
-        "Off") ;;
+        "Off") return 0 ;;
         "15m") sleep 900; "$POWER_OFF_SCRIPT" ;;
         "30m") sleep 1800; "$POWER_OFF_SCRIPT" ;;
         "1h") sleep 3600; "$POWER_OFF_SCRIPT" ;;
@@ -43,10 +43,13 @@ if [ ! -d /sys/class/gpio/gpio48 ]; then
     echo 48 > /sys/class/gpio/export 2>/dev/null
 fi
 
+# start timer even before any buttons pressed
+reset_poweroff_timer
+
 # Start evtest in background and read its output line-by-line
 evtest "$DEVICE" 2>/dev/null | while read -r line; do
 
-    reset_sleep_poweroff_timers
+    reset_poweroff_timer
 
     case "$line" in
 
