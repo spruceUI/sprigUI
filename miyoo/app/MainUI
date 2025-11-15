@@ -3,6 +3,7 @@
 # This is sprigUI's entry point for taking over operation from the Miyoo Mini family device.
 # This script gets executed by /customer/main.
 
+
 ##########     AT TIME OF BOOT     ##########
 
 . /mnt/SDCARD/sprig/scripts/helperFunctions.sh
