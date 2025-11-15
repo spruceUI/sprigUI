@@ -194,7 +194,7 @@ class SystemConfig:
         self.save_config()
 
     def game_switcher_game_count(self):
-        return self.config.get("gameSwitcherGameCount", 5)
+        return self.config.get("gameSwitcherGameCount", 8)
 
     def never_prompt_boxart_resize(self):
         return self.config.get("neverPromptBoxartResize", False)
@@ -303,3 +303,12 @@ class SystemConfig:
     def set_bgm_volume(self,value):
         self.config["bgmVolume"] = value
         self.save_config()
+
+    def use_custom_gameswitcher_path(self):
+        return self.config.get("useCustomGameSwitcherPath", True)
+
+    def set_use_custom_gameswitcher_path(self,value):
+        self.config["useCustomGameSwitcherPath"] = value
+        self.save_config()
+
+
