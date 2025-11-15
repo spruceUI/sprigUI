@@ -10,4 +10,8 @@
 - firmware updater app? IDK
 - fsck.fat app or auto fix thingie
 - Update RA?
-
+- spriggified dingux, RTC, and pixel reader appearances
+- in game menu
+- miyoo mini v4 support
+- miyoo mini pre-v4 support
+- miyoo mini plus support

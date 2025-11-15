@@ -41,7 +41,7 @@ cd "$DIR"
 
 	dd if=customer.mod of=/dev/mtdblock6 bs=128K conv=fsync
 
-} &> ./log.txt
+} &> /mnt/SDCARD/Saves/spruce/RemoveLoading.log
 
 mv "$DIR/config.json" "$DIR/config.disabled"
 reboot
