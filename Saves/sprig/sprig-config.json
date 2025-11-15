@@ -73,10 +73,9 @@
             }
         },
         "Network Settings": {
-
             "enableADB": {
                 "display": "Enable Wireless ADB",
-                "description": "(from commandline) adb connect {ip_addr}; adb shell",
+                "description": "adb connect {ip_addr}; adb shell",
                 "options": [
                     "True",
                     "False"
@@ -85,7 +84,7 @@
             },
             "enableSSH": {
                 "display": "Enable SSH",
-                "description": "(from commandline) ssh sprig@{ip_addr} (password=happygaming)",
+                "description": "ssh sprig@{ip_addr} (password=happygaming)",
                 "options": [
                     "True",
                     "False"
@@ -94,7 +93,7 @@
             },
             "enableSMB": {
                 "display": "Enable Samba",
-                "description": "(in file browser) smb://{ip_addr}/SDCARD (user/pass=sprig/happygaming)",
+                "description": "smb://{ip_addr}/SDCARD (user/pass=sprig/happygaming)",
                 "options": [
                     "True",
                     "False"
@@ -103,7 +102,7 @@
             },
             "enableTelnet": {
                 "display": "Enable Telnet",
-                "description": "(from commandline) telnet {ip_addr}",
+                "description": "telnet {ip_addr}",
                 "options": [
                     "True",
                     "False"
@@ -112,7 +111,7 @@
             },
             "enableSyncthing": {
               "display": "Enable Syncthing",
-              "description": "(in internet browser) http://{ip_addr}:8384",
+              "description": "http://{ip_addr}:8384",
               "options": [
                 "True",
                 "False"
