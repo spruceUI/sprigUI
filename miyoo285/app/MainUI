@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# This is sprigUI's entry point for taking over operation from the Mini Flip.
+# This is sprigUI's entry point for taking over operation from the Miyoo Mini family device.
 # This script gets executed by /customer/main.
 
 
