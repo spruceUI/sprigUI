@@ -1129,6 +1129,15 @@ class Theme():
         cls.save_changes()
 
     @classmethod
+    def true_full_screen_game_switcher(cls):
+        return cls._data.get("gameSwitcherTrueFullScreen", True)
+    
+    @classmethod
+    def set_true_full_screen_game_switcher(cls, value):
+        cls._data["gameSwitcherTrueFullScreen"] = value
+        cls.save_changes()
+
+    @classmethod
     def display_battery_percent(cls):
         return cls._data.get("displayBatteryPercent", True)
     
