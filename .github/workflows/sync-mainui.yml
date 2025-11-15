@@ -34,7 +34,7 @@ jobs:
           echo "Source of truth is: $SRC"
 
           # Copy to the other two locations
-          for DEST in miyoo/MainUI miyoo285/MainUI miyoo354/MainUI; do
+          for DEST in miyoo/app/MainUI miyoo285/app/MainUI miyoo354/app/MainUI; do
             if [ "$DEST" != "$SRC" ]; then
               echo "Syncing $SRC → $DEST"
               cp "$SRC" "$DEST"
