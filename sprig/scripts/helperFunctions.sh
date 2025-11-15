@@ -493,9 +493,14 @@ get_battery_percentage() {
 
 # returns the charging state.
 # 0 = not plugged in
-# 3 = plugged in
+# 1 = plugged in        (OG)
+# 3 = plugged in   (Plus and Flip)
 get_charging_state() {
-    axp_test 2>/dev/null | jq -r '.charging // 0'
+    if is_mini_og; then
+        cat /sys/devices/gpiochip0/gpio/gpio59/value
+    else
+        axp_test 2>/dev/null | jq -r '.charging // 0'
+    fi
 }
 
 # returns current lid state

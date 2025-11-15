@@ -8,6 +8,12 @@
 
 . /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
+# init charger detection (Mini OG needs this because no axp_test)
+if [ ! -f /sys/devices/gpiochip0/gpio/gpio59/direction ]; then
+	echo 59 > /sys/class/gpio/export
+	echo in > /sys/devices/gpiochip0/gpio/gpio59/direction
+fi
+
 # auto shutdown if device powers on while lid is shut and plugged in
 CHARGING="$(get_charging_state)"
 LID="$(get_lid_state)"
