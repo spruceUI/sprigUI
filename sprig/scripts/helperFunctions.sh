@@ -20,6 +20,10 @@ is_mini_og() {
     pgrep -f "/mnt/SDCARD/miyoo/" &>/dev/null
 }
 
+has_v4_screen() {
+    grep -q "752x560p" /sys/class/graphics/fb0/modes &>/dev/null
+}
+
 ##########     FLAG HANDLING     ##########
 
 export PATH="/mnt/SDCARD/sprig/bin:/customer:$PATH"
