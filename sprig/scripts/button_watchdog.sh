@@ -17,27 +17,15 @@ IDLE_TIMER_FILE="/tmp/idle_timer"
 ##########     IDLE TIMER FUNCTIONS     ##########
 
 is_mid_update() {
-    if pgrep -f "App/OTA" >/dev/null 2>&1; then
-        return 0
-    else
-        return 1
-    fi
+    if pgrep -f "App/OTA" >/dev/null 2>&1; then return 0; else return 1; fi
 }
 
 is_mid_scrape() {
-    if pgrep -f "App/BoxartScraper" >/dev/null 2>&1; then
-        return 0
-    else
-        return 1
-    fi
+    if pgrep -f "App/BoxartScraper" >/dev/null 2>&1; then return 0; else return 1; fi
 }
 
 is_mid_nursery_download() {
-    if pgrep -f "App/GameNursery" >/dev/null 2>&1 && pgrep -f "wget"; then
-        return 0
-    else
-        return 1
-    fi
+    if pgrep -f "App/GameNursery" >/dev/null 2>&1 && pgrep -f "wget" >/dev/null 2>&1; then return 0; else return 1; fi
 }
 
 reset_poweroff_timer() {
@@ -54,7 +42,6 @@ reset_poweroff_timer() {
 }
 
 monitor_poweroff_timer() {
-
     while true; do
         POWEROFF_TIME="$(get_config_value '.menuOptions."Lid and Power Settings".idlePowerdownTimer.selected' "Off")"
         time_left="$(cat "$IDLE_TIMER_FILE")"
