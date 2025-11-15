@@ -3,6 +3,23 @@
 # Gain access to these functions in your script by adding the following line at the top:
 # . /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
+##########     DEVICE DETECTION     ##########
+
+# note: these take advantage of the fact that the fake mainui script is running from each device's respective folder on the SD card.
+# If we ever change our hook point, these will likely no longer work.
+
+is_mini_flip() {
+    pgrep -f "/mnt/SDCARD/miyoo285/" &>/dev/null
+}
+
+is_mini_plus() {
+    pgrep -f "/mnt/SDCARD/miyoo354/" &>/dev/null
+}
+
+is_mini_og() {
+    pgrep -f "/mnt/SDCARD/miyoo/" &>/dev/null
+}
+
 ##########     FLAG HANDLING     ##########
 
 export PATH="/mnt/SDCARD/sprig/bin:/customer:$PATH"
