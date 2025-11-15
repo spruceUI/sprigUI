@@ -1,0 +1,54 @@
+name: Sync MainUI copies
+
+on:
+  push:
+    paths:
+      - "miyoo/MainUI"
+      - "miyoo285/MainUI"
+      - "miyoo354/MainUI"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine modified MainUI file and sync
+        run: |
+          # Detect which copy changed in this commit
+          if git diff --name-only HEAD^ HEAD | grep -q '^miyoo285/MainUI$'; then
+            SRC="miyoo285/MainUI"
+          elif git diff --name-only HEAD^ HEAD | grep -q '^miyoo354/MainUI$'; then
+            SRC="miyoo354/MainUI"
+          elif git diff --name-only HEAD^ HEAD | grep -q '^miyoo/MainUI$'; then
+            SRC="miyoo/MainUI"
+          else
+            echo "No MainUI changes detected"
+            exit 0
+          fi
+
+          echo "Source of truth is: $SRC"
+
+          # Copy to the other two locations
+          for DEST in miyoo/MainUI miyoo285/MainUI miyoo354/MainUI; do
+            if [ "$DEST" != "$SRC" ]; then
+              echo "Syncing $SRC → $DEST"
+              cp "$SRC" "$DEST"
+            fi
+          done
+
+      - name: Commit and push if changes exist
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+            git add .
+            git commit -m "Sync MainUI copies"
+            git push
+          else
+            echo "No changes to commit"
+          fi
