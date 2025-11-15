@@ -501,8 +501,13 @@ get_charging_state() {
 # returns current lid state
 # 0 = lid closed
 # 1 = lid open
+# 10 = device ain't got no lid
 get_lid_state() {
-    cat "/sys/devices/soc0/soc/soc:hall-mh248/hallvalue"
+    if is_mini_flip; then
+        cat "/sys/devices/soc0/soc/soc:hall-mh248/hallvalue"
+    else
+        return 10
+    fi
 }
 
 
