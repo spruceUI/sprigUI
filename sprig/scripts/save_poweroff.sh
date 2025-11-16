@@ -23,6 +23,7 @@ done
 sync
 
 if is_mini_og; then
+    # OG still hung for me with reboot... need to investigate further
     reboot          # OG Mini hangs if you use the poweroff command
 else
     poweroff
