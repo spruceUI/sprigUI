@@ -20,11 +20,11 @@ jobs:
       - name: Determine modified MainUI file and sync
         run: |
           # Detect which copy changed in this commit
-          if git diff --name-only HEAD^ HEAD | grep -q '^miyoo285/MainUI$'; then
+          if git diff --name-only HEAD^ HEAD | grep -q '^miyoo285/app/MainUI$'; then
             SRC="miyoo285/app/MainUI"
-          elif git diff --name-only HEAD^ HEAD | grep -q '^miyoo354/MainUI$'; then
+          elif git diff --name-only HEAD^ HEAD | grep -q '^miyoo354/app/MainUI$'; then
             SRC="miyoo354/app/MainUI"
-          elif git diff --name-only HEAD^ HEAD | grep -q '^miyoo/MainUI$'; then
+          elif git diff --name-only HEAD^ HEAD | grep -q '^miyoo/app/MainUI$'; then
             SRC="miyoo/app/MainUI"
           else
             echo "No MainUI changes detected"

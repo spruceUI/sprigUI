@@ -23,6 +23,12 @@ mount -o bind /mnt/SDCARD/sprig/etc/profile /etc/profile
 mount -o bind /mnt/SDCARD/sprig/etc/passwd /etc/passwd
 mount -o bind /mnt/SDCARD/sprig/etc/group /etc/group
 
+# better to bind than to include 3 copies of all our libs
+mkdir -p /mnt/SDCARD/miyoo/lib
+mkdir -p /mnt/SDCARD/miyoo354/lib
+mount -o bind /mnt/SDCARD/miyoo285/lib /mnt/SDCARD/miyoo/lib
+mount -o bind /mnt/SDCARD/miyoo285/lib /mnt/SDCARD/miyoo354/lib
+
 rotate_logs && log_message "sprigUI has entered the chat"
 
 /mnt/SDCARD/sprig/scripts/importRAC.sh
