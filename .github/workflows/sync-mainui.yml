@@ -3,9 +3,9 @@ name: Sync MainUI copies
 on:
   push:
     paths:
-      - "miyoo/MainUI"
-      - "miyoo285/MainUI"
-      - "miyoo354/MainUI"
+      - "miyoo/app/MainUI"
+      - "miyoo285/app/MainUI"
+      - "miyoo354/app/MainUI"
 
 jobs:
   sync:

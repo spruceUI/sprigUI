@@ -67,6 +67,7 @@ while true; do
     /mnt/SDCARD/sprig/scripts/audio_server.sh
 
     # Restart PyUI.
+    has_v4_screen && fbset -g 752 560 752 560 32
     freemma
     /mnt/SDCARD/App/PyUI/launch.sh
 done
