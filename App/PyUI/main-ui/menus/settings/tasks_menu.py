@@ -55,18 +55,16 @@ class TasksMenu(settings_menu.SettingsMenu):
     def build_options_list(self):
         option_list = []
 
-        #Future
-        if(False):
-            option_list.append(
-                    GridOrListEntry(
-                            primary_text=Language.download_boxart(),
-                            image_path=None,
-                            image_path_selected=None,
-                            description=None,
-                            icon=None,
-                            value=self.scrape_box_art
-                    )
-            )    
+        option_list.append(
+                GridOrListEntry(
+                        primary_text=Language.download_boxart(),
+                        image_path=None,
+                        image_path_selected=None,
+                        description=None,
+                        icon=None,
+                        value=self.scrape_box_art
+                )
+         )    
 
         if(Device.supports_image_resizing()):
             option_list.append(
