@@ -10,4 +10,4 @@
 - firmware updater app? IDK
 - fsck.fat app or auto fix thingie
 - Update RA?
-
+- easy netplay thing
