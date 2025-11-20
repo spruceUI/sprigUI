@@ -35,6 +35,7 @@ fi
 
 ##########################################################
 
+CURRENT_VERSION="$(cat /mnt/SDCARD/sprig/version)"
 
 ##### FUNCTION DEFINITIONS #####
 
@@ -198,6 +199,41 @@ preserve_sprig_config_settings() {
     python /mnt/SDCARD/App/OTA/merge_configs.py "$existing_config" "$new_config"
 }
 
+current_version_equal_or_older_than() {
+    # $1 = version to compare against
+
+    IFS='.' read -r c1 c2 c3 <<EOF
+$CURRENT_VERSION
+EOF
+    IFS='.' read -r v1 v2 v3 <<EOF
+$1
+EOF
+
+    # Default missing fields to zero
+    c1=${c1:-0}; c2=${c2:-0}; c3=${c3:-0}
+    v1=${v1:-0}; v2=${v2:-0}; v3=${v3:-0}
+
+    # Compare major
+    if [ "$c1" -lt "$v1" ]; then return 0; fi
+    if [ "$c1" -gt "$v1" ]; then return 1; fi
+
+    # Compare minor
+    if [ "$c2" -lt "$v2" ]; then return 0; fi
+    if [ "$c2" -gt "$v2" ]; then return 1; fi
+
+    # Compare patch
+    if [ "$c3" -le "$v3" ]; then return 0; fi
+
+    return 1
+}
+
+delete_extra_files_from_old_releases(){
+    if current_version_equal_or_older_than "1.1.0"; then
+        echo "Deleting /mnt/SDCARD/App/BoxartScraper"
+        rm -rf "/mnt/SDCARD/App/BoxartScraper"
+    fi
+}
+
 complete_installation() {
 
     log_message "Killing main execution loop, powerbutton watchdog, and SSH."
@@ -248,6 +284,7 @@ if does_device_have_sufficient_space && is_wifi_connected && is_branch_newer_tha
             sleep 3
         fi
         complete_installation
+        delete_extra_files_from_old_releases
         sync
         sleep 5
         reboot
