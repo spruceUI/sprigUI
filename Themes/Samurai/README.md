@@ -1,4 +1,4 @@
-# `Samurai` *by* `Sky_Walker AKA GamerChef`
+# `Samurai` *by* `SkyWalker541`
 
 Theme for sprig modded stock os
 
@@ -7,15 +7,15 @@ Theme for sprig modded stock os
 
 **Font:** PixelIntv-OPxd:** by Oliver Lalan
 
-**Icons:** By [Icons8](https://icons8.com/) - Cute Outline. Edited and modified by Sky_Walker
+**Icons:** By [Icons8](https://icons8.com/) - Cute Outline. Edited and modified by SkyWalker541
 
-**Console Icons:** By Retroarch with additions by Sky_Walker AKA GamerChef
+**Console Icons:** By Retroarch with additions by SkyWalker541
 
 **Super Game Boy Icon:** By rodrigoomuller
 
-**App Icons:** By [Icons8](https://icons8.com/) - Cute Outline. Edited and modified by Sky_Walker
+**App Icons:** By [Icons8](https://icons8.com/) - Cute Outline. Edited and modified by SkyWalker541
 
-**Pico8 Icon**:** By Sky_Walker AKA GamerChef
+**Pico8 Icon**:** By SkyWalker541
 
 **change.wav File:** By Dragon Studio
 
