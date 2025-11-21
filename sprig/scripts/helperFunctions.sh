@@ -17,7 +17,11 @@ is_mini_plus() {
 }
 
 is_mini_og() {
-    pgrep -f "/mnt/SDCARD/miyoo/" &>/dev/null
+    if [ -e /customer/app/axp_test ]; then
+        return 1
+    else
+        return 0
+    fi
 }
 
 has_v4_screen() {
