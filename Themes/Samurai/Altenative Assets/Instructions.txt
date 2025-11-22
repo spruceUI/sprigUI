@@ -4,4 +4,4 @@ Replace the assets in the:
 
 If you are prompted to overwrite the files, select yes to all.
 
-Note "Pack 3, and Original Assets" requires all three assets to be replaced.
+Note "Pack 3, and Original Assets" requires all eleven assets to be replaced.
