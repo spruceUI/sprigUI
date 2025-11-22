@@ -496,7 +496,11 @@ exit_pseudo_sleep() {
 
 # returns the battery percentage (0-100)
 get_battery_percentage() {
-    axp_test 2>/dev/null | jq -r '.battery // empty'
+    if is_mini_og; then
+        read_battery || echo 0
+    else
+        axp_test 2>/dev/null | jq -r '.battery // empty'
+    fi
 }
 
 # returns the charging state.
