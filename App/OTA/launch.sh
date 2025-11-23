@@ -229,8 +229,8 @@ EOF
 
 delete_extra_files_from_old_releases(){
     if current_version_equal_or_older_than "1.1.0"; then
-        echo "Deleting /mnt/SDCARD/App/BoxartScraper"
-        rm -rf "/mnt/SDCARD/App/BoxartScraper"
+        rm -rf "/mnt/SDCARD/App/BoxartScraper" && log_message "Deleting /mnt/SDCARD/App/BoxartScraper"
+        rm -rf "/mnt/SDCARD/App/Clock" && log_message "Deleting /mnt/SDCARD/App/Clock"
     fi
 }
 
