@@ -3,5 +3,6 @@
   "icon": "menuswitch.png",
   "launch": "launch.sh",
   "description": "Removes SD card picture and loading text from boot sequence",
-  "hide": true
+  "hide": true,
+  "hideInSimpleMode": true
 }

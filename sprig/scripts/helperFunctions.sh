@@ -3,6 +3,31 @@
 # Gain access to these functions in your script by adding the following line at the top:
 # . /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
+##########     DEVICE DETECTION     ##########
+
+# note: these take advantage of the fact that the fake mainui script is running from each device's respective folder on the SD card.
+# If we ever change our hook point, these will likely no longer work.
+
+is_mini_flip() {
+    pgrep -f "/mnt/SDCARD/miyoo285/" &>/dev/null
+}
+
+is_mini_plus() {
+    pgrep -f "/mnt/SDCARD/miyoo354/" &>/dev/null
+}
+
+is_mini_og() {
+    if [ -e /customer/app/axp_test ]; then
+        return 1
+    else
+        return 0
+    fi
+}
+
+has_v4_screen() {
+    grep -q "752x560p" /sys/class/graphics/fb0/modes &>/dev/null
+}
+
 ##########     FLAG HANDLING     ##########
 
 export PATH="/mnt/SDCARD/sprig/bin:/customer:$PATH"
@@ -424,25 +449,12 @@ vibrate() {
     /mnt/SDCARD/sprig/scripts/vibrate.sh "$@" &
 }
 
-##########     OTHER STUFF     ##########
-
-init_volume_backlight() {
-    current_backlight=$(get_pyui_config_value ".backlight" 5)
-    set_backlight "$current_backlight"
-    current_volume=$(get_pyui_config_value ".vol" 10)
-    set_volume "$current_volume"
-    log_message "Backlight initialized to $current_backlight."
-    log_message "Volume initialized to $current_volume."
-}
+##########     POWER MANAGEMENT     ##########
 
 BRIGHTNESS_FILE="/sys/devices/soc0/soc/1f003400.pwm/pwm/pwmchip0/pwm0/duty_cycle"
 SCREEN_BLANK_FILE="/proc/mi_modules/fb/mi_fb0"
 BUTTON_ENABLE_FILE="/sys/module/gpio_keys_polled/parameters/button_enable"
 EMU_LIST="retroarch scummvm pico8_dyn drastic OpenBOR OpenBOR_mod OpenBOR_new ffplay MainUI"
-
-get_battery_percentage() {
-    axp_test 2>/dev/null | jq -r '.battery // empty'
-}
 
 enter_pseudo_sleep() {
     killall -q -SIGSTOP $(echo $EMU_LIST) 2>/dev/null
@@ -482,6 +494,51 @@ exit_pseudo_sleep() {
     pgrep retroarch 2>/dev/null && /mnt/SDCARD/sprig/scripts/enforceSmartCPU.sh # return to smart mode
 }
 
+# returns the battery percentage (0-100)
+get_battery_percentage() {
+    if is_mini_og; then
+        read_battery || echo 0
+    else
+        axp_test 2>/dev/null | jq -r '.battery // empty'
+    fi
+}
+
+# returns the charging state.
+# 0 = not plugged in
+# 1 = plugged in        (OG)
+# 3 = plugged in   (Plus and Flip)
+get_charging_state() {
+    if is_mini_og; then
+        cat /sys/devices/gpiochip0/gpio/gpio59/value
+    else
+        axp_test 2>/dev/null | jq -r '.charging // 0'
+    fi
+}
+
+# returns current lid state
+# 0 = lid closed
+# 1 = lid open
+# 10 = device ain't got no lid
+get_lid_state() {
+    if is_mini_flip; then
+        cat "/sys/devices/soc0/soc/soc:hall-mh248/hallvalue"
+    else
+        return 10
+    fi
+}
+
+
+
+##########     OTHER STUFF     ##########
+
+init_volume_backlight() {
+    current_backlight=$(get_pyui_config_value ".backlight" 5)
+    set_backlight "$current_backlight"
+    current_volume=$(get_pyui_config_value ".vol" 10)
+    set_volume "$current_volume"
+    log_message "Backlight initialized to $current_backlight."
+    log_message "Volume initialized to $current_volume."
+}
 
 read_only_check() {
     log_message "Performing read-only check"

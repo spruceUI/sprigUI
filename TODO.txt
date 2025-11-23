@@ -2,7 +2,6 @@
 
 - theme garden?
 - dufs
-- syncthing
 - ebook "Emu"
 - MEDIA "Emu"
 - PORTS "Emu"
@@ -10,3 +9,5 @@
 - A / B prompt for bootlogo, ota, remove loading, instead of committing you to it as soon as you click the app
 - firmware updater app? IDK
 - fsck.fat app or auto fix thingie
+- Update RA?
+- easy netplay thing

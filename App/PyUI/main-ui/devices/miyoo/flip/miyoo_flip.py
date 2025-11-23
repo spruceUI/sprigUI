@@ -1,11 +1,14 @@
 import inspect
+import json
 from pathlib import Path
 import subprocess
 import threading
 import time
+from audio.audio_player_delegate_sdl2 import AudioPlayerDelegateSdl2
 from controller.controller_inputs import ControllerInput
 from controller.key_watcher import KeyWatcher
 import os
+from controller.sdl.sdl2_controller_interface import Sdl2ControllerInterface
 from devices.bluetooth.bluetooth_scanner import BluetoothScanner
 from devices.charge.charge_status import ChargeStatus
 from devices.miyoo.flip.miyoo_flip_poller import MiyooFlipPoller
@@ -28,10 +31,24 @@ from utils.py_ui_config import PyUiConfig
 class MiyooFlip(MiyooDevice):
     OUTPUT_MIXER = 2
     SOUND_DISABLED = 0
+    MIYOO_STOCK_CONFIG_LOCATION = "/userdata/system.json"
 
-    def __init__(self, device_name):
+    def __init__(self, device_name, main_ui_mode):
         self.device_name = device_name
-        
+        self.unknown_axis_ranges = {}  # axis -> (min, max)
+        self.unknown_axis_stats = {}   # axis -> (sum, count)
+
+        self.sdl_axis_names = {
+            0: "SDL_CONTROLLER_AXIS_LEFTX",
+            1: "SDL_CONTROLLER_AXIS_LEFTY",
+            2: "SDL_CONTROLLER_AXIS_RIGHTX",
+            3: "SDL_CONTROLLER_AXIS_RIGHTY",
+            4: "SDL_CONTROLLER_AXIS_TRIGGERLEFT",
+            5: "SDL_CONTROLLER_AXIS_TRIGGERRIGHT"
+        }
+        self.sdl2_controller_interface = Sdl2ControllerInterface()
+        self.audio_player = AudioPlayerDelegateSdl2()
+
         self.sdl_button_to_input = {
             sdl2.SDL_CONTROLLER_BUTTON_A: ControllerInput.B,
             sdl2.SDL_CONTROLLER_BUTTON_B: ControllerInput.A,
@@ -53,43 +70,42 @@ class MiyooFlip(MiyooDevice):
         os.environ["SDL_VIDEODRIVER"] = "KMSDRM"
         os.environ["SDL_RENDER_DRIVER"] = "kmsdrm"
         
-        script_dir = Path(__file__).resolve().parent
-        source = script_dir / 'flip-system.json'
-        ConfigCopier.ensure_config("/mnt/SDCARD/Saves/flip-system.json", source)
-        self.system_config = SystemConfig("/mnt/SDCARD/Saves/flip-system.json")
-        self.miyoo_games_file_parser = MiyooGamesFileParser()        
-   
-        self.hardware_poller = MiyooFlipPoller(self)
-        threading.Thread(target=self.hardware_poller.continuously_monitor, daemon=True).start()
-        threading.Thread(target=self.startup_init, daemon=True).start()
+        self.system_config = None
+        if(main_ui_mode):
+            script_dir = Path(__file__).resolve().parent
+            source = script_dir / 'flip-system.json'
+            ConfigCopier.ensure_config("/mnt/SDCARD/Saves/flip-system.json", source)
+            self.system_config = SystemConfig("/mnt/SDCARD/Saves/flip-system.json")
+            self.miyoo_games_file_parser = MiyooGamesFileParser()        
+            miyoo_stock_json_file = script_dir.parent / 'stock/flip.json'
+            ConfigCopier.ensure_config(MiyooFlip.MIYOO_STOCK_CONFIG_LOCATION, miyoo_stock_json_file)
+            self.hardware_poller = MiyooFlipPoller(self)
+            threading.Thread(target=self.hardware_poller.continuously_monitor, daemon=True).start()
+            threading.Thread(target=self.startup_init, daemon=True).start()
+            if(PyUiConfig.enable_button_watchers()):
+                from controller.controller import Controller
+                #/dev/miyooio if we want to get rid of miyoo_inputd
+                # debug in terminal: hexdump  /dev/miyooio
+                self.volume_key_watcher = KeyWatcher("/dev/input/event0")
+                Controller.add_button_watcher(self.volume_key_watcher.poll_keyboard)
+                volume_key_polling_thread = threading.Thread(target=self.volume_key_watcher.poll_keyboard, daemon=True)
+                volume_key_polling_thread.start()
+                self.power_key_watcher = KeyWatcher("/dev/input/event2")
+                power_key_polling_thread = threading.Thread(target=self.power_key_watcher.poll_keyboard, daemon=True)
+                power_key_polling_thread.start()
+          
+            # Done to try to account for external systems editting the config file
+            self.config_watcher_thread, self.config_watcher_thread_stop_event = FileWatcher().start_file_watcher(
+                "/mnt/SDCARD/Saves/flip-system.json", self.on_system_config_changed, interval=1.0)
 
-        if(PyUiConfig.enable_button_watchers()):
-            from controller.controller import Controller
-            #/dev/miyooio if we want to get rid of miyoo_inputd
-            # debug in terminal: hexdump  /dev/miyooio
-            self.volume_key_watcher = KeyWatcher("/dev/input/event0")
-            Controller.add_button_watcher(self.volume_key_watcher.poll_keyboard)
-            volume_key_polling_thread = threading.Thread(target=self.volume_key_watcher.poll_keyboard, daemon=True)
-            volume_key_polling_thread.start()
-            self.power_key_watcher = KeyWatcher("/dev/input/event2")
-            power_key_polling_thread = threading.Thread(target=self.power_key_watcher.poll_keyboard, daemon=True)
-            power_key_polling_thread.start()
-
-        self.unknown_axis_ranges = {}  # axis -> (min, max)
-        self.unknown_axis_stats = {}   # axis -> (sum, count)
-        self.sdl_axis_names = {
-            0: "SDL_CONTROLLER_AXIS_LEFTX",
-            1: "SDL_CONTROLLER_AXIS_LEFTY",
-            2: "SDL_CONTROLLER_AXIS_RIGHTX",
-            3: "SDL_CONTROLLER_AXIS_RIGHTY",
-            4: "SDL_CONTROLLER_AXIS_TRIGGERLEFT",
-            5: "SDL_CONTROLLER_AXIS_TRIGGERRIGHT"
-        }
+        if(self.system_config is None):
+            self.system_config = SystemConfig("/mnt/SDCARD/Saves/flip-system.json")
 
         super().__init__()
-        # Done to try to account for external systems editting the config file
-        self.config_watcher_thread, self.config_watcher_thread_stop_event = FileWatcher().start_file_watcher(
-            "/mnt/SDCARD/Saves/flip-system.json", self.on_system_config_changed, interval=1.0)
+
+
+    def get_controller_interface(self):
+        return self.sdl2_controller_interface
 
     def on_system_config_changed(self):
         old_volume = self.system_config.get_volume()
@@ -98,7 +114,7 @@ class MiyooFlip(MiyooDevice):
         if(old_volume != new_volume):
             Display.volume_changed(new_volume)
 
-    def startup_init(self):
+    def startup_init(self, include_wifi=True):
         self._set_lumination_to_config()
         self._set_contrast_to_config()
         self._set_saturation_to_config()
@@ -107,7 +123,7 @@ class MiyooFlip(MiyooDevice):
         self.ensure_wpa_supplicant_conf()
         self.init_gpio()
 
-        if(PyUiConfig.enable_wifi_monitor()):
+        if(PyUiConfig.enable_wifi_monitor() and include_wifi):
             PyUiLogger.get_logger().info(f"Starting wifi monitor")
             threading.Thread(target=self.monitor_wifi, daemon=True).start()
             if(self.is_wifi_enabled()):
@@ -454,3 +470,25 @@ class MiyooFlip(MiyooDevice):
         #If we set the time be sure to
         #export TZ='{timezone}'
 
+    def set_theme(self, theme_path: str):
+        MiyooTrimCommon.set_theme(MiyooFlip.MIYOO_STOCK_CONFIG_LOCATION, theme_path)
+
+    def get_audio_system(self):
+        return self.audio_player
+    
+    def get_fw_version(self):
+        try:
+            with open(f"/usr/miyoo/version") as f:
+                return f.read().strip()
+        except Exception as e:
+            PyUiLogger.get_logger().error(f"Could not read FW version : {e}")
+            return "Unknown"
+
+    def get_core_name_overrides(self, core_name):
+        return [core_name, core_name+"-64"]
+
+    def get_core_for_game(self, game_system_config, rom_file_path):
+        core = game_system_config.get_effective_menu_selection("Emulator", rom_file_path)
+        if(core is None):
+            core = game_system_config.get_effective_menu_selection("Emulator_64", rom_file_path)
+        return core

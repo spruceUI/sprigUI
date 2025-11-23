@@ -3,6 +3,7 @@
         "Game Switcher Settings": {
             "menuHoldTime": {
                 "display": "Menu Hold Time",
+                "description": "in seconds",
                 "options": [
                     "0",
                     "0.5",
@@ -15,6 +16,7 @@
             },
             "menuShouldVibrate": {
                 "display": "Vibrate on Menu Hold",
+                "description": "haptic feedback when launching game switcher",
                 "options": [
                     "True",
                     "False"
@@ -25,6 +27,7 @@
         "Lid and Power Settings": {
             "lidPowerdownTimer": {
                 "display": "Powerdown After Closing Lid",
+                "description": "device enters pseudosleep between close and shutdown",
                 "options": [
                     "Off",
                     "5s",
@@ -37,8 +40,22 @@
                 ],
                 "selected": "30s"
             },
+            "idlePowerdownTimer": {
+                "display": "Powerdown After Inactivity",
+                "description": "applies with lid open or shut",
+                "options": [
+                    "Off",
+                    "5m",
+                    "15m",
+                    "30m",
+                    "1h",
+                    "2h"
+                ],
+                "selected": "Off"
+            },
             "disableWifiInSleep": {
                 "display": "Disable Wi-Fi During Pseudosleep",
+                "description": "reduces power consumption",
                 "options": [
                     "True",
                     "False"
@@ -47,6 +64,7 @@
             },
             "disableWifiInGame": {
                 "display": "Disable Wi-Fi In Game",
+                "description": "reduces power consumption",
                 "options": [
                     "True",
                     "False"
@@ -55,9 +73,9 @@
             }
         },
         "Network Settings": {
-
             "enableADB": {
                 "display": "Enable Wireless ADB",
+                "description": "adb connect {ip_addr}; adb shell",
                 "options": [
                     "True",
                     "False"
@@ -66,6 +84,7 @@
             },
             "enableSSH": {
                 "display": "Enable SSH",
+                "description": "ssh sprig@{ip_addr} (password=happygaming)",
                 "options": [
                     "True",
                     "False"
@@ -74,6 +93,7 @@
             },
             "enableSMB": {
                 "display": "Enable Samba",
+                "description": "smb://{ip_addr}/SDCARD (user/pass=sprig/happygaming)",
                 "options": [
                     "True",
                     "False"
@@ -82,16 +102,27 @@
             },
             "enableTelnet": {
                 "display": "Enable Telnet",
+                "description": "telnet {ip_addr}",
                 "options": [
                     "True",
                     "False"
                 ],
                 "selected": "False"
+            },
+            "enableSyncthing": {
+              "display": "Enable Syncthing",
+              "description": "http://{ip_addr}:8384",
+              "options": [
+                "True",
+                "False"
+              ],
+              "selected": "False"
             }
         },
         "OTA Settings": {
             "branch": {
                 "display": "Target Branch",
+                "description": "to download from sprigUI GitHub",
                 "options": [
                     "release",
                     "development"
@@ -100,6 +131,7 @@
             },
             "bypassVersionChecks": {
                 "display": "Bypass Version Checks",
+                "description": "allow OTA to same version",
                 "options": [
                     "True",
                     "False"
@@ -108,6 +140,7 @@
             },
             "overwriteEmuDir": {
                 "display": "Reset Core Preferences",
+                "description": "as part of OTA",
                 "options": [
                     "True",
                     "False"
@@ -116,6 +149,7 @@
             },
             "overwriteRAconfigs": {
                 "display": "Reset RetroArch/DraStic Configurations",
+                "description": "as part of OTA",
                 "options": [
                     "True",
                     "False"
@@ -124,6 +158,7 @@
             },
             "overwriteThemesDir": {
                 "display": "Reinstall Base Themes",
+                "description": "resets any modifications",
                 "options": [
                     "True",
                     "False"
@@ -132,6 +167,7 @@
             },
             "overwritePythonDir": {
                 "display": "Reinstall Python",
+                "description": "rarely necessary",
                 "options": [
                     "True",
                     "False"
@@ -140,5 +176,4 @@
             }
         }
     }
-    
 }

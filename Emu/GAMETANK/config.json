@@ -10,5 +10,5 @@
     "brand": "other",
     "type": "fantasy",
     "releaseYear": 2023,
-    "default_emulator": "gametank"
+    "default_emulator": "libgametank"
   }

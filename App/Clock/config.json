@@ -1,7 +1,0 @@
-{
-  "label": "Clock",
-  "icon": "rtc.png",
-  "launch": "launch.sh",
-  "description": "Set the current time",
-  "hide": false
-}

@@ -15,7 +15,8 @@ class TopBar:
         self.volume_changed_time = time.time()
         self.volume = 0
         self.selected_tab = "Games"
-        
+        self.top_bar_h = 0
+
     def render_top_bar(self, title, hide_top_bar_icons = False) :
         if(Theme.skip_main_menu()):
             self.render_top_bar_menu_skipped(title, hide_top_bar_icons)
@@ -30,11 +31,11 @@ class TopBar:
 
         x_offset = Theme.get_top_bar_initial_x_offset()
 
-        games_color = Theme.text_color_selected(FontPurpose.GRID_ONE_ROW) if "Games" == self.selected_tab else Theme.text_color(FontPurpose.GRID_ONE_ROW)
-        apps_color = Theme.text_color_selected(FontPurpose.GRID_ONE_ROW) if "Apps" == self.selected_tab else Theme.text_color(FontPurpose.GRID_ONE_ROW)
-        settings_color = Theme.text_color_selected(FontPurpose.GRID_ONE_ROW) if "Settings" == self.selected_tab else Theme.text_color(FontPurpose.GRID_ONE_ROW)
+        games_color = Theme.text_color_selected(FontPurpose.GRID_ONE_ROW) if "Game" == self.selected_tab else Theme.text_color(FontPurpose.GRID_ONE_ROW)
+        apps_color = Theme.text_color_selected(FontPurpose.GRID_ONE_ROW) if "App" == self.selected_tab else Theme.text_color(FontPurpose.GRID_ONE_ROW)
+        settings_color = Theme.text_color_selected(FontPurpose.GRID_ONE_ROW) if "Setting" == self.selected_tab else Theme.text_color(FontPurpose.GRID_ONE_ROW)
         
-        text_padding = 20
+        text_padding = 20 * Theme._default_multiplier
         w, h = Display.render_text(Language.games(),x_offset, center_of_bar,  games_color, FontPurpose.GRID_ONE_ROW, RenderMode.MIDDLE_LEFT_ALIGNED)
         x_offset += w +text_padding
         w, h = Display.render_text(Language.apps(),x_offset, center_of_bar,  apps_color, FontPurpose.GRID_ONE_ROW, RenderMode.MIDDLE_LEFT_ALIGNED)

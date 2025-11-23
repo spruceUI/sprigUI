@@ -1,0 +1,14 @@
+{
+  "Forget all WiFi networks": "/mnt/SDCARD/sprig/scripts/tasks/clearwifi.sh",
+  "Reset RetroArch hotkeys":  "/mnt/SDCARD/sprig/scripts/tasks/resetRAHotkeys.sh",
+  "Reset RetroArch config":   "/mnt/SDCARD/sprig/scripts/tasks/resetRA.sh",
+  "Reset DraStic config":     "/mnt/SDCARD/sprig/scripts/tasks/resetNDS.sh",
+  "Clean up macOS dotfiles":  "/mnt/SDCARD/sprig/scripts/tasks/deleteMacFiles.sh",
+  "descriptions": {
+    "Forget all WiFi networks": "disconnect and clear all saved networks",
+    "Reset RetroArch hotkeys":  "reapply sprig default RA hotkey layout",
+    "Reset RetroArch config":   "restore sprig default RA config",
+    "Reset DraStic config":     "restore sprig default NDS config",
+    "Clean up macOS dotfiles":  "delete any junk files created by macOS"
+  }
+}

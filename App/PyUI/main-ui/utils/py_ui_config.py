@@ -94,6 +94,10 @@ class PyUiConfig:
         return cls._data.get("mainMenuTitle", "PyUI")
 
     @classmethod
+    def get_cfw_name(cls):
+        return cls._data.get("mainMenuTitle", "CFW")
+
+    @classmethod
     def show_clock(cls):
         return cls.get("showClock",True)
 
@@ -194,4 +198,12 @@ class PyUiConfig:
     @classmethod
     def allow_pyui_game_switcher(cls):
         return cls.get("allowPyUiGameSwitcher",True)
+
+    @classmethod
+    def get_gameswitcher_path(cls):
+        return cls.get("gameSwitcherPath",None)
+
+    @classmethod
+    def cfw_tasks_json(cls):
+        return cls.get("cfwTasks",None)
 

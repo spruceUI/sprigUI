@@ -10,6 +10,7 @@ ADB_ENABLED="$(get_config_value '.menuOptions."Network Settings".enableADB.selec
 SSH_ENABLED="$(get_config_value '.menuOptions."Network Settings".enableSSH.selected' "False")"
 SMB_ENABLED="$(get_config_value '.menuOptions."Network Settings".enableSMB.selected' "False")"
 TEL_ENABLED="$(get_config_value '.menuOptions."Network Settings".enableTelnet.selected' "False")"
+SYN_ENABLED="$(get_config_value '.menuOptions."Network Settings".enableSyncthing.selected' "False")"
 
 # ADB
 if [ "$ADB_ENABLED" = "True" ]; then
@@ -23,7 +24,7 @@ fi
 
 # SSH (Dropbear)
 if [ "$SSH_ENABLED" = "True" ]; then
-    if ! pgrep dropbear >/dev/null 2>&1; then
+    if ! pgrep dropbearmulti >/dev/null 2>&1; then
         /mnt/SDCARD/sprig/scripts/network/start_dropbear.sh &
         log_message "Started Dropbear"
     fi
@@ -49,4 +50,14 @@ if [ "$TEL_ENABLED" = "True" ]; then
     fi
 else
     killall telnetd 2>/dev/null && log_message "Killed Telnet daemon"
+fi
+
+# Syncthing
+if [ "$SYN_ENABLED" = "True" ]; then
+    if ! pgrep syncthing >/dev/null 2>&1; then
+      /mnt/SDCARD/sprig/scripts/network/start_syncthing.sh &
+      log_message "Started Syncthing daemon"
+    fi
+else
+    killall syncthing 2>/dev/null && log_message "Killed Syncthing daemon"
 fi

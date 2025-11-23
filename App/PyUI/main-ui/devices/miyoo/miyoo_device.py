@@ -2,7 +2,6 @@ import subprocess
 import time
 from apps.miyoo.miyoo_app_finder import MiyooAppFinder
 from controller.controller_inputs import ControllerInput
-from controller.sdl.sdl2_controller_interface import Sdl2ControllerInterface
 from devices.device_common import DeviceCommon
 from devices.miyoo.trim_ui_joystick import TrimUIJoystick
 from devices.miyoo_trim_common import MiyooTrimCommon
@@ -25,9 +24,6 @@ class MiyooDevice(DeviceCommon):
     def __init__(self):
         self.button_remapper = ButtonRemapper(self.system_config)
         self.game_utils = MiyooTrimGameSystemUtils()
-
-    def get_controller_interface(self):
-        return Sdl2ControllerInterface()
 
     def clear_framebuffer(self):
         pass
@@ -278,8 +274,8 @@ class MiyooDevice(DeviceCommon):
     def get_roms_dir(self):
         return "/mnt/SDCARD/Roms/"
     
-    def get_extra_settings_options(self):
-        return []
-    
     def get_save_state_image(self, rom_info: RomInfo):
         return self.get_game_system_utils().get_save_state_image(rom_info)
+    
+    def get_device_specific_about_info_entries(self):
+        return []

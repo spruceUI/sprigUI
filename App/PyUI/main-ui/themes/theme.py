@@ -1,17 +1,20 @@
 import json
 import logging
 import os
+import subprocess
 import sys
 import traceback
 
 from devices.charge.charge_status import ChargeStatus
 from devices.device import Device
+from devices.utils.process_runner import ProcessRunner
 from devices.wifi.wifi_status import WifiStatus
 from display.font_purpose import FontPurpose
 from display.resize_type import ResizeType
 from menus.games.utils.daijisho_theme_index import DaijishoThemeIndex
 from themes.theme_patcher import ThemePatcher
 from utils.logger import PyUiLogger
+from utils.py_ui_config import PyUiConfig
 from views.view_type import ViewType
 
 class Theme():
@@ -21,8 +24,11 @@ class Theme():
     _icon_folder = ""
     _loaded_file_path = ""
     _daijisho_theme_index = None
-
+    _button_press_wav = None
     _default_multiplier = 1.0
+    _play_button_press_sounds = True
+    _asset_cache = {}  # shared cache for asset + icon lookups
+    _grid_game_default_size = 140
 
     @classmethod
     def init(cls, path, width, height):
@@ -59,10 +65,46 @@ class Theme():
             cls._daijisho_theme_index = None
             #PyUiLogger.get_logger().info(f"Using Miyoo style theme")
 
-        scale_width = Device.screen_width() / width
-        scale_height = Device.screen_height() / height
+        scale_width = Device.screen_width() / 640
+        scale_height = Device.screen_height() / 480
+
+        if(scale_width > scale_height):
+            cls.width_multiplier = ((scale_width-scale_height) / scale_height) + 1
+            cls.height_multiplier = 1.0
+        else:
+            cls.height_multiplier = ((scale_height-scale_width) / scale_width) + 1
+            cls.width_multiplier = 1.0
+
         cls._default_multiplier = min(scale_width, scale_height)
 
+        cls.button_press_sounds_changed()
+        cls.bgm_setting_changed()
+
+
+    @classmethod
+    def bgm_setting_changed(cls):
+        Device.get_audio_system().audio_stop_loop()
+        if(Device.get_system_config().play_bgm()):
+            bgm_wav = os.path.join(cls._path, "sound", "bgm.wav")
+            bgm_mp3 = os.path.join(cls._path, "sound", "bgm.mp3")
+            Device.get_audio_system().audio_set_volume(Device.get_system_config().bgm_volume())
+            if os.path.exists(bgm_wav) and os.path.getsize(bgm_wav) > 0:
+                Device.get_audio_system().audio_loop_wav(bgm_wav)
+            elif os.path.exists(bgm_mp3) and os.path.getsize(bgm_mp3) > 0:
+                Device.get_audio_system().audio_loop_mp3(bgm_mp3)
+
+    @classmethod
+    def button_press_sounds_changed(cls):
+        cls._play_button_press_sounds = Device.get_system_config().play_button_press_sound()
+        button_press_wav = os.path.join(cls._path, "sound", "change.wav")
+        if(os.path.exists(button_press_wav)) and os.path.getsize(button_press_wav) > 0:
+            cls._button_press_wav = button_press_wav
+            Device.get_audio_system().load_wav(button_press_wav)
+
+    @classmethod
+    def controller_button_pressed(cls, input):
+        if(cls._play_button_press_sounds and cls._button_press_wav is not None):
+            Device.get_audio_system().audio_play_wav(cls._button_press_wav)
 
     @classmethod
     def convert_theme_if_needed(cls, path, width, height):
@@ -139,38 +181,50 @@ class Theme():
         PyUiLogger.get_logger().info(f"Wrote Theme : {cls._data.get('description', 'UNKNOWN')}")
         from display.display import Display
         Display.clear_cache()
+        
+    @classmethod
+    def _resolve_file(cls, base_folder, parts):
+        """
+        Shared resolver:
+        - Checks full path
+        - If missing and ends in .qoi, tries .png then .tga fallback
+        - Caches results
+        """
+        key = (base_folder, parts)
+        if key in cls._asset_cache:
+            return cls._asset_cache[key]
+
+        path = os.path.join(cls._path, base_folder, *parts)
+
+        # Direct hit
+        if os.path.exists(path):
+            cls._asset_cache[key] = path
+            return path
+
+        # Fallback only makes sense for .qoi assets/icons
+        if path.endswith(".qoi"):
+            png_path = path[:-4] + ".png"
+            if os.path.exists(png_path):
+                cls._asset_cache[key] = png_path
+                return png_path
+
+            tga_path = path[:-4] + ".tga"
+            if os.path.exists(tga_path):
+                cls._asset_cache[key] = tga_path
+                return tga_path
+
+        # Nothing found
+        cls._asset_cache[key] = None
+        return None
 
     @classmethod
     def _asset(cls, *parts):
-        path = os.path.join(cls._path, cls._skin_folder, *parts)
-        # If the file doesn't exist and ends with .qoi, try the PNG fallback
-        if not os.path.exists(path):
-            png_path = path[:-4] + ".png" 
-            if os.path.exists(png_path):
-                return png_path
+        return cls._resolve_file(cls._skin_folder, parts)
 
-            tga_path = path[:-4] + ".tga" 
-            if os.path.exists(tga_path):
-                return tga_path
-
-        # Otherwise return the original path
-        return path
-        
     @classmethod
     def _icon(cls, *parts):
-        path = os.path.join(cls._path, cls._icon_folder, *parts)
-        # If the file doesn't exist and ends with .qoi, try the PNG fallback
-        if not os.path.exists(path):
-            png_path = path[:-4] + ".png" 
-            if os.path.exists(png_path):
-                return png_path
-            tga_path = path[:-4] + ".tga" 
-            if os.path.exists(tga_path):
-                return tga_path
-        
-        # Otherwise return the original path
-        return path
-
+        return cls._resolve_file(cls._icon_folder, parts)
+    
     @classmethod
     def background(cls, page = None):
         if(page is None):
@@ -242,10 +296,10 @@ class Theme():
     def render_top_and_bottom_bar_last(cls): return cls._data.get("renderTopAndBottomBarLast", False)
     
     @classmethod
-    def confirm_text(cls): return "Okay"
+    def confirm_text(cls): return cls._data.get("confirmText", "Okay")
     
     @classmethod
-    def back_text(cls): return "Back"
+    def back_text(cls): return cls._data.get("backText", "Back")
     
     @classmethod
     def favorite_icon(cls): return cls._asset("ic-favorite-mark.qoi")
@@ -410,27 +464,27 @@ class Theme():
         try:
             match font_purpose:
                 case FontPurpose.TOP_BAR_TEXT:
-                    return cls._data.get("topBarFontSize", cls._data["list"].get("size", 24))
+                    return cls._data.get("topBarFontSize", cls._data["list"].get("size", int(24*cls._default_multiplier)))
                 case FontPurpose.BATTERY_PERCENT:
-                    return cls._data.get("batteryPercentFontSize", cls._data["list"].get("size", 24))
+                    return cls._data.get("batteryPercentFontSize", cls._data["list"].get("size", int(24*cls._default_multiplier)))
                 case FontPurpose.ON_SCREEN_KEYBOARD:
-                    return cls._data["list"].get("size", 24)
+                    return cls._data["list"].get("size", int(24*cls._default_multiplier))
                 case FontPurpose.GRID_ONE_ROW:
-                    return cls._data.get("gridSingleRowFontSize", cls._data["grid"].get("grid1x4", cls._data["grid"].get("size",25)))
+                    return cls._data.get("gridSingleRowFontSize", cls._data["grid"].get("grid1x4", cls._data["grid"].get("size",int(25*cls._default_multiplier))))
                 case FontPurpose.GRID_MULTI_ROW:
-                    return cls._data.get("gridMultiRowFontSize", cls._data["grid"].get("grid3x4", cls._data["grid"].get("size",18)))
+                    return cls._data.get("gridMultiRowFontSize", cls._data["grid"].get("grid3x4", cls._data["grid"].get("size",int(18*cls._default_multiplier))))
                 case FontPurpose.LIST:
-                    return cls._data.get("listFontSize",cls._data["list"].get("size", 24))
+                    return cls._data.get("listFontSize",cls._data["list"].get("size", int(24*cls._default_multiplier)))
                 case FontPurpose.DESCRIPTIVE_LIST_TITLE:
-                    return cls._data.get("descListFontSize",cls._data["list"].get("size", 24))
+                    return cls._data.get("descListFontSize",cls._data["list"].get("size", int(24*cls._default_multiplier)))
                 case FontPurpose.MESSAGE:
-                    return cls._data.get("messageFontSize",cls._data["list"].get("size", 24))
+                    return cls._data.get("messageFontSize",cls._data["list"].get("size", int(24*cls._default_multiplier)))
                 case FontPurpose.DESCRIPTIVE_LIST_DESCRIPTION:
-                    return cls._data.get("descriptionFontSize",cls._data["grid"].get("grid3x4", cls._data["grid"].get("size",18)))
+                    return cls._data.get("descriptionFontSize",cls._data["grid"].get("grid3x4", cls._data["grid"].get("size",int(18*cls._default_multiplier))))
                 case FontPurpose.LIST_INDEX:
-                    return cls._data.get("indexSelectedFontSize",cls._data["list"].get("size", 20))
+                    return cls._data.get("indexSelectedFontSize",cls._data["list"].get("size", int(20*cls._default_multiplier)))
                 case FontPurpose.LIST_TOTAL:
-                    return cls._data.get("indexTotalSize",cls._data["list"].get("size", 20))
+                    return cls._data.get("indexTotalSize",cls._data["list"].get("size", int(20*cls._default_multiplier)))
                 case FontPurpose.SHADOWED:
                     try:
                         return cls._data["shadowed"]["shadowedFontSize"] 
@@ -618,23 +672,23 @@ class Theme():
 
     @classmethod
     def get_descriptive_list_icon_offset_x(cls):
-        return cls._data.get("descriptiveListIconOffsetX", 10)
+        return cls._data.get("descriptiveListIconOffsetX", int(10*cls._default_multiplier))
 
     @classmethod
     def get_descriptive_list_icon_offset_y(cls):
-        return cls._data.get("descriptiveListIconOffsetY", 10)
+        return cls._data.get("descriptiveListIconOffsetY", int(10*cls._default_multiplier))
 
     @classmethod
     def get_descriptive_list_text_offset_y(cls):
-        return cls._data.get("descriptiveListTextOffsetY", 15)
+        return cls._data.get("descriptiveListTextOffsetY", int(15*cls._default_multiplier))
 
     @classmethod
     def get_descriptive_list_text_from_icon_offset(cls):
-        return cls._data.get("descriptiveListTextFromIconOffset", 10)
+        return cls._data.get("descriptiveListTextFromIconOffset", int(10*cls._default_multiplier))
 
     @classmethod
     def get_grid_multirow_text_offset_y_percent(cls):
-        return cls._data.get("gridMultirowTextOffsetYPercent", -15)
+        return cls._data.get("gridMultirowTextOffsetYPercent", int(-15*cls._default_multiplier))
 
     @classmethod
     def get_system_select_show_sel_bg_grid_mode(cls):
@@ -759,12 +813,12 @@ class Theme():
 
     @classmethod
     def get_game_system_select_col_count(cls):
-        return cls._data.get("gameSystemSelectColCount", 4)
+        return cls._data.get("gameSystemSelectColCount", int(4 * cls.width_multiplier))
 
     @classmethod
     def get_game_system_select_row_count(cls):
-        return cls._data.get("gameSystemSelectRowCount", 2)
-
+        return cls._data.get("gameSystemSelectRowCount", int(2 * cls.height_multiplier)) 
+    
     @classmethod
     def set_game_system_select_col_count(cls, count):
         cls._data["gameSystemSelectColCount"] = count
@@ -789,7 +843,7 @@ class Theme():
 
     @classmethod
     def pop_menu_text_padding(cls):
-        return cls._data.get("popupMenuTextPad", 20)
+        return cls._data.get("popupMenuTextPad", int(20*cls._default_multiplier))
 
     @classmethod
     def popup_menu_cols(cls):
@@ -881,7 +935,7 @@ class Theme():
 
     @classmethod
     def get_game_select_row_count(cls):
-        return cls._data.get("gameSelectRowCount", 2)
+        return cls._data.get("gameSelectRowCount", int(2 * cls.height_multiplier)) 
 
     @classmethod
     def set_game_select_row_count(cls, value):
@@ -890,7 +944,7 @@ class Theme():
 
     @classmethod
     def get_game_select_col_count(cls):
-        return cls._data.get("gameSelectColCount", 4)
+        return cls._data.get("gameSelectColCount", int(4*cls.width_multiplier)) 
 
     @classmethod
     def set_game_select_col_count(cls, value):
@@ -900,7 +954,7 @@ class Theme():
     @classmethod
     def get_game_select_img_width(cls):
         from devices.device import Device
-        return cls._data.get("gameSelectImgWidth", int(Device.screen_width() * 320 / 640))
+        return cls._data.get("gameSelectImgWidth", int(320 * cls._default_multiplier))
     
     @classmethod
     def set_game_select_img_width(cls, value):
@@ -909,8 +963,7 @@ class Theme():
 
     @classmethod
     def get_grid_game_select_img_width(cls):
-        from devices.device import Device
-        return cls._data.get("gridGameSelectImgWidth", int(Device.screen_width() * 140 / 640))
+        return cls._data.get("gridGameSelectImgWidth", int(cls._grid_game_default_size * cls._default_multiplier))
     
     @classmethod
     def set_grid_game_select_img_width(cls, value):
@@ -956,7 +1009,7 @@ class Theme():
     @classmethod
     def get_game_select_img_height(cls):
         from devices.device import Device
-        return cls._data.get("gameSelectImgHeight", int(Device.screen_height() * 300 / 640))
+        return cls._data.get("gameSelectImgHeight", int(300 * cls._default_multiplier))
     
     @classmethod
     def set_game_select_img_height(cls, value):
@@ -965,8 +1018,7 @@ class Theme():
 
     @classmethod
     def get_grid_game_select_img_height(cls):
-        from devices.device import Device
-        return cls._data.get("gridGameSelectImgHeight", int(Device.screen_width() * 140 / 640))
+        return cls._data.get("gridGameSelectImgHeight", int(cls._grid_game_default_size * cls._default_multiplier))
     
     @classmethod
     def set_grid_game_select_img_height(cls, value):
@@ -1002,7 +1054,7 @@ class Theme():
 
     @classmethod
     def get_grid_multi_row_sel_bg_resize_pad_width(cls):
-        return cls._data.get("gridMultiRowSelBgResizePadWidth", 20)
+        return cls._data.get("gridMultiRowSelBgResizePadWidth", int(20*cls._default_multiplier))
     
     @classmethod
     def set_grid_multi_row_sel_bg_resize_pad_width(cls, value):
@@ -1011,7 +1063,7 @@ class Theme():
 
     @classmethod
     def get_grid_multi_row_sel_bg_resize_pad_height(cls):
-        return cls._data.get("gridMultiRowSelBgResizePadHeight", 20)
+        return cls._data.get("gridMultiRowSelBgResizePadHeight", int(20*cls._default_multiplier))
     
     @classmethod
     def set_grid_multi_row_sel_bg_resize_pad_height(cls, value):
@@ -1020,7 +1072,7 @@ class Theme():
 
     @classmethod
     def get_top_bar_initial_x_offset(cls):
-        return cls._data.get("topBarInitialXOffset", 20)
+        return cls._data.get("topBarInitialXOffset", int(20*cls._default_multiplier))
 
     @classmethod
     def set_top_bar_initial_x_offset(cls, value):
@@ -1056,8 +1108,8 @@ class Theme():
 
     @classmethod
     def get_resize_type_for_game_switcher(cls):
-        view_type_str = cls._data.get("gameSwitcherResizeType", "ZOOM")
-        return getattr(ResizeType, view_type_str, ResizeType.ZOOM)
+        view_type_str = cls._data.get("gameSwitcherResizeType", "FIT")
+        return getattr(ResizeType, view_type_str, ResizeType.FIT)
 
     @classmethod
     def set_resize_type_for_game_switcher(cls, resize_type):
@@ -1084,6 +1136,15 @@ class Theme():
         cls.save_changes()
 
     @classmethod
+    def true_full_screen_game_switcher(cls):
+        return cls._data.get("gameSwitcherTrueFullScreen", True)
+    
+    @classmethod
+    def set_true_full_screen_game_switcher(cls, value):
+        cls._data["gameSwitcherTrueFullScreen"] = value
+        cls.save_changes()
+
+    @classmethod
     def display_battery_percent(cls):
         return cls._data.get("displayBatteryPercent", True)
     
@@ -1099,5 +1160,14 @@ class Theme():
     @classmethod
     def set_display_battery_icon(cls, value):
         cls._data["displayBatteryIcon"] = value
+        cls.save_changes()
+
+    @classmethod
+    def get_main_menu_title(cls):
+        return cls._data.get("mainMenuTitle", PyUiConfig.get_main_menu_title())
+    
+    @classmethod
+    def set_main_menu_title(cls, value):
+        cls._data["mainMenuTitle"] = value
         cls.save_changes()
 

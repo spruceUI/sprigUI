@@ -1,7 +1,9 @@
+import sys
 import time
 from controller.controller_inputs import ControllerInput
 from devices.device import Device
 
+from themes.theme import Theme
 from utils.logger import PyUiLogger
 from utils.py_ui_config import PyUiConfig
 
@@ -21,13 +23,45 @@ class Controller:
     special_non_sdl_event = False
     render_required_callback = None
     last_controller_input = None
-
-    controller_interface = None
+    _input_history = []
     gs_triggered = False
+    first_check_after_gs_triggered = False
+    controller_interface = None
+    _watch_for_secret_code = False
+
+    # The sequence we want to detect
+    _SECRET_CODE = [
+        ControllerInput.DPAD_UP,
+        ControllerInput.DPAD_UP,
+        ControllerInput.DPAD_DOWN,
+        ControllerInput.DPAD_DOWN,
+        ControllerInput.DPAD_LEFT,
+        ControllerInput.DPAD_RIGHT,
+        ControllerInput.DPAD_LEFT,
+        ControllerInput.DPAD_RIGHT,
+        ControllerInput.B,
+        ControllerInput.A,
+        ControllerInput.START,
+        ControllerInput.SELECT,
+    ]
+    _SECRET_CODE_PREFIX = [
+        ControllerInput.DPAD_UP,
+        ControllerInput.DPAD_UP,
+        ControllerInput.DPAD_DOWN,
+        ControllerInput.DPAD_DOWN,
+        ControllerInput.DPAD_LEFT,
+        ControllerInput.DPAD_RIGHT,
+        ControllerInput.DPAD_LEFT,
+        ControllerInput.DPAD_RIGHT,
+        ControllerInput.B,
+        ControllerInput.A,
+    ]
+
 
     @staticmethod
     def init():
         Controller.controller_interface = Device.get_controller_interface()
+        Controller._watch_for_secret_code = Device.get_system_config().game_selection_only_mode_enabled() or Device.get_system_config().simple_mode_enabled()
 
     @staticmethod
     def init_controller():
@@ -58,15 +92,53 @@ class Controller:
         Controller.controller_interface.clear_input()
 
     @staticmethod
+    def _matches_secret_prefix():
+        h = Controller._input_history
+        p = Controller._SECRET_CODE_PREFIX
+        plen = len(p)
+
+        if len(h) < plen:
+            return False
+
+        return h[-plen:] == p     
+       
+    @staticmethod
     def set_last_input(last_input):
-        #if(last_input is not None):            
-        #    PyUiLogger.get_logger().info(f"Setting last input to {last_input}")
-        #elif(Controller.last_controller_input is not None):
-        #    PyUiLogger.get_logger().info(f"Setting last input to {last_input}")
         Controller.last_controller_input = last_input
 
+        if(Controller._watch_for_secret_code and last_input is not None):
+            if(Controller._matches_secret_prefix() and Controller.last_controller_input == ControllerInput.A):
+                PyUiLogger().get_logger().info(f"Prefix matched so blocking A press")
+                Controller.last_controller_input = None
+                return
+
+            # Add input to history
+            Controller._input_history.append(last_input)
+
+            # Keep history trimmed to the length of the code
+            max_len = len(Controller._SECRET_CODE)
+            if len(Controller._input_history) > max_len:
+                Controller._input_history.pop(0)
+
+            # Check for match
+            if Controller._input_history == Controller._SECRET_CODE:
+                PyUiLogger().get_logger().info(f"Secret code entered")
+                Device.get_system_config().set_game_selection_only_mode_enabled(False)
+                Device.get_system_config().set_simple_mode_enabled(False)
+                Device.exit_pyui()
+
+
+            if(Controller._matches_secret_prefix()):
+                PyUiLogger().get_logger().info(f"Prefix matched so blocking A press")
+                Controller.last_controller_input = None
+
+
     @staticmethod
-    def get_input(timeout=-2):
+    def get_input(timeout=-2, called_from_check_for_hotkey=False):
+        if(Controller.first_check_after_gs_triggered):
+            #Let user stop holding menu
+            Controller.first_check_after_gs_triggered = False
+            time.sleep(0.3)
         DEFAULT_TIMEOUT_FLAG = -2
         INPUT_DEBOUNCE_SECONDS = 0.2
         POLL_INTERVAL_SECONDS = 0.005
@@ -121,32 +193,34 @@ class Controller:
                 Controller.set_last_input(input)
 
                 if Controller.last_controller_input is not None:
+                    Theme.controller_button_pressed(Controller.last_controller_input)
                     if Controller.last_controller_input == ControllerInput.MENU:
-                        if not Controller.is_check_for_hotkey and not Controller.check_for_hotkey():
+                        if not Controller.is_check_for_hotkey and not called_from_check_for_hotkey and not Controller.check_for_hotkey():
                             Controller.set_last_input(ControllerInput.MENU)
                             break  # Treat MENU as valid input
                         else:
                             was_hotkey = True
-                            while Controller.still_held_down():
+                            while Controller.still_held_down() and not called_from_check_for_hotkey:
                                 Controller.check_for_hotkey()
                     else:
                         break  # Valid non-hotkey input
 
 
-
+        #TODO i think this loop is in the wrong place
         # Wait if the input is being held down (anti-repeat logic)
-        while Controller.still_held_down() and (time.time() - start_time < Controller.hold_delay):
+        while started_held_down and Controller.still_held_down() and (time.time() - start_time < Controller.hold_delay):
             Controller.controller_interface.force_refresh()
             time.sleep(POLL_INTERVAL_SECONDS)
 
         if Controller.still_held_down():
             if(ControllerInput.MENU == Controller.last_input()):
-                was_hotkey = Controller.check_for_hotkey()
+                was_hotkey = called_from_check_for_hotkey or Controller.check_for_hotkey()
                 if(not was_hotkey and not Controller.gs_triggered and Controller.allow_pyui_game_switcher()):
                     Controller.gs_triggered = True
-                    PyUiLogger.get_logger().info(f"GS Triggered")
+                    Controller.first_check_after_gs_triggered = True
                     from menus.games.recents_menu_gs import RecentsMenuGS
                     Controller.clear_last_input()
+                    PyUiLogger.get_logger().info("Starting GS().run_rom_selection()")
                     RecentsMenuGS().run_rom_selection()
                     Controller.clear_last_input()
                     Controller.gs_triggered = False
@@ -191,7 +265,7 @@ class Controller:
         start_time = time.time()
 
         while(not was_hotkey and time.time() - start_time < 0.3):
-            if(Controller.get_input(timeout=0.05)):
+            if(Controller.get_input(timeout=0.05, called_from_check_for_hotkey=True)):
                 Controller.perform_hotkey(Controller.last_input())
                 time.sleep(0.1)
                 was_hotkey = True 

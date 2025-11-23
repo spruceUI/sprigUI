@@ -1,10 +1,12 @@
 from abc import abstractmethod
+import traceback
 
 from controller.controller import Controller
 from controller.controller_inputs import ControllerInput
 from devices.device import Device
 from display.display import Display
 from themes.theme import Theme
+from utils.logger import PyUiLogger
 from views.selection import Selection
 from views.text_utils import TextUtils
 from views.view import View
@@ -54,7 +56,7 @@ class ListView(View):
 
     def get_selection(self, select_controller_inputs = [ControllerInput.A]):
         self._render_common()
-        
+        #PyUiLogger.get_logger().error("".join(traceback.format_stack()))
         if(Controller.get_input()):
             if Controller.last_input() == ControllerInput.DPAD_UP:
                 self.adjust_selected(-1, skip_by_letter=False)
@@ -70,9 +72,9 @@ class ListView(View):
                     self.adjust_selected(-1*self.max_rows+1, skip_by_letter=False)
             elif Controller.last_input() == ControllerInput.L2:
                 if(Theme.skip_main_menu()):
-                    self.adjust_selected(-1*self.max_rows+1, skip_by_letter=True)
-                else:
                     self.adjust_selected(-1*self.max_rows+1, skip_by_letter=Device.get_system_config().get_skip_by_letter())
+                else:
+                    self.adjust_selected(-1*self.max_rows+1, skip_by_letter=True)
             elif Controller.last_input() == ControllerInput.R1:
                 if(Theme.skip_main_menu()):
                     return Selection(self.get_selected_option(),Controller.last_input(), self.selected)
@@ -87,21 +89,23 @@ class ListView(View):
                 self.selection_made()
                 return Selection(self.get_selected_option(),Controller.last_input(), self.selected)
 
-            self._render_common()
-
-
         return Selection(self.get_selected_option(), None, self.selected)
     
+    def options_are_alphabetized(self):
+        return False
+    
     def _render_common(self):
-        #if(self.clear_display_each_render_cycle):
         Display.clear(self.top_bar_text)
         
         self.adjust_selected_top_bottom_for_overflow()
 
         self._render()
         if(Theme.include_index_text()):
+            letter = ''
+            if(self.options_are_alphabetized()):
+                letter=self.options[self.selected].get_primary_text()[0]
             Display.add_index_text(self.selected+1, len(self.options), force_include_index = True, 
-                                   letter=self.options[self.selected].get_primary_text()[0])
+                                   letter=letter)
         Display.present()
 
     def adjust_selected_top_bottom_for_overflow(self):

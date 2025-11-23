@@ -6,10 +6,13 @@ from devices.device import Device
 from display.display import Display
 from menus.language.language import Language
 from menus.settings import settings_menu
-from menus.settings.cfw_system_settings_menu import CfwSystemSettingsMenu
+from menus.settings.about_menu import AboutMenu
 from menus.settings.extra_settings_menu import ExtraSettingsMenu
 from menus.settings.bluetooth_menu import BluetoothMenu
-from menus.settings.theme.list_of_options_selection_menu import ListOfOptionsSelectionMenu
+from menus.settings.sound_settings import SoundSettings
+from menus.settings.list_of_options_selection_menu import ListOfOptionsSelectionMenu
+from menus.settings.tasks_menu import TasksMenu
+from menus.settings.theme.theme_selection_menu import ThemeSelectionMenu
 from menus.settings.theme.theme_settings_menu import ThemeSettingsMenu
 from menus.settings.wifi_menu import WifiMenu
 from themes.theme import Theme
@@ -90,28 +93,32 @@ class BasicSettingsMenu(settings_menu.SettingsMenu):
             selected_index+=1
             if(selected_index == len(theme_folders)):
                 selected_index = 0
-        elif(ControllerInput.X == input):
+        elif(ControllerInput.X == input and not Device.get_system_config().simple_mode_enabled()):
             ThemeSettingsMenu().show_theme_options_menu()
         elif(ControllerInput.A == input):
-            selected_index = ListOfOptionsSelectionMenu().get_selected_option_index(theme_folders, "Themes")
+            selected_index = ThemeSelectionMenu().get_selected_option_index(theme_folders, "Themes")
 
 
         if(selected_index is not None):
             Theme.set_theme_path(os.path.join(PyUiConfig.get("themeDir"), theme_folders[selected_index]), Device.screen_width(), Device.screen_height())
             Display.init_fonts()   
             Device.get_system_config().set_theme(theme_folders[selected_index])
+            Device.set_theme(os.path.join(PyUiConfig.get("themeDir"), theme_folders[selected_index]))
             self.theme_changed = True
             Display.restore_bg()
-
-
-    def launch_cfw_system_settings(self,input):
-        if(ControllerInput.A == input):
-            CfwSystemSettingsMenu().show_menu()
 
     def launch_extra_settings(self,input):
         if(ControllerInput.A == input):
             if(ExtraSettingsMenu().show_menu()):
                 self.theme_changed = True
+
+    def launch_tasks(self,input):
+        if(ControllerInput.A == input):
+            TasksMenu().show_menu()
+
+    def launch_about(self,input):
+        if(ControllerInput.A == input):
+            AboutMenu().show_menu()
 
     def launch_theme_settings(self,input):
         if(ControllerInput.A == input):
@@ -121,11 +128,17 @@ class BasicSettingsMenu(settings_menu.SettingsMenu):
         if(ControllerInput.A == input):
             sys.exit()
 
+            
+    def launch_sound_options(self, input):
+        if (input == ControllerInput.A):
+            SoundSettings().show_menu()
+
+
     def build_options_list(self):
         option_list = []
         option_list.append(
                 GridOrListEntry(
-                        primary_text="Power Off",
+                        primary_text=Language.power_off(),
                         image_path=None,
                         image_path_selected=None,
                         description=None,
@@ -135,7 +148,7 @@ class BasicSettingsMenu(settings_menu.SettingsMenu):
             )
         option_list.append(
                 GridOrListEntry(
-                        primary_text="Backlight",
+                        primary_text=Language.backlight(),
                         value_text="<    " + str(Device.lumination()) + "    >",
                         image_path=None,
                         image_path_selected=None,
@@ -148,7 +161,7 @@ class BasicSettingsMenu(settings_menu.SettingsMenu):
         if(Device.supports_volume()):
             option_list.append(
                     GridOrListEntry(
-                            primary_text="Volume",
+                            primary_text=Language.volume(),
                             value_text="<    " + str(Device.get_volume()//5) + "    >",
                             image_path=None,
                             image_path_selected=None,
@@ -158,35 +171,38 @@ class BasicSettingsMenu(settings_menu.SettingsMenu):
                         )
                 )
         
-        if(Device.supports_wifi()):
-            option_list.append(
-                    GridOrListEntry(
-                            primary_text="WiFi",
-                            value_text="<    " + (Device.get_ip_addr_text()) + "    >",
-                            image_path=None,
-                            image_path_selected=None,
-                            description=None,
-                            icon=None,
-                            value=self.show_wifi_menu
-                        )
-                )
-        
-        if(Device.get_bluetooth_scanner() is not None):
-            option_list.append(
-                    GridOrListEntry(
-                            primary_text="Bluetooth",
-                            value_text="<    " + ("On" if Device.is_bluetooth_enabled() else "Off") + "    >",
-                            image_path=None,
-                            image_path_selected=None,
-                            description=None,
-                            icon=None,
-                            value=self.show_bt_menu
-                        )
-                )
+
+        if(not Device.get_system_config().simple_mode_enabled()):
+
+            if(Device.supports_wifi()):
+                option_list.append(
+                        GridOrListEntry(
+                                primary_text=Language.wifi(),
+                                value_text="<    " + (Device.get_ip_addr_text()) + "    >",
+                                image_path=None,
+                                image_path_selected=None,
+                                description=None,
+                                icon=None,
+                                value=self.show_wifi_menu
+                            )
+                    )
             
+            if(Device.get_bluetooth_scanner() is not None):
+                option_list.append(
+                        GridOrListEntry(
+                                primary_text=Language.bluetooth(),
+                                value_text="<    " + ("On" if Device.is_bluetooth_enabled() else "Off") + "    >",
+                                image_path=None,
+                                image_path_selected=None,
+                                description=None,
+                                icon=None,
+                                value=self.show_bt_menu
+                            )
+                    )
+                
         option_list.append(
                 GridOrListEntry(
-                        primary_text="Theme",
+                        primary_text=Language.theme(),
                         value_text="<    " + Device.get_system_config().get_theme() + "    >",
                         image_path=None,
                         image_path_selected=None,
@@ -194,56 +210,81 @@ class BasicSettingsMenu(settings_menu.SettingsMenu):
                         icon=None,
                         value=self.change_theme
                     )
-            )
-        
-        option_list.append(
-                GridOrListEntry(
-                        primary_text="Theme Settings",
-                        value_text=None,
-                        image_path=None,
-                        image_path_selected=None,
-                        description=None,
-                        icon=None,
-                        value=self.launch_theme_settings
-                    )
+        )
+            
+
+        if(not Device.get_system_config().simple_mode_enabled()):
+            option_list.append(
+                        GridOrListEntry(
+                                primary_text=Language.theme_settings(),
+                                value_text=None,
+                                image_path=None,
+                                image_path_selected=None,
+                                description=None,
+                                icon=None,
+                                value=self.launch_theme_settings
+                        )
             )
 
-        if(len(CfwSystemConfig.get_categories()) > 0):
             option_list.append(
                 GridOrListEntry(
-                            primary_text="CFW System Settings",
+                    primary_text=Language.sound_settings(),
+                    value_text="",
+                    image_path=None,
+                    image_path_selected=None,
+                    description=None,
+                    icon=None,
+                    value=self.launch_sound_options
+                )
+            )
+
+            option_list.append(
+                    GridOrListEntry(
+                            primary_text=Language.additional_settings(),
                             value_text=None,
                             image_path=None,
                             image_path_selected=None,
                             description=None,
                             icon=None,
-                            value=self.launch_cfw_system_settings
+                            value=self.launch_extra_settings
+                        )
                 )
-            )
 
-        option_list.append(
-                GridOrListEntry(
-                        primary_text="Extra Settings",
-                        value_text=None,
-                        image_path=None,
-                        image_path_selected=None,
-                        description=None,
-                        icon=None,
-                        value=self.launch_extra_settings
-                    )
-            )
+            option_list.append(
+                    GridOrListEntry(
+                            primary_text=Language.tasks(),
+                            value_text=None,
+                            image_path=None,
+                            image_path_selected=None,
+                            description=None,
+                            icon=None,
+                            value=self.launch_tasks
+                        )
+                )
 
-        option_list.append(
-                GridOrListEntry(
-                        primary_text=Language.exit_py_ui(),
-                        value_text=None,
-                        image_path=None,
-                        image_path_selected=None,
-                        description=None,
-                        icon=None,
-                        value=self.exit
-                    )
-            )
+            option_list.append(
+                    GridOrListEntry(
+                            primary_text=Language.aboutThisDevice(),
+                            value_text=None,
+                            image_path=None,
+                            image_path_selected=None,
+                            description=None,
+                            icon=None,
+                            value=self.launch_about
+                        )
+                )
+
+            option_list.append(
+                    GridOrListEntry(
+                            primary_text=Language.exit_py_ui(),
+                            value_text=None,
+                            image_path=None,
+                            image_path_selected=None,
+                            description=None,
+                            icon=None,
+                            value=self.exit
+                        )
+                )
         
 
         return option_list

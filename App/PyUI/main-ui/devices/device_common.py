@@ -4,6 +4,7 @@ import socket
 import subprocess
 import sys
 import time
+from audio.audio_player_none import AudioPlayerNone
 from controller.controller_inputs import ControllerInput
 from devices.abstract_device import AbstractDevice
 from devices.utils.process_runner import ProcessRunner
@@ -247,6 +248,9 @@ class DeviceCommon(AbstractDevice):
                 ((70 - wifi_connection_quality_info.noise_level) / 70.0) * 0.2    # 20% weight (less noise is better)
             ) * 100
 
+            # Ensure signal and settings stay in sync
+            self.get_ip_addr_text()
+            
             if score >= 80:
                 return WifiStatus.GREAT
             elif score >= 60:
@@ -289,7 +293,7 @@ class DeviceCommon(AbstractDevice):
             self.start_udhcpc()
 
 
-    @throttle.limit_refresh(15)
+    @throttle.limit_refresh(10)
     def get_ip_addr_text(self):
         import psutil
         if self.is_wifi_enabled():
@@ -330,8 +334,7 @@ class DeviceCommon(AbstractDevice):
         return sys.maxsize
         
     def get_guaranteed_safe_max_text_char_count(self):
-        #No known limit?
-        return sys.maxsize
+        return 35
 
     def get_system_config(self):
         return self.system_config
@@ -344,6 +347,15 @@ class DeviceCommon(AbstractDevice):
 
     def apply_timezone(self, timezone):
         pass
+
+    def set_theme(self, theme_path):
+        pass
+
+    def get_core_name_overrides(self, core_name):
+        return [core_name]
+    
+    def get_core_for_game(self, game_system_config, rom_file_path):
+        return None
 
     def prompt_timezone_update(self):
         #Unsupported by default
@@ -406,3 +418,33 @@ class DeviceCommon(AbstractDevice):
     def get_disp_green(self):
         return self.system_config.get_disp_green()
 
+    def get_audio_system(self):
+        return AudioPlayerNone()
+
+    def get_extra_settings_options(self):
+        return []
+    
+    def get_device_specific_about_info_entries(self):
+        return []
+
+    def get_mac_address(self,iface="wlan0"):
+        try:
+            with open(f"/sys/class/net/{iface}/address") as f:
+                return f.read().strip()
+        except Exception as e:
+            PyUiLogger.get_logger().error(f"Could not read MAC address for interface {iface} : {e}")
+            return "Unknown"
+
+    def get_fw_version(self):
+        return "Unknown"
+
+    def get_about_info_entries(self):
+        about_info_entries = []
+        about_info_entries.append( ("IP Address", self.get_ip_addr_text()) )
+        about_info_entries.append( ("Mac Address", self.get_mac_address()) )
+        about_info_entries.append( ("FW Version",self.get_fw_version()) )
+        about_info_entries.extend(self.get_device_specific_about_info_entries())
+        return about_info_entries
+    
+    def startup_init(self, include_wifi):
+        pass

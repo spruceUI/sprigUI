@@ -1,5 +1,6 @@
 import sys
 from controller.controller_inputs import ControllerInput
+from devices.device import Device
 from utils.cfw_system_config import CfwSystemConfig
 from utils.logger import PyUiLogger
 from views.grid_or_list_entry import GridOrListEntry
@@ -85,31 +86,40 @@ class SettingsMenu(ABC):
             PyUiLogger.get_logger().info(f"Updating {entry_name} to {all_options[selected_index]}")
             update_value(category, entry_name, all_options[selected_index])
 
+    def replace_dynamic_text_in_description(self, description):
+        if(description):
+            description = description.format(ip_addr=Device.get_ip_addr_text())
+        return description
+
     def build_options_list_from_config_menu_options(self, category):
         option_list = []
         menu_options = CfwSystemConfig.get_menu_options(category=category)
 
         for name, option in menu_options.items():
             display_name = option.get('display')
-            selected_value = CfwSystemConfig.get_selected_value(category,name)
+            description = self.replace_dynamic_text_in_description(option.get('description'))
+            devices = option.get('devices')
+            supported_device = not devices or Device.get_device_name() in devices
+            if(supported_device):
+                selected_value = CfwSystemConfig.get_selected_value(category,name)
 
-            option_list.append(
-                            GridOrListEntry(
-                            primary_text=display_name,
-                            value_text="<    " + selected_value + "    >",
-                            image_path=None,
-                            image_path_selected=None,
-                            description=None,
-                            icon=None,
-                            value=lambda 
-                                input_value, 
-                                entry_name=name, 
-                                category=category,
-                                all_options=option.get('options', []),
-                                current_value=selected_value,update_value=CfwSystemConfig.set_menu_option
-                                : self.change_indexed_array_option_for_menu_options_list(category, entry_name, input_value, all_options, current_value, update_value)
+                option_list.append(
+                                GridOrListEntry(
+                                primary_text=display_name,
+                                value_text="<    " + selected_value + "    >",
+                                image_path=None,
+                                image_path_selected=None,
+                                description=description,
+                                icon=None,
+                                value=lambda 
+                                    input_value, 
+                                    entry_name=name, 
+                                    category=category,
+                                    all_options=option.get('options', []),
+                                    current_value=selected_value,update_value=CfwSystemConfig.set_menu_option
+                                    : self.change_indexed_array_option_for_menu_options_list(category, entry_name, input_value, all_options, current_value, update_value)
+                        )
                     )
-                )
         return option_list
 
 
@@ -229,3 +239,32 @@ class SettingsMenu(ABC):
         value += delta
         if(min <= value <= max):
             set_value_func(value)
+
+    def get_selected_index(self, title, options):
+        selected = Selection(None, None, 0)
+        self.should_scan_for_bluetooth = True
+        option_list = []
+        for index, opt in enumerate(options):
+            option_list.append(
+                GridOrListEntry(
+                    primary_text=opt,
+                    value=index
+                )
+            )
+
+        #convert to text and desc and show the theme desc
+        #maybe preview too if theyre common
+        view = ViewCreator.create_view(
+            view_type=ViewType.TEXT_ONLY,
+            top_bar_text=title,
+            options=option_list,
+            selected_index=selected.get_index())
+
+        accepted_inputs = [ControllerInput.A, ControllerInput.B]
+
+        while (True):
+            selected = view.get_selection(accepted_inputs)
+            if (ControllerInput.A == selected.get_input()):
+                return selected.get_selection().get_value()
+            elif (ControllerInput.B == selected.get_input()):
+                return None

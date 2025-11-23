@@ -177,7 +177,7 @@ class GameSystemSelectMenu:
         if(index is not None):
             icon = icon_system_name_priority[index]
             selected_icon = selected_icon_system_name_priority[index]
-            if not os.path.isfile(selected_icon):
+            if selected_icon is None or not os.path.isfile(selected_icon):
                 selected_icon = icon    
             return icon, selected_icon
         else:
@@ -225,7 +225,8 @@ class GameSystemSelectMenu:
                 if(return_value is not None):
                     if(ControllerInput.B == return_value):
                         PyUiState.set_in_game_selection_screen(None)
-                    return return_value
+                    elif(Theme.skip_main_menu() and (ControllerInput.L1 == return_value or ControllerInput.R1 == return_value)):
+                        return return_value
 
         else:
             self.selected = Selection(None,None,0)
@@ -273,4 +274,5 @@ class GameSystemSelectMenu:
                 return ControllerInput.L1
             elif(Theme.skip_main_menu() and ControllerInput.R1 == self.selected.get_input()):
                 return ControllerInput.R1
-                        
+                    
+        

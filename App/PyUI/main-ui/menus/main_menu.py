@@ -1,11 +1,13 @@
 
 from pathlib import Path
 from controller.controller_inputs import ControllerInput
+from devices.device import Device
 from display.display import Display
 from menus.app.app_menu import AppMenu
 from menus.games.collections_menu import CollectionsMenu
 from menus.games.favorites_menu import FavoritesMenu
 from menus.games.game_system_select_menu import GameSystemSelectMenu
+from menus.games.just_games_menu import JustGamesMenu
 from menus.language.language import Language
 from menus.main_menu_popup import MainMenuPopup
 from menus.settings.basic_settings_menu import BasicSettingsMenu
@@ -116,7 +118,7 @@ class MainMenu:
     def build_main_menu_view(self, options, selected):
         return ViewCreator.create_view(
             view_type=Theme.get_view_type_for_main_menu(),
-            top_bar_text=PyUiConfig.get_main_menu_title(), 
+            top_bar_text=Theme.get_main_menu_title(), 
             options=options, 
             cols=Theme.get_main_menu_column_count(), 
             rows=1,
@@ -175,40 +177,51 @@ class MainMenu:
 
 
     def run_main_menu_selection(self):
+        if Device.get_system_config().game_selection_only_mode_enabled():
+            while(True):
+                JustGamesMenu().run_rom_selection()
+
         self.check_for_gameswitcher()
         self.check_for_boxart_resizing()
-
-        self.launch_selection(PyUiState.get_last_main_menu_selection())            
+    
 
         if(Theme.skip_main_menu()):
-            selection = "Games"
+
+            selection = PyUiState.get_last_main_menu_selection()
+            if(selection not in ["Game","App","Setting"]):
+                PyUiLogger.get_logger().info(f"Defaulting to Games tab on main menu due to invalid selection of {selection}")
+                selection = "Game"
+
             while(True):
                 Display.set_selected_tab(selection)
-                if("Games" == selection):
+                if("Game" == selection):
                     PyUiState.set_last_main_menu_selection("Game")
                     controller_input = self.system_select_menu.run_system_selection()
                     if(ControllerInput.L1 == controller_input):
-                        selection = "Settings"
+                        selection = "Setting"
                     elif(ControllerInput.R1 == controller_input):
-                        selection = "Apps"
+                        selection = "App"
                     PyUiState.set_last_main_menu_selection(None)
-                elif("Apps" == selection):
+                elif("App" == selection):
                     PyUiState.set_last_main_menu_selection("App")
                     controller_input = self.app_menu.run_app_selection()
+                    PyUiLogger.get_logger().info(f"App Menu returned input: {controller_input}")
                     if(ControllerInput.L1 == controller_input):
-                        selection = "Games"
+                        selection = "Game"
                     elif(ControllerInput.R1 == controller_input):
-                        selection = "Settings"
+                        selection = "Setting"
                     PyUiState.set_last_main_menu_selection(None)
-                elif("Settings" == selection):
+                elif("Setting" == selection):
                     controller_input = self.settings_menu.show_menu()
                     if(ControllerInput.L1 == controller_input):
-                        selection = "Apps"
+                        selection = "App"
                     elif(ControllerInput.R1 == controller_input):
-                        selection = "Games"
+                        selection = "Game"
                     PyUiState.set_last_main_menu_selection(None)
 
         else:
+            self.launch_selection(PyUiState.get_last_main_menu_selection())            
+
             selected = Selection(None,None,0)
 
             image_text_list = self.build_options()

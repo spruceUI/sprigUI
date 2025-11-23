@@ -1,0 +1,48 @@
+{
+    "showBottomBar": true,
+    "name": "Samurai",
+    "author": "Sky_Walker AKA GamerChef",
+    "description": "Avocado inspired theme",
+    "batteryPercentage": {
+        "color": "#000000",
+        "font": "PixelIntv-OPxd.ttf",
+        "size": 37
+    },
+    "title": {
+        "font": "PixelIntv-OPxd.ttf",
+        "size": 37,
+        "color": "#000000"
+    },
+    "hint": {
+        "font": "PixelIntv-OPxd.ttf",
+        "size": 37,
+        "color": "#000000"
+    },
+    "currentpage": {
+        "font": "PixelIntv-OPxd.ttf",
+        "size": 37,
+        "color": "#000000"
+    },
+    "total": {
+        "font": "PixelIntv-OPxd.ttf",
+        "size": 37,
+        "color": "#000000"
+    },
+    "grid": {
+        "font": "PixelIntv-OPxd.ttf",
+        "grid1x4": 20,
+        "grid3x4": 20,
+        "color": "#000000",
+        "selectedcolor": "#000000"
+    },
+    "list": {
+        "font": "PixelIntv-OPxd.ttf",
+        "size": 19,
+        "color": "#000000",
+        "selectedcolor": "#000000"
+    },
+    "topBarFontSize": 35,
+    "batteryPercentFontSize": 28,
+    "descListFontSize": 24,
+    "descriptionFontSize": 18
+}

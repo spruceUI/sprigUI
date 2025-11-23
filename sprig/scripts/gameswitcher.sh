@@ -4,6 +4,23 @@
 
 game_switcher_enabled="$(get_pyui_config_value '.gameSwitcherEnabled' "true")"
 
+
+take_screenshot(){
+    # capture screenshot
+    CMD=$(cat /tmp/cmd_to_run.sh)
+    GAME_PATH=$(echo "$CMD" | grep -o '".*"' | tail -n1 | tr -d '"')
+    GAME_NAME="${GAME_PATH##*/}"
+    SHORT_NAME="${GAME_NAME%.*}"
+    mkdir -p "/mnt/SDCARD/Saves/states/.gameswitcher"
+    SCREENSHOT_NAME="/mnt/SDCARD/Saves/states/.gameswitcher/${SHORT_NAME}.state.auto.png"
+
+
+    /mnt/SDCARD/sprig/bin/screenshot.sh "$SCREENSHOT_NAME" 
+
+    echo "$SCREENSHOT_NAME"
+}
+
+
 # If the key is missing or explicitly set to true, proceed
 if [ -z "$game_switcher_enabled" ] || [ "$game_switcher_enabled" = "null" ] || [ "$game_switcher_enabled" = "true" ]; then
 	if pgrep "retroarch" >/dev/null || pgrep "pico8_dyn" >/dev/null || pgrep "drastic" >/dev/null; then
@@ -16,7 +33,10 @@ if [ -z "$game_switcher_enabled" ] || [ "$game_switcher_enabled" = "null" ] || [
 	    log_message "Create gs trigger file, closing retroarch, pico8_dyn, drastic"
 		killall -q -15 retroarch
 		killall -q -15 pico8_dyn
-		killall -q -15 drastic
+		if pgrep "drastic" >/dev/null; then
+			take_screenshot
+			killall -q -15 drastic
+		fi
 	else
 	    log_message "retroarch, pico8_dyn, nor drastic were running"
 	fi

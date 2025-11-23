@@ -1,9 +1,12 @@
+import math
 from typing import List
 from devices.device import Device
 from display.display import Display
 from display.font_purpose import FontPurpose
 from display.render_mode import RenderMode
+from display.resize_type import ResizeType
 from themes.theme import Theme
+from utils.logger import PyUiLogger
 from views.grid_or_list_entry import GridOrListEntry
 from views.list_view import ListView
 
@@ -13,20 +16,26 @@ class DescriptiveListView(ListView):
                  options: List[GridOrListEntry], selected_bg, selected : int = 0):
         super().__init__()
         self.top_bar_text = top_bar_text
-        self.options : List[GridOrListEntry] = options
-
+        self.set_options(options)
         self.selected : int = selected
+        PyUiLogger.get_logger().info(f"selected_bg = {selected_bg}")
+
         self.selected_bg = selected_bg
         self.each_entry_width, self.each_entry_height = Display.get_image_dimensions(selected_bg)
-        # TODO is there a bettter way? Apps are getting set to 3 instead of 4 
+
         self.max_rows = (Display.get_usable_screen_height(force_include_top_bar=True) // self.each_entry_height)
+
         self.current_top = 0
         self.current_bottom = min(self.max_rows,len(options))
         self.center_selection()
 
     def set_options(self, options):
         self.options = options
+        self.options_are_sorted = self.is_alphabetized(options)
 
+    def options_are_alphabetized(self):
+        return self.options_are_sorted
+    
     def _render(self):
         visible_options: List[GridOrListEntry] = self.options[self.current_top:self.current_bottom]
 
@@ -42,7 +51,11 @@ class DescriptiveListView(ListView):
                 Display.render_image(
                     self.selected_bg, 
                     0, 
-                    row_offset_y)
+                    row_offset_y,
+                    target_width=Device.screen_width(),
+                    target_height=self.each_entry_height,
+                    resize_type= ResizeType.ZOOM
+                    )
                 
             icon_w = 0
             icon_h = 0
@@ -55,21 +68,28 @@ class DescriptiveListView(ListView):
                                     target_height=int(self.each_entry_height*0.8))
 
             color = Theme.text_color_selected(FontPurpose.DESCRIPTIVE_LIST_TITLE) if actual_index == self.selected else Theme.text_color(FontPurpose.DESCRIPTIVE_LIST_TITLE)
+            title_y_offset = row_offset_y + Theme.get_descriptive_list_text_offset_y()
+            title_render_mode = RenderMode.TOP_LEFT_ALIGNED
+            if(gridOrListEntry.get_description() is None):
+                title_y_offset = row_offset_y + self.each_entry_height // 2
+                title_render_mode = RenderMode.MIDDLE_LEFT_ALIGNED
+
             title_w, title_h = Display.render_text(
                 gridOrListEntry.get_primary_text(), 
                 row_offset_x + icon_w + Theme.get_descriptive_list_text_from_icon_offset(), 
-                row_offset_y + Theme.get_descriptive_list_text_offset_y(), 
+                title_y_offset, 
                 color, 
-                FontPurpose.DESCRIPTIVE_LIST_TITLE)
+                FontPurpose.DESCRIPTIVE_LIST_TITLE,
+                render_mode=title_render_mode)
 
             if(gridOrListEntry.get_value_text() is not None):
                 Display.render_text(
                     gridOrListEntry.get_value_text(), 
                     Device.screen_width() - Theme.get_descriptive_list_text_from_icon_offset(), 
-                    row_offset_y + Theme.get_descriptive_list_text_offset_y(), 
+                    row_offset_y + self.each_entry_height // 2, 
                     color, 
                     FontPurpose.DESCRIPTIVE_LIST_TITLE,
-                    RenderMode.TOP_RIGHT_ALIGNED)
+                    RenderMode.MIDDLE_RIGHT_ALIGNED)
 
             color = Theme.text_color_selected(FontPurpose.DESCRIPTIVE_LIST_DESCRIPTION) if actual_index == self.selected else Theme.text_color(FontPurpose.DESCRIPTIVE_LIST_DESCRIPTION)
             
@@ -77,7 +97,7 @@ class DescriptiveListView(ListView):
                 text_w, text_h = Display.render_text(
                     gridOrListEntry.get_description(), 
                     row_offset_x + icon_w + Theme.get_descriptive_list_text_from_icon_offset(), 
-                    row_offset_y + + Theme.get_descriptive_list_text_offset_y() + title_h, 
+                    row_offset_y + Theme.get_descriptive_list_text_offset_y() + title_h, 
                     color, 
                     FontPurpose.DESCRIPTIVE_LIST_DESCRIPTION)
 
