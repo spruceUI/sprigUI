@@ -14,7 +14,6 @@ from menus.settings.basic_settings_menu import BasicSettingsMenu
 from menus.games.recents_menu import RecentsMenu
 from themes.theme import Theme
 from utils.logger import PyUiLogger
-from utils.py_ui_config import PyUiConfig
 from utils.py_ui_state import PyUiState
 from views.grid_or_list_entry import GridOrListEntry
 from views.selection import Selection
@@ -23,12 +22,13 @@ from views.view_creator import ViewCreator
 
 class MainMenu:
     def __init__(self):
-        self.system_select_menu = GameSystemSelectMenu()
         self.app_menu = AppMenu()
         self.favorites_menu = FavoritesMenu()
         self.collections_menu = CollectionsMenu()
         self.recents_menu = RecentsMenu()
         self.settings_menu = BasicSettingsMenu()
+        self.system_select_menu = GameSystemSelectMenu(self.app_menu, self.favorites_menu, self.collections_menu, self.recents_menu, self.settings_menu)
+
         self.popup_menu = MainMenuPopup()
 
     def reorder_options(self,ordering, objects):

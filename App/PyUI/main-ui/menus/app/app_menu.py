@@ -5,7 +5,6 @@ from apps.pyui_app import PyUiAppConfig
 from controller.controller import Controller
 from controller.controller_inputs import ControllerInput
 from devices.device import Device
-from devices.miyoo.system_config import SystemConfig
 from display.display import Display
 from menus.app.app_menu_popup import AppMenuPopup
 from menus.app.hidden_apps_manager import AppsManager
@@ -134,8 +133,7 @@ class AppMenu:
                     selected.get_selection().get_value()()
                 elif(ControllerInput.B == selected.get_input()):
                     self.save_app_selection(selected)
-                    if(not Theme.skip_main_menu()):
-                        running = False
+                    running = False
                 elif(ControllerInput.MENU == selected.get_input()):
                     self.save_app_selection(selected)
                     if(selected.get_selection()):
