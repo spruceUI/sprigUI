@@ -7,13 +7,13 @@ export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH:/mnt/SDCARD/App/P
 theme_name="$1"
 
 THEME_BASE_URL="https://raw.githubusercontent.com/spruceUI/PyUI-Themes/main/PackedThemes"
-ARCHIVE_DIR=/mnt/SDCARD/sprig/archives
+ARCHIVE_DIR=/mnt/SDCARD/Themes
 TMP_DIR="/mnt/SDCARD/App/ThemeGarden/tmp"
 
 encoded_name=$(echo "$theme_name" | sed 's/ /%20/g' | sed "s/'/%27/g")
 theme_url="${THEME_BASE_URL}/${encoded_name}.7z"
 temp_path="$TMP_DIR/${theme_name}.7z"
-final_path="$ARCHIVE_DIR/preMenu/${theme_name}.7z"
+final_path="$ARCHIVE_DIR/${theme_name}.7z"
 
 start_pyui_message_writer
 log_and_display_message "Now downloading $theme_name!"
@@ -52,5 +52,5 @@ if ! wget --quiet --no-check-certificate --output-document="$temp_path" "$theme_
 	exit 1
 fi
 
-mkdir -p "$ARCHIVE_DIR/preMenu"
+mkdir -p "$ARCHIVE_DIR"
 mv "$temp_path" "$final_path"
