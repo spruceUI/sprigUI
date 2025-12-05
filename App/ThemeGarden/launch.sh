@@ -43,7 +43,7 @@ setup_previews() {
         rm -rf "$CONFIG_DIR/previews"
         mkdir -p "$CONFIG_DIR/previews"
 
-        if ! curl -s -k -L -o "$CONFIG_DIR/theme_previews.7z" "$PREVIEW_PACK_URL"; then
+        if ! wget --quiet --no-check-certificate --max-redirect=20 -O "$CONFIG_DIR/theme_previews.7z" "$PREVIEW_PACK_URL"; then
             log_and_display_message "Unable to download preview pack. Please try again later."
             return 1
         fi
