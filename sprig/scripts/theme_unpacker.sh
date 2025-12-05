@@ -2,6 +2,7 @@
 
 . /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
+PATH="/mnt/SDCARD/sprig/bin:$PATH"
 THEME_DIR="/mnt/SDCARD/Themes"
 
 # Function to unpack archives from a specified directory
@@ -37,5 +38,5 @@ log_message "Unpacker: Starting theme unpacking process"
 
 start_pyui_message_writer
 unpack_archives "$THEME_DIR"
-log_and_display_message "Done!"
+log_and_display_message "Enjoy!"
 sleep 2
