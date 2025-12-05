@@ -1,0 +1,7 @@
+{
+  "label": "Theme Garden",
+  "icon": "themegallery.png",
+  "launch": "launch.sh",
+  "description": "Check out the latest themes for your device!",
+  "hideInSimpleMode": true
+}
