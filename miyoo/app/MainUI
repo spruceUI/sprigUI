@@ -44,6 +44,7 @@ if [ -e /mnt/SDCARD/sprig/flags/lastgame.lock ]; then
     mv /mnt/SDCARD/sprig/flags/lastgame.lock /tmp/cmd_to_run.sh
 fi
 
+/mnt/SDCARD/sprig/scripts/theme_unpacker.sh
 
 ##########     MAIN OPERATION LOOP     ##########
 
