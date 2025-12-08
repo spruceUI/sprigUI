@@ -1,6 +1,5 @@
 "Would be nice"s / ideas for future updates:
 
-- theme garden?
 - dufs
 - ebook "Emu"
 - MEDIA "Emu"
