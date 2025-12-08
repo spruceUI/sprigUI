@@ -50,7 +50,9 @@ class ViewCreator:
                     full_screen_grid_render_text_overlay=None,
                     image_resize_height_multiplier=None,
                     carousel_x_pad = None,
-                    carousel_x_offset = None) -> object:
+                    carousel_x_offset = None,
+                    carousel_fixed_width = None,
+                    grid_view_wrap_around_single_row=None) -> object:
         
         if(len(options) == 0):
             return EmptyView()
@@ -188,7 +190,8 @@ class ViewCreator:
                     set_bottom_bar_text_to_selection=set_bottom_bar_text_to_selection,
                     resize_type=grid_resize_type,
                     grid_img_y_offset=grid_img_y_offset,
-                    missing_image_path=missing_image_path
+                    missing_image_path=missing_image_path,
+                    wrap_around_single_row=grid_view_wrap_around_single_row
                 )
 
             case ViewType.FULLSCREEN_GRID:
@@ -226,7 +229,8 @@ class ViewCreator:
                     sides_hang_off_edge=carousel_sides_hang_off_edge,
                     missing_image_path=missing_image_path,
                     x_pad=carousel_x_pad,
-                    x_offset=carousel_x_offset
+                    x_offset=carousel_x_offset,
+                    fixed_width=carousel_fixed_width
                 )
 
             case _:

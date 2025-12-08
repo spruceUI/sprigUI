@@ -250,7 +250,7 @@ if ! is_config_valid; then construct_config; fi
 RESULT_FILE="/mnt/SDCARD/App/PyUI/selection.txt"
 rm -f "$RESULT_FILE"
 
-log_and_display_message "OPTION_LIST:$CONFIG_DIR"/nursery_config
+display_option_list "$CONFIG_DIR/nursery_config"
 
 while true; do
     if [ -f "$RESULT_FILE" ]; then
@@ -266,7 +266,7 @@ while true; do
             eval "$content"
             # Remove the file after running
             rm -f "$RESULT_FILE"
-            log_and_display_message "OPTION_LIST:$CONFIG_DIR"/nursery_config
+            display_option_list "$CONFIG_DIR/nursery_config"
         fi
     fi
 
