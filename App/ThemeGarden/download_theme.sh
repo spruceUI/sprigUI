@@ -4,13 +4,13 @@
 export PATH="/mnt/SDCARD/sprig/bin:$PATH"
 export LD_LIBRARY_PATH="/mnt/SDCARD/sprig/lib:$LD_LIBRARY_PATH:/mnt/SDCARD/App/PyUI/libs/:/config/lib/:/customer/lib"
 
-theme_name="$1"
+encoded_name="$1"
+theme_name=$(echo "$encoded_name" | sed 's/%20/ /g' | sed "s/%27/'/g")
 
 THEME_BASE_URL="https://raw.githubusercontent.com/spruceUI/PyUI-Themes/main/PackedThemes"
 ARCHIVE_DIR=/mnt/SDCARD/Themes
 TMP_DIR="/mnt/SDCARD/App/ThemeGarden/tmp"
 
-encoded_name=$(echo "$theme_name" | sed 's/ /%20/g' | sed "s/'/%27/g")
 theme_url="${THEME_BASE_URL}/${encoded_name}.7z"
 temp_path="$TMP_DIR/${theme_name}.7z"
 final_path="$ARCHIVE_DIR/${theme_name}.7z"
