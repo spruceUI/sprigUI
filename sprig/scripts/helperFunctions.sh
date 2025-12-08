@@ -416,17 +416,21 @@ kill_pyui_message_writer() {
 }
 
 stop_pyui_message_writer() {
-    display_message "EXIT_APP"
+    display_message "$(printf '{"cmd":"EXIT_APP","args":[]}')"
     sleep 0.5
     kill_pyui_message_writer
     freemma
 }
 
+
 display_message() {
     local message="$1"
-    python - "$message" <<'EOF'
-import socket, sys
-msg = sys.argv[1]
+    local python_path
+    python_path="python"
+
+    MESSAGE="$message" "$python_path" - <<'EOF'
+import os, socket, sys
+msg = os.environ.get("MESSAGE", "")
 try:
     with socket.create_connection(("127.0.0.1", 50980), timeout=1) as s:
         s.sendall((msg + "\n").encode("utf-8"))
@@ -438,7 +442,35 @@ EOF
 
 log_and_display_message(){
     log_message "$1"
-    display_message "$1"
+    display_message "$(printf '{"cmd":"MESSAGE","args":["%s"]}' "$1")"
+}
+
+display_option_list(){
+    log_message "Display option list $1"
+    display_message "$(printf '{"cmd":"OPTION_LIST","args":["%s"]}' "$1")"
+}
+
+display_top_image_bottom_text(){
+    #$1 = Img e.g. /mnt/SDCARD/spruce/tmp/image.png
+    #$2 = Up to what % of the scren height should be used for the image e.g. 75
+    #$3 = Bottom text e.g. "World"
+    log_message "Display top image bottom text $1 $2 $3"
+    display_message "$(printf '{"cmd":"TOP_IMAGE_BOTTOM_TEXT","args":["%s","%s","%s"]}' "$1" "$2" "$3")"
+}
+
+display_top_text_bottom_image(){
+    #$1 = Img e.g. /mnt/SDCARD/spruce/tmp/image.png
+    #$2 = Up to what % of the scren height should be used for the image e.g. 75 starting from the bottom
+    #$3 = Top text e.g. "World"
+    log_message "Display top image bottom text $1 $2 $3"
+    display_message "$(printf '{"cmd":"TOP_TEXT_BOTTOM_IMAGE","args":["%s","%s","%s"]}' "$1" "$2" "$3")"
+}
+
+display_text_with_percentage_bar(){
+    #$1 = Text e.g. "Hello"
+    #$2 = The percentage complete e.g. 75
+    log_message "Display text with percentage bar $1 $2"
+    display_message "$(printf '{"cmd":"TEXT_WITH_PERCENTAGE_BAR","args":["%s","%s"]}' "$1" "$2")"
 }
 
 show() {

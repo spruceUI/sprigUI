@@ -5,7 +5,7 @@
     "enableButtonWatchers": false,
     "enableWifiMonitor": true,
     "mainMenuTitle": "sprigUI",
-    "animationsEnabled": false,
+    "animationsEnabled": true,
     "includeStockOsLaunchOption": false,
     "cfwTasks": "/mnt/SDCARD/App/PyUI/sprig-tasks.json"
 }

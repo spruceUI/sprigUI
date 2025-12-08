@@ -78,7 +78,14 @@ class ThemeSettingsSystemSelectMenu(ThemeSettingsMenuCommon):
                                 get_value_func=Theme.get_grid_system_select_img_height,
                                 set_value_func=Theme.set_grid_system_select_img_height
                             )
-                        )                       
+                        )                  
+            if(Theme.get_game_system_select_row_count() == 1):
+                option_list.append(
+                    self.build_enabled_disabled_entry("Wrap-Around", 
+                                            Theme.get_system_select_grid_wrap_around_single_row, 
+                                            Theme.set_system_select_grid_wrap_around_single_row)
+                )
+
         if(ViewType.FULLSCREEN_GRID == Theme.get_view_type_for_system_select_menu()):
             option_list.append(
                 self.build_enabled_disabled_entry("Show Text", 
@@ -94,29 +101,43 @@ class ThemeSettingsSystemSelectMenu(ThemeSettingsMenuCommon):
                 )
             )                
             
-        if(ViewType.CAROUSEL == Theme.get_view_type_for_system_select_menu()):
+        if(ViewType.CAROUSEL == Theme.get_view_type_for_system_select_menu()):  
             option_list.append(
-                self.build_percent_entry(
-                    primary_text=Language.prim_img_width(),
-                    get_value_func=Theme.get_carousel_system_select_primary_img_width,
-                    set_value_func=Theme.set_carousel_system_select_primary_img_width
+                self.build_enabled_disabled_entry(
+                    primary_text="Percentage Mode",
+                    get_value_func=Theme.get_carousel_system_use_percentage_mode,
+                    set_value_func=Theme.set_carousel_system_use_percentage_mode
                 )
             )
-            if (Theme.get_game_system_select_col_count() > 3):
+            if(Theme.get_carousel_system_use_percentage_mode()):
                 option_list.append(
-                    self.build_enabled_disabled_entry(
-                        primary_text=Language.shrink_further_away(),
-                        get_value_func=Theme.get_carousel_system_select_shrink_further_away,
-                        set_value_func=Theme.set_carousel_system_select_shrink_further_away
+                    self.build_percent_entry(
+                        primary_text=Language.prim_img_width(),
+                        get_value_func=Theme.get_carousel_system_select_primary_img_width,
+                        set_value_func=Theme.set_carousel_system_select_primary_img_width
                     )
                 )
+                if (Theme.get_game_system_select_col_count() > 3):
+                    option_list.append(
+                        self.build_enabled_disabled_entry(
+                            primary_text=Language.shrink_further_away(),
+                            get_value_func=Theme.get_carousel_system_select_shrink_further_away,
+                            set_value_func=Theme.set_carousel_system_select_shrink_further_away
+                        )
+                    )
 
-            if (not Theme.get_carousel_system_select_shrink_further_away()):
+                if (not Theme.get_carousel_system_select_shrink_further_away()):
+                    option_list.append(
+                        self.build_enabled_disabled_entry(
+                            "Sides Hang Off",
+                            Theme.get_carousel_system_select_sides_hang_off,
+                            Theme.set_carousel_system_select_sides_hang_off)
+                    )
+            else:
                 option_list.append(
-                    self.build_enabled_disabled_entry(
-                        "Sides Hang Off",
-                        Theme.get_carousel_system_select_sides_hang_off,
-                        Theme.set_carousel_system_select_sides_hang_off)
+                    self.build_numeric_entry("Width", 
+                                            Theme.get_carousel_system_fixed_width, 
+                                            Theme.set_carousel_system_fixed_width)
                 )
             option_list.append(
                 self.build_numeric_entry("Internal Padding", 
@@ -130,6 +151,7 @@ class ThemeSettingsSystemSelectMenu(ThemeSettingsMenuCommon):
                                         Theme.set_carousel_system_external_x_offset,
                                         min=-99999)
             )
+
         if(ViewType.CAROUSEL == Theme.get_view_type_for_system_select_menu() or ViewType.CAROUSEL == Theme.get_view_type_for_system_select_menu()):        
             option_list.append(
                 self.build_enabled_disabled_entry(
