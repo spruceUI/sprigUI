@@ -3,6 +3,7 @@ import threading
 import sys
 import queue
 import json
+from pathlib import Path
 from devices.device import Device
 from display.display import Display
 from display.font_purpose import FontPurpose
@@ -22,6 +23,17 @@ class RealtimeMessageNetworkListener:
         self.threads = []
         self.message_queue = queue.Queue()  # thread-safe message handoff
 
+    def _write_to_file(self,result):
+        """Write selection result to selection.txt next to package root (two levels up)."""
+        script_dir = Path(__file__).resolve().parent.parent.parent
+        result_file = script_dir / "realtime_message_network_listener.txt"
+        PyUiLogger.get_logger().info(f"Writing {result} to {result_file}")
+        try:
+            with result_file.open("w", encoding="utf-8") as f:
+                f.write(result)
+        except Exception as e:
+            PyUiLogger.get_logger().error(f"Error writing result to file: {e}")
+
     def start(self):
         """Start the message listener server (runs on main thread)."""
         self.logger.info(f"Starting RealtimeMessageNetworkListener on port {self.port}...")
@@ -32,7 +44,7 @@ class RealtimeMessageNetworkListener:
         self.server_socket.bind((self.host, self.port))
         self.server_socket.listen(5)
         self.logger.info(f"Listening for connections on {self.host}:{self.port}")
-
+        self._write_to_file("Listening on port " + str(self.port))
         try:
             while not self.stop_event.is_set():
                 self.server_socket.settimeout(0.2)
@@ -107,7 +119,7 @@ class RealtimeMessageNetworkListener:
         filled = rounded // 5  # each block is 5%
 
         bar = "█" * filled + "·" * (total_segments - filled)
-        return f"[{bar}] {rounded}%"
+        return f"[{bar}] {percent}%"
 
     def _handle_ui_message(self, raw_message: str):
         """
@@ -147,24 +159,23 @@ class RealtimeMessageNetworkListener:
                 else:
                     self.logger.error("RENDER_IMAGE missing args")
 
-            elif cmd == "TOP_IMAGE_BOTTOM_TEXT":
+            elif cmd == "IMAGE_AND_TEXT":
                 if args:
-                    image_path = args[0]
-                    height_percent = int(args[1])  # convert safely
-                    text = args[2]
-
                     padding = Display.get_top_bar_height()
 
+                    image_path = args[0]
+                    text = args[1]
+                    height_percent = int(args[2])  
+                    
                     # Use usable height (excluding top bar)
                     usable_height = Display.get_usable_screen_height()
 
                     # Image metrics
                     image_height = int(usable_height * (height_percent / 100))
-                    image_y = padding + (image_height // 2)
 
-                    # Text placement: centered in remaining space
-                    remaining_height = usable_height - image_height
-                    text_y = padding + image_height + (remaining_height // 2)
+                    image_y = int(int(args[3])/100 * usable_height) + padding
+                    text_y = int(int(args[4])/100 * usable_height) + padding
+
 
                     self.logger.info(f"Rendering image from path: {image_path} with text: {text}")
 
@@ -174,52 +185,12 @@ class RealtimeMessageNetworkListener:
                         image_path,
                         Device.screen_width() // 2,
                         image_y,
-                        RenderMode.MIDDLE_CENTER_ALIGNED,
+                        RenderMode.TOP_CENTER_ALIGNED,
                         Device.screen_width(),
                         image_height
                     )
 
-                    Display.write_message_multiline(
-                        Display.split_message(text, FontPurpose.LIST, clip_to_device_width=True),
-                        text_y
-                    )
-
-                    Display.present()
-                else:
-                    self.logger.error("TOP_IMAGE_BOTTOM_TEXT missing args")
-            elif cmd == "TOP_TEXT_BOTTOM_IMAGE":
-                if args:
-                    image_path = args[0]
-                    height_percent = int(args[1])  # convert safely
-                    text = args[2]
-
-                    padding = Display.get_top_bar_height()
-
-                    # Use usable height (excluding top bar)
-                    usable_height = Display.get_usable_screen_height()
-
-                    # Image metrics
-                    image_height = int(usable_height * (height_percent / 100))
-                    text_y = padding + (image_height // 2)
-
-                    # Text placement: centered in remaining space
-                    remaining_height = usable_height - image_height
-                    image_y = padding + image_height + (remaining_height // 2)
-
-                    self.logger.info(f"Rendering image from path: {image_path} with text: {text}")
-
-                    Display.clear("")
-
-                    Display.render_image(
-                        image_path,
-                        Device.screen_width() // 2,
-                        image_y,
-                        RenderMode.MIDDLE_CENTER_ALIGNED,
-                        Device.screen_width(),
-                        image_height
-                    )
-
-                    Display.write_message_multiline(
+                    Display.write_message_multiline_starting_height_specified(
                         Display.split_message(text, FontPurpose.LIST, clip_to_device_width=True),
                         text_y
                     )
@@ -234,8 +205,10 @@ class RealtimeMessageNetworkListener:
                     percentage = args[1]
                     self.logger.info(f"Rendering text: {text} w/ perc(entage bar: {percentage}%")
                     Display.clear("")
-                    Display.write_message_multiline(Display.split_message(text, FontPurpose.LIST,clip_to_device_width=True), Device.screen_height()//3)
-                    Display.write_message_multiline([self._progress_bar(percentage)], (Device.screen_height()*2)//3)
+                    Display.write_message_multiline(Display.split_message(text, FontPurpose.LIST,clip_to_device_width=True), Device.screen_height()*0.35)
+                    Display.write_message_multiline([self._progress_bar(percentage)], (Device.screen_height()*0.6))                    
+                    if(len(args) > 2):
+                        Display.write_message_multiline(Display.split_message(args[2], FontPurpose.LIST,clip_to_device_width=True), Device.screen_height()*0.7)
                     Display.present()
                 else:
                     self.logger.error("TEXT_WITH_PERCENTAGE_BAR missing args")

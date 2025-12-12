@@ -98,7 +98,7 @@ class Display:
         cls.init_fonts()
         cls.render_canvas = sdl2.SDL_CreateTexture(
             cls.renderer.renderer,
-            sdl2.SDL_PIXELFORMAT_ARGB8888,
+            sdl2.SDL_PIXELFORMAT_ARGB1555,
             sdl2.SDL_TEXTUREACCESS_TARGET,
             Device.screen_width(),
             Device.screen_height()
@@ -114,6 +114,10 @@ class Display:
         if(Device.double_init_sdl_display()):
             Display.deinit_display()
             Display.reinitialize()
+
+        if(False):
+            Display.log_sdl_render_drivers()
+            Display.log_current_renderer()
 
         #Debug prints
         if(False):
@@ -133,6 +137,43 @@ class Display:
             PyUiLogger.get_logger().info(
                 f"Window size: {window_w.value}x{window_h.value}, Drawable size: {drawable_w.value}x{drawable_h.value}"
             )
+
+    @classmethod
+    def log_sdl_render_drivers(cls):
+        # Number of render drivers available
+        num_drivers = sdl2.SDL_GetNumRenderDrivers()
+        PyUiLogger.get_logger().info(f"SDL found {num_drivers} render drivers:")
+
+        info = sdl2.SDL_RendererInfo()
+
+        for i in range(num_drivers):
+            sdl2.SDL_GetRenderDriverInfo(i, ctypes.byref(info))
+
+            PyUiLogger.get_logger().info(f"Driver #{i}: {info.name.decode()}")
+            PyUiLogger.get_logger().info(f"  Max texture size: {info.max_texture_width}x{info.max_texture_height}")
+
+            # Log supported flags
+            print("  Flags:", end=" ")
+            flags = []
+            if info.flags & sdl2.SDL_RENDERER_SOFTWARE: flags.append("SOFTWARE")
+            if info.flags & sdl2.SDL_RENDERER_ACCELERATED: flags.append("ACCELERATED")
+            if info.flags & sdl2.SDL_RENDERER_PRESENTVSYNC: flags.append("VSYNC")
+            if info.flags & sdl2.SDL_RENDERER_TARGETTEXTURE: flags.append("TARGETTEXTURE")
+            PyUiLogger.get_logger().info(", ".join(flags) if flags else "None")
+
+            # Log supported texture formats
+            PyUiLogger.get_logger().info("  Supported texture formats:")
+            for j in range(info.num_texture_formats):
+                fmt = info.texture_formats[j]
+                name = sdl2.SDL_GetPixelFormatName(fmt).decode()
+                PyUiLogger.get_logger().info(f"    - {name}")
+
+
+    @classmethod
+    def log_current_renderer(cls):
+        info = sdl2.SDL_RendererInfo()
+        sdl2.SDL_GetRendererInfo(cls.renderer.renderer, ctypes.byref(info))
+        PyUiLogger.get_logger().info(f"SDL selected renderer: {info.name.decode()}")
 
     @classmethod
     def log_sdl_error_if_any(cls):
@@ -296,7 +337,7 @@ class Display:
         cls.bg_canvas = cls.render_canvas
         cls.render_canvas = sdl2.SDL_CreateTexture(
             cls.renderer.renderer,
-            sdl2.SDL_PIXELFORMAT_ARGB8888,
+            sdl2.SDL_PIXELFORMAT_ARGB1555,
             sdl2.SDL_TEXTUREACCESS_TARGET,
             Device.screen_width(),
             Device.screen_height()
@@ -630,7 +671,7 @@ class Display:
 
         scaled_texture = sdl2.SDL_CreateTexture(
             cls.renderer.sdlrenderer,
-            sdl2.SDL_PIXELFORMAT_ARGB8888,
+            sdl2.SDL_PIXELFORMAT_ARGB1555,
             sdl2.SDL_TEXTUREACCESS_TARGET,
             target_width,
             target_height
@@ -668,7 +709,7 @@ class Display:
         # Create an intermediate render target texture
         render_target = sdl2.SDL_CreateTexture(
             renderer,
-            sdl2.SDL_PIXELFORMAT_RGBA8888,
+            sdl2.SDL_PIXELFORMAT_ARGB1555,
             sdl2.SDL_TEXTUREACCESS_TARGET,
             width.value, height.value
         )
@@ -742,7 +783,7 @@ class Display:
 
             cls.render_canvas = sdl2.SDL_CreateTexture(
                 cls.renderer.sdlrenderer,
-                sdl2.SDL_PIXELFORMAT_RGBA8888,
+                sdl2.SDL_PIXELFORMAT_ARGB1555,
                 sdl2.SDL_TEXTUREACCESS_TARGET,
                 width,
                 height
@@ -763,7 +804,7 @@ class Display:
         # Create a new target texture
         rotated_texture = sdl2.SDL_CreateTexture(
             cls.renderer.sdlrenderer,
-            sdl2.SDL_PIXELFORMAT_RGBA8888,
+            sdl2.SDL_PIXELFORMAT_ARGB1555,
             sdl2.SDL_TEXTUREACCESS_TARGET,
             new_w,
             new_h
@@ -934,29 +975,42 @@ class Display:
     @classmethod
     def split_message(cls, message: str, font_purpose, clip_to_device_width) -> list[str]:
         if not message:
-            return [message]
+            return [""]
 
-        if not cls.is_text_too_long(message, font_purpose,clip_to_device_width):
-            return [message]
-        
-        words = message.split()
-        lines = []
-        current_line = ""
+        # First split on explicit newlines
+        raw_lines = message.split("\n")
+        final_lines = []
 
-        for word in words:
-            tentative_line = (current_line + " " + word).strip()
+        for raw_line in raw_lines:
+            # If the line is empty (because of "\n\n"), preserve it
+            if raw_line.strip() == "":
+                final_lines.append("")
+                continue
 
-            # If adding this word makes the line too long, start a new one
-            if current_line and cls.is_text_too_long(tentative_line, font_purpose,clip_to_device_width):
-                lines.append(current_line)
-                current_line = word
-            else:
-                current_line = tentative_line
+            # If line fits as-is, keep it
+            if not cls.is_text_too_long(raw_line, font_purpose, clip_to_device_width):
+                final_lines.append(raw_line)
+                continue
 
-        if current_line:
-            lines.append(current_line)
+            # Otherwise word-wrap this raw_line
+            words = raw_line.split()
+            current_line = ""
 
-        return lines
+            for word in words:
+                tentative_line = (current_line + " " + word).strip()
+
+                # If adding this word makes the line too long, start a new one
+                if current_line and cls.is_text_too_long(tentative_line, font_purpose, clip_to_device_width):
+                    final_lines.append(current_line)
+                    current_line = word
+                else:
+                    current_line = tentative_line
+
+            if current_line:
+                final_lines.append(current_line)
+
+        return final_lines
+
 
 
     @classmethod
@@ -973,6 +1027,17 @@ class Display:
 
         height_per_line = text_h + int(5 * Device.screen_height()/480)
         starting_height = middle_height - (len(split_message) * height_per_line)//2
+
+        for i, line in enumerate(split_message):
+            Display.render_text_centered(f"{line}",Device.screen_width()//2, starting_height + i * height_per_line,
+                                         Theme.text_color(FontPurpose.LIST), purpose=FontPurpose.LIST)
+
+
+    @classmethod
+    def write_message_multiline_starting_height_specified(cls,split_message, starting_height):
+        text_w,text_h = Display.get_text_dimensions(FontPurpose.LIST, "W")
+
+        height_per_line = text_h + int(5 * Device.screen_height()/480)
 
         for i, line in enumerate(split_message):
             Display.render_text_centered(f"{line}",Device.screen_width()//2, starting_height + i * height_per_line,
