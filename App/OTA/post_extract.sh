@@ -143,12 +143,6 @@ complete_installation() {
 ##### MAIN EXECUTION #####
 
 preserve_sprig_config_settings
-if [ "$OVERWRITE_EMU_DIR" = "False" ]; then
-    preserve_user_emu_launch_settings
-else
-    log_and_display_message "Emulator options and overrides will be reset to default."
-    sleep 3
-fi
 complete_installation
 delete_legacy_files_from_previous_versions
 sync
