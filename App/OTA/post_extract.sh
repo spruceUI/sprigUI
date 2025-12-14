@@ -39,33 +39,6 @@ CURRENT_VERSION="$(cat /mnt/SDCARD/sprig/version)"
 
 ##### FUNCTION DEFINITIONS #####
 
-preserve_user_emu_launch_settings() {
-    log_and_display_message "Preserving user emu launch settings."
-    for configjson in /mnt/SDCARD/Emu/*/config.json ; do
-
-        emu_dir="$(dirname "$configjson")"
-        emu_name="$(basename "$emu_dir")"
-        new_json="/mnt/SDCARD/sprigUI-$BRANCH/Emu/$emu_name/config.json"
-
-        [ -f "$new_json" ] || continue    # Skip if new config doesn’t exist
-
-        if jq -e '.menuOptions.Emulator' "$new_json" >/dev/null; then
-            selected_core="$(jq -r '.menuOptions.Emulator.selected' "$configjson")"
-            overrides="$(jq '.menuOptions.Emulator.overrides' "$configjson")"
-            [ "$overrides" = "null" ] && overrides='{}'
-            log_message "$emu_name: selected core: $selected_core"
-            log_message "$emu_name: overrides section: $overrides"
-            tmpfile="$(mktemp)"
-            jq \
-                --arg selected "$selected_core" \
-                --argjson overrides "$overrides" \
-                '.menuOptions.Emulator.selected = $selected
-                | .menuOptions.Emulator.overrides = $overrides' \
-                "$new_json" > "$tmpfile" && mv -f "$tmpfile" "$new_json"
-        fi
-    done
-}
-
 preserve_sprig_config_settings() {
     log_and_display_message "Preserving sprig config settings."
 
@@ -77,21 +50,28 @@ preserve_sprig_config_settings() {
     fi
 
     # Preserve per-emulator configs
-    for emu_dir in /mnt/SDCARD/Emu/*; do
-        [ -d "$emu_dir" ] || continue
+    if  [ "$OVERWRITE_EMU_DIR" = "False" ]; then
+        log_and_display_message "Preserving user emu launch settings."
+        for emu_dir in /mnt/SDCARD/Emu/*; do
+            [ -d "$emu_dir" ] || continue
 
-        emu_name="$(basename "$emu_dir")"
+            emu_name="$(basename "$emu_dir")"
 
-        existing_emu_config="$emu_dir/config.json"
-        new_emu_config="/mnt/SDCARD/sprigUI-$BRANCH/Emu/$emu_name/config.json"
+            existing_emu_config="$emu_dir/config.json"
+            new_emu_config="/mnt/SDCARD/sprigUI-$BRANCH/Emu/$emu_name/config.json"
 
-        if [ -f "$existing_emu_config" ] && [ -f "$new_emu_config" ]; then
-            log_and_display_message "Preserving config for emulator: $emu_name"
-            python /mnt/SDCARD/App/OTA/merge_configs.py \
-                "$existing_emu_config" \
-                "$new_emu_config"
-        fi
-    done
+            if [ -f "$existing_emu_config" ] && [ -f "$new_emu_config" ]; then
+                log_and_display_message "Preserving user emu launch settings."
+
+                log_and_display_message "Preserving config for emulator: $emu_name"
+                python /mnt/SDCARD/App/OTA/merge_configs.py \
+                    "$existing_emu_config" \
+                    "$new_emu_config" \
+                    >> /mnt/SDCARD/Saves/sprig/sprig.log 2>&1
+            fi
+        done
+    fi
+
 }
 
 

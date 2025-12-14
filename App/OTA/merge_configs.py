@@ -1,9 +1,8 @@
 import json
 import sys
-
 def merge_selected(old, new, path=""):
     """
-    Recursively copy 'selected' values from old into new.
+    Recursively copy 'selected' values and valid 'overrides' from old into new.
     Logs every update.
     """
     if not isinstance(old, dict) or not isinstance(new, dict):
@@ -26,6 +25,17 @@ def merge_selected(old, new, path=""):
                     new[key] = old_val
                 else:
                     print(f"Value is no longer valid in latest config '{current_path}': {old_val}")
+
+        elif key == "overrides":
+            if isinstance(old_val, dict) and isinstance(new_val, dict):
+                options = new.get("options", [])
+                for file_key, val in old_val.items():
+                    if val in options:
+                        print(f"Copying override '{current_path}/{file_key}': {new_val.get(file_key)} -> {val}")
+                        new_val[file_key] = val
+                    else:
+                        print(f"Override value invalid in latest config '{current_path}/{file_key}': {val}")
+
         else:
             merge_selected(old_val, new_val, current_path)
 
