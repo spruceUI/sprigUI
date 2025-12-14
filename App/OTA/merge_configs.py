@@ -14,12 +14,12 @@ def merge_selected(old, new, path=""):
             current_path = f"{path}/{key}" if path else key
 
             if key == "selected" and old_val is not None:
-                # Copy selected value
-                print(f"Copying '{current_path}': {new_val} -> {old_val}")
-                new[key] = old_val
-            elif isinstance(old_val, dict) and isinstance(new_val, dict):
-                merge_selected(old_val, new_val, current_path)
-            # else: skip arrays or other types
+                values = new.get("options")
+                if isinstance(values, list) and old_val in values:
+                    print(f"Copying '{current_path}': {new_val} -> {old_val}")
+                    new[key] = old_val
+                else:
+                    print(f"Skipping invalid '{current_path}': {old_val}")
 
 def main():
     if len(sys.argv) != 3:
