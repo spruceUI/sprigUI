@@ -6,20 +6,29 @@ def merge_selected(old, new, path=""):
     Recursively copy 'selected' values from old into new.
     Logs every update.
     """
-    if isinstance(old, dict) and isinstance(new, dict):
-        for key in old:
-            old_val = old[key]
-            new_val = new.get(key)
+    if not isinstance(old, dict) or not isinstance(new, dict):
+        return
 
-            current_path = f"{path}/{key}" if path else key
+    for key, old_val in old.items():
+        if key not in new:
+            continue
 
-            if key == "selected" and old_val is not None:
-                values = new.get("options")
-                if isinstance(values, list) and old_val in values:
+        new_val = new[key]
+        current_path = f"{path}/{key}" if path else key
+
+        if key == "selected":
+            if old_val is None:
+                print(f"'{current_path}' has an old_val of None")
+            else:
+                options = new.get("options")
+                if isinstance(options, list) and old_val in options:
                     print(f"Copying '{current_path}': {new_val} -> {old_val}")
                     new[key] = old_val
                 else:
-                    print(f"Skipping invalid '{current_path}': {old_val}")
+                    print(f"Value is no longer valid in latest config '{current_path}': {old_val}")
+        else:
+            merge_selected(old_val, new_val, current_path)
+
 
 def main():
     if len(sys.argv) != 3:
