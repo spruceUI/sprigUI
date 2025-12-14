@@ -45,11 +45,11 @@ rm -rf "$TMP_DIR"/* 2>/dev/null
 # attempt to download the theme
 
 log_and_display_message "Now downloading $theme_name!"
-if ! wget --quiet --no-check-certificate --output-document="$temp_path" "$theme_url"; then
-	log_and_display_message "Unable to download $theme_name from repository. Please try again later."
-    sleep 4
-	rm -f "$temp_path"
+if ! download_and_display_progress "$theme_url" "$temp_path" "$theme_name" "$TARGET_SIZE_BYTES"; then
 	exit 1
+else
+	log_and_display_message "Successfully downloaded $theme_name!"
+	sleep 2
 fi
 
 mkdir -p "$ARCHIVE_DIR"
