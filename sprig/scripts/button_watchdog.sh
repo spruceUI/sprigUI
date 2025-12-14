@@ -157,9 +157,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
 
                 if pgrep "retroarch" >/dev/null; then
                     log_message "Triggering RA in game menu"
-                    send_event 42:1 97:1
-                    sleep 0.2
-                    send_event 42:0 97:0
+                    ra_network_command MENU_TOGGLE
                 fi
             fi
             ;;
