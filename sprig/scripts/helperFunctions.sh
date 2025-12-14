@@ -380,9 +380,10 @@ backlight_down() {
 
 ##########     DISPLAY AND COMMUNICATION     ##########
 
-PYUI_PIPE=/tmp/pyui_pipe
-
 start_pyui_message_writer() {
+    # $1 = 0 to not wait, anything else to wait
+    wait_for_listener="$1"
+
     # Check if PyUI is already running with the realtime port argument
     if ps -ef | grep "[m]sgDisplayRealtimePort" >/dev/null; then
         log_message "Real Time message listener already running."
@@ -390,12 +391,18 @@ start_pyui_message_writer() {
     fi
 
     freemma
-    rm -f "$PYUI_PIPE"
-    [ -p "$PYUI_PIPE" ] || mkfifo "$PYUI_PIPE"
-
+    rm -f /mnt/SDCARD/App/PyUI/realtime_message_network_listener.txt
     log_message "Starting Real Time message listener on port 50980"
     /mnt/SDCARD/App/PyUI/launch.sh -msgDisplayRealtimePort 50980 &
-    sleep 3
+
+    # Optional wait for the listener file
+    if [ "$wait_for_listener" != "0" ]; then
+        log_message "Waiting for realtime_message_network_listener to appear..."
+        while [ ! -e "/mnt/SDCARD/App/PyUI/realtime_message_network_listener.txt" ]; do
+            sleep 0.1
+        done
+        log_message "Realtime message network listener detected."
+    fi
 }
 
 kill_pyui_message_writer() {
@@ -404,7 +411,7 @@ kill_pyui_message_writer() {
     pids=$(ps -ef | grep "[m]sgDisplayRealtimePort" | awk '{print $1}')
 
     if [ -n "$pids" ]; then
-        log_message "Real Time message listener already running. Killing it..."
+        log_message "Real Time message listener is running. Killing it..."
         # Kill all matching PIDs
         for pid in $pids; do
             kill "$pid" 2>/dev/null
@@ -450,27 +457,81 @@ display_option_list(){
     display_message "$(printf '{"cmd":"OPTION_LIST","args":["%s"]}' "$1")"
 }
 
-display_top_image_bottom_text(){
-    #$1 = Img e.g. /mnt/SDCARD/spruce/tmp/image.png
-    #$2 = Up to what % of the scren height should be used for the image e.g. 75
-    #$3 = Bottom text e.g. "World"
-    log_message "Display top image bottom text $1 $2 $3"
-    display_message "$(printf '{"cmd":"TOP_IMAGE_BOTTOM_TEXT","args":["%s","%s","%s"]}' "$1" "$2" "$3")"
-}
+display_image_and_text() {
+    # Full form (5 args):
+    # $1 = image path
+    # $2 = image size (%)
+    # $3 = image vertical offset (%)
+    # $4 = text
+    # $5 = text height (%)
 
-display_top_text_bottom_image(){
-    #$1 = Img e.g. /mnt/SDCARD/spruce/tmp/image.png
-    #$2 = Up to what % of the scren height should be used for the image e.g. 75 starting from the bottom
-    #$3 = Top text e.g. "World"
-    log_message "Display top image bottom text $1 $2 $3"
-    display_message "$(printf '{"cmd":"TOP_TEXT_BOTTOM_IMAGE","args":["%s","%s","%s"]}' "$1" "$2" "$3")"
+    # Abridged form (only 2 args):
+    # $1 = image path
+    # $2 = text
+
+    if [ $# -eq 2 ]; then
+        img="$1"
+        text="$2"
+        size="25"
+        img_y="25"
+        text_y="75"
+    else
+        img="$1"
+        size="${2:-25}"
+        img_y="${3:-25}"
+        text="$4"
+        text_y="${5:-75}"
+    fi
+
+    log_message "Display image and text $img $size $img_y $text $text_y"
+
+    display_message "$(printf \
+        '{"cmd":"IMAGE_AND_TEXT","args":["%s","%s","%s","%s","%s"]}' \
+        "$img" "$text" "$size" "$img_y" "$text_y"
+    )"
 }
 
 display_text_with_percentage_bar(){
-    #$1 = Text e.g. "Hello"
-    #$2 = The percentage complete e.g. 75
-    log_message "Display text with percentage bar $1 $2"
-    display_message "$(printf '{"cmd":"TEXT_WITH_PERCENTAGE_BAR","args":["%s","%s"]}' "$1" "$2")"
+    # $1 = Text e.g. "Hello"
+    # $2 = The percentage complete e.g. 75
+    # $3 = Optional bottom text
+    log_message "Display text with percentage bar $1 $2 $3"
+    if [ $# -eq 2 ]; then
+        display_message "$(printf '{"cmd":"TEXT_WITH_PERCENTAGE_BAR","args":["%s","%s"]}' "$1" "$2")"
+    else
+        display_message "$(printf '{"cmd":"TEXT_WITH_PERCENTAGE_BAR","args":["%s","%s","%s"]}' "$1" "$2" "$3")"
+    fi
+}
+
+download_and_display_progress() {
+	BAD_IMG="/mnt/SDCARD/Themes/spruce/skin_750x560/missing_image.qoi"
+    remote_url="$1"
+    local_path="$2"
+    display_name="$3"
+    final_size_bytes="$4"
+
+	{
+		sleep 0.1
+		while ps | grep '[w]get' >/dev/null; do
+			current_size=$(ls -ln "$local_path" 2>/dev/null | awk '{print $5}')
+			[ -z "$current_size" ] && current_size=0
+			[ -z "$final_size_bytes" ] && final_size_bytes=1
+			percent_complete="$(((current_size * 100) / final_size_bytes))"
+			[ "$percent_complete" -gt 100 ] && percent_complete=100
+            current_mb="$((current_size / 1024 / 1024))"
+            final_mb="$((final_size_bytes / 1024 / 1024))"
+			display_text_with_percentage_bar "Now downloading $display_name!\n\n$current_mb MB / $final_mb MB" "$percent_complete"
+			sleep 0.1
+		done 
+	} &
+	if ! wget --quiet --no-check-certificate --output-document="$local_path" "$remote_url"; then
+		display_image_and_text "$BAD_IMG" 35 25 "Unable to download $display_name. Please try again later." 75
+		sleep 4
+		rm -f "$local_path" 2>/dev/null
+		return 1
+    else
+        return 0
+	fi
 }
 
 show() {
