@@ -183,7 +183,7 @@ set_smart() {
 
         echo 85 >"$OD_DIR"/up_threshold
         echo 1 >"$OD_DIR"/sampling_down_factor
-        echo 400000 >"$OD_DIR"/sampling_rate
+        echo 100000 >"$OD_DIR"/sampling_rate
 
         log_message "CPU Mode now set to SMART" -v
         flag_remove "setting_cpu"
