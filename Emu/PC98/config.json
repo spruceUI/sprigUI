@@ -10,5 +10,5 @@
   "brand": "NEC",
   "type": "computer",
   "releaseYear": 1982,
-  "default_emulator": "np2kai",
+  "default_emulator": "np2kai"
 }
