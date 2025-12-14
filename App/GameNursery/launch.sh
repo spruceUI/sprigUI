@@ -160,6 +160,7 @@ get_system_icon_from_theme() {
         "Game Boy family")  icon_name="gba";        emu_name="GBA" ;;
         "Game Tank")        icon_name="gametank";   emu_name="GAMETANK" ;;
         "NES")              icon_name="fc";         emu_name="FC" ;;
+        "SNES")             icon_name="sfc";        emu_name="SFC" ;;
         "Ports")            icon_name="ports";      emu_name="PORTS" ;;
         "ZX Spectrum")      icon_name="zxs";        emu_name="ZXS" ;;
         *) return 1 ;;
