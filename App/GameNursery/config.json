@@ -3,5 +3,6 @@
   "icon": "iconfresh.png",
   "launch": "launch.sh",
   "description": "Download free games directly to your device",
-  "hide": false
+  "devices": ["MIYOO_MINI_PLUS", "MIYOO_MINI_FLIP"],
+  "hideInSimpleMode": false
 }

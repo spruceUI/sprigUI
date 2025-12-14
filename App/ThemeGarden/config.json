@@ -3,5 +3,6 @@
   "icon": "themegallery.png",
   "launch": "launch.sh",
   "description": "Check out the latest themes for your device!",
+  "devices": ["MIYOO_MINI_PLUS", "MIYOO_MINI_FLIP"],
   "hideInSimpleMode": true
 }

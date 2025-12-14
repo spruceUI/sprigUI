@@ -3,6 +3,6 @@
   "icon": "updater.png",
   "launch": "launch.sh",
   "description": "Download and install updates over Wi-Fi",
-  "hide": false,
+  "devices": ["MIYOO_MINI_PLUS", "MIYOO_MINI_FLIP"],
   "hideInSimpleMode": true
 }
