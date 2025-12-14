@@ -71,8 +71,29 @@ preserve_sprig_config_settings() {
 
     existing_config="/mnt/SDCARD/Saves/sprig/sprig-config.json"
     new_config="/mnt/SDCARD/sprigUI-$BRANCH/Saves/sprig/sprig-config.json"
-    python /mnt/SDCARD/App/OTA/merge_configs.py "$existing_config" "$new_config"
+
+    if [ -f "$existing_config" ] && [ -f "$new_config" ]; then
+        python /mnt/SDCARD/App/OTA/merge_configs.py "$existing_config" "$new_config"
+    fi
+
+    # Preserve per-emulator configs
+    for emu_dir in /mnt/SDCARD/Emu/*; do
+        [ -d "$emu_dir" ] || continue
+
+        emu_name="$(basename "$emu_dir")"
+
+        existing_emu_config="$emu_dir/config.json"
+        new_emu_config="/mnt/SDCARD/sprigUI-$BRANCH/Emu/$emu_name/config.json"
+
+        if [ -f "$existing_emu_config" ] && [ -f "$new_emu_config" ]; then
+            log_and_display_message "Preserving config for emulator: $emu_name"
+            python /mnt/SDCARD/App/OTA/merge_configs.py \
+                "$existing_emu_config" \
+                "$new_emu_config"
+        fi
+    done
 }
+
 
 current_version_equal_or_older_than() {
     # $1 = version to compare against
