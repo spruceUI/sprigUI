@@ -11,7 +11,8 @@
       "display": "Retroarch Core",
       "options": [
         "mednafen_supafaust",
-        "snes9x"
+        "snes9x",
+        "snes9x_2005"
       ],
       "selected": "mednafen_supafaust",
       "overrides": {}
