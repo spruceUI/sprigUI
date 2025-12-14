@@ -10,11 +10,10 @@
     "Emulator": {
       "display": "Retroarch Core",
       "options": [
-        "chimerasnes",
         "mednafen_supafaust",
         "snes9x"
       ],
-      "selected": "chimerasnes",
+      "selected": "mednafen_supafaust",
       "overrides": {}
     }
   },
@@ -22,5 +21,5 @@
   "brand": "Nintendo",
   "type": "homeconsole",
   "releaseYear": 1990,
-  "default_emulator": "chimerasnes"
+  "default_emulator": "mednafen_supafaust"
 }
