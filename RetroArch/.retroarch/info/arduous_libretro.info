@@ -1,11 +1,11 @@
 # Software Information
-display_name = "Arduboy (Ardens)"
-authors = "Peter Brown"
-supported_extensions = "hex|arduboy"
-corename = "Ardens"
-license = "MIT"
+display_name = "Arduboy (Arduous)"
+authors = "James Roeder"
+supported_extensions = "hex"
+corename = "Arduous"
+license = "GPLv3"
 permissions = ""
-display_version = "Git"
+display_version = "0.1.0"
 categories = "Emulator"
 
 # Hardware Information
@@ -15,8 +15,8 @@ systemid = "arduboy"
 
 # Libretro Features
 supports_no_game = "false"
-database = "Arduboy Inc - Arduboy"
-savestate = "true"
+database = "Arduboy"
+savestate = "false"
 cheats = "false"
 core_options = "false"
 disk_control = "false"
@@ -26,4 +26,4 @@ is_experimental = "false"
 # Firmware / BIOS
 firmware_count = 0
 
-description = "Ardens is a simulator for the Arduboy FX that is designed especially for profiling and debugging Arduboy games."
+description = "Arduboy emulator implemented as a libretro core."
