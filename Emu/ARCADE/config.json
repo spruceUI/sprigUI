@@ -11,6 +11,7 @@
       "options": [
         "fbneo",
         "mame2003_plus",
+        "km_mame2003_xtreme",
         "fbalpha2012"
       ],
       "selected": "fbneo",
