@@ -1,5 +1,5 @@
 #!/bin/sh
-RA_V4_CFG="/mnt/SDCARD/RetroArch/.retroarch/retroarchV4.cfg"
+RA_V4_CFG="/mnt/SDCARD/RetroArch/.retroarch/retroarch.cfg"
 RAC_CFG="/mnt/SDCARD/RetroAchievementsLogin.cfg"
 
 create_fresh_rac_cfg() {

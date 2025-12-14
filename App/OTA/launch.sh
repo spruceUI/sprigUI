@@ -139,7 +139,7 @@ extract_archive() {
 
     if [ "$OVERWRITE_RA_CONFIGS" = "False" ]; then
         log_message "Will not overwrite RA configs."
-        excluded_files="$excluded_files $new_ra_dir/config $new_ra_dir/retroarchV4.cfg $new_dir/Saves/NDS/config"
+        excluded_files="$excluded_files $new_ra_dir/config $new_ra_dir/retroarch.cfg $new_dir/Saves/NDS/config"
     fi
 
     if [ "$OVERWRITE_PYTHON3_DIR" = "False" ]; then
