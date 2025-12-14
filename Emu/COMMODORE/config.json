@@ -5,7 +5,17 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "d64|zip|7z|t64|crt|prg|nib|tap",
   "launchlist": [],
-  "menuOptions": {},
+  "menuOptions": {
+    "Emulator": {
+      "display": "Retroarch Core",
+      "options": [
+        "vice_x64",
+        "frodo"
+      ],
+      "selected": "vice_x64",
+      "overrides": {}
+    }
+  },
   "sortOrder": 1100,
   "brand": "Commodore",
   "type": "pc",
