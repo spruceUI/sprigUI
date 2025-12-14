@@ -95,7 +95,7 @@ sprig is a custom operating system for the Miyoo Mini Flip, developed by the spr
 ## Special Thanks
 
 - Miyoo for providing us with development units.
-- OnionOS team for sharing their wealth of knowledge and a couple of apps.
+- OnionOS team for sharing their wealth of knowledge, a couple of apps, and an updated RetroArch + cores.
 - Shaun Inman of MinUI for the same.
 - XK9274 for the SDL2 build that allows PyUI to even run on this device.
 - Steward Fu for all his work on the Miyoo Mini, including but not limited to porting the DraStic emulator.
