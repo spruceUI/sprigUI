@@ -2,7 +2,7 @@
 
 . /mnt/SDCARD/sprig/scripts/helperFunctions.sh
 
-RA_FILE="/mnt/SDCARD/RetroArch/.retroarch/retroarchV4.cfg"
+RA_FILE="/mnt/SDCARD/RetroArch/.retroarch/retroarch.cfg"
 
 update_file() {
     file="$1"
