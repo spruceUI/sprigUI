@@ -630,7 +630,11 @@ get_lid_state() {
 init_volume_backlight() {
     current_backlight=$(get_pyui_config_value ".backlight" 5)
     set_backlight "$current_backlight"
-    current_volume=$(get_pyui_config_value ".vol" 10)
+    if is_mini_og; then
+        current_volume=20   # offload volume control to analog wheel
+    else
+        current_volume=$(get_pyui_config_value ".vol" 10)
+    fi
     set_volume "$current_volume"
     log_message "Backlight initialized to $current_backlight."
     log_message "Volume initialized to $current_volume."
