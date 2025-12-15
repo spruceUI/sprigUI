@@ -37,7 +37,7 @@ rotate_logs && log_message "sprigUI has entered the chat"
 if [ -e /mnt/SDCARD/sprig/flags/lastgame.lock ]; then
     DISABLE_WIFI="$(get_config_value '.menuOptions."Lid and Power Settings".disableWifiInGame.selected' "False")"
     WIFI_ENABLED="$(get_pyui_config_value '.wifi' 1)"
-    if [ "$DISABLE_WIFI" = "False" ] && [ "$WIFI_ENABLED" -eq 1 ]; then
+    if [ "$DISABLE_WIFI" = "False" ] && [ "$WIFI_ENABLED" -eq 1 ] && ! is_mini_og; then
         /mnt/SDCARD/sprig/scripts/network/start_wifi.sh
     fi
     freemma
@@ -51,7 +51,9 @@ fi
 while true; do
 
     # Start and stop network services as configured.
-    /mnt/SDCARD/sprig/scripts/network/start_stop_services.sh &
+    if ! is_mini_og; then
+        /mnt/SDCARD/sprig/scripts/network/start_stop_services.sh &
+    fi
 
     # Start battery, lid, and button watchdogs only if necessary.
     for thing in battery lid button; do
