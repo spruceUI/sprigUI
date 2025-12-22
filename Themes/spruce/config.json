@@ -43,6 +43,7 @@
     "bindOverMiyooTheme": true,
     "recentsEnabled": false,
     "topBarInitialXOffset": 60,
+    "gameSelectionViewType": "TEXT_AND_IMAGE",
     "setTopBarTextToGameSelection": true,
     "fullScreenGridGameMenuResizeType": "FIT",
     "mainMenuTitle": ""

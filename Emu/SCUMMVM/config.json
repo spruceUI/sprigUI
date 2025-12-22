@@ -1,0 +1,14 @@
+{
+  "label": "ScummVM",
+  "icon": "scummvm.png",
+  "iconsel": "scummvm_sel.png",
+  "launch": "../.emu_setup/standard_launch.sh",
+  "extlist": "scummvm",
+  "launchlist": [],
+  "menuOptions": {},
+  "sortOrder": 5600,
+  "brand": "modernengine",
+  "type": "pc",
+  "releaseYear": 2001,
+  "default_emulator": "scummvm"
+}

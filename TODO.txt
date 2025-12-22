@@ -1,6 +1,5 @@
 "Would be nice"s / ideas for future updates:
 
-- theme garden?
 - dufs
 - ebook "Emu"
 - MEDIA "Emu"
@@ -11,3 +10,6 @@
 - fsck.fat app or auto fix thingie
 - Update RA?
 - easy netplay thing
+
+- add SNES icon for game nursery
+- add fallback logic for game nursery system icons

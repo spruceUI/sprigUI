@@ -3,5 +3,5 @@
   "icon": "ereader.png",
   "launch": "launch.sh",
   "description": "PixelReader v0.6",
-  "hide": false
+  "hideInSimpleMode": false
 }

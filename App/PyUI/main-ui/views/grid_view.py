@@ -8,7 +8,6 @@ from display.render_mode import RenderMode
 from display.y_render_option import YRenderOption
 from controller.controller import Controller
 from themes.theme import Theme
-from utils.logger import PyUiLogger
 from utils.py_ui_config import PyUiConfig
 from views.grid_or_list_entry import GridOrListEntry
 from views.selection import Selection
@@ -19,7 +18,8 @@ class GridView(View):
     def __init__(self, top_bar_text, options: List[GridOrListEntry], cols: int, rows: int, selected_bg: str = None,
                  selected_index=0, show_grid_text=True, resized_width=None, resized_height=None,
                  set_top_bar_text_to_selection=False, set_bottom_bar_text_to_selection=False, resize_type=None, 
-                 unselected_bg = None, grid_img_y_offset=None, missing_image_path=None):
+                 unselected_bg = None, grid_img_y_offset=None, missing_image_path=None,
+                 wrap_around_single_row=None):
         super().__init__()
         self.resized_width = resized_width
         self.resized_height = resized_height
@@ -50,6 +50,10 @@ class GridView(View):
         else:
             self.font_purpose = FontPurpose.GRID_ONE_ROW
 
+        if(wrap_around_single_row is None):
+            wrap_around_single_row = True
+        self.wrap_around_single_row = wrap_around_single_row
+
         self.selected_bg = selected_bg
         self.unselected_bg = unselected_bg
         self.show_grid_text = show_grid_text
@@ -65,6 +69,14 @@ class GridView(View):
         self.options = options
         self.options_are_sorted = self.is_alphabetized(options)
 
+    def single_row_in_window(self):
+        """Return True if index i is inside the circular window."""
+        if self.current_left <= self.current_right:
+            return self.current_left <= self.selected < self.current_right
+        else:
+            # wrapped window case, e.g. left=28 right=2
+            return self.selected >= self.current_left or self.selected < self.current_right
+        
     def correct_selected_for_off_list(self):
         while (self.selected < 0):
             self.selected = len(self.options) + self.selected
@@ -73,19 +85,38 @@ class GridView(View):
         if (len(self.options) > 0):
             self.selected = self.selected % (len(self.options))
 
-        while (self.selected < self.current_left):
-            if (self.rows > 1):
+        if(self.rows > 1):
+            while (self.selected < self.current_left):
                 self.current_left -= (self.cols)
                 self.current_right -= (self.cols)
-            else:
+
+            while (self.selected >= self.current_right):
+                self.current_left += (self.cols)
+                self.current_right += (self.cols)
+        elif(self.wrap_around_single_row):
+            if(len(self.options) > self.cols):
+                N = len(self.options)  # total number of items
+                self.selected = self.selected % N
+
+                # normalize current_left/right to wrap properly
+                self.current_left  %= N
+                self.current_right = (self.current_left + self.cols) % N
+                while not self.single_row_in_window():
+                    # shift window toward sel
+                    if (self.current_left - self.selected) % N < (self.selected - self.current_left) % N:
+                        # sel is "to the left" in circular sense
+                        self.current_left  = (self.current_left - 1) % N
+                        self.current_right = (self.current_right - 1) % N
+                    else:
+                        # sel is "to the right"
+                        self.current_left  = (self.current_left + 1) % N
+                        self.current_right = (self.current_right + 1) % N
+        else:
+            while (self.selected < self.current_left):
                 self.current_left -= 1
                 self.current_right -= 1
 
-        while (self.selected >= self.current_right):
-            if (self.rows > 1):
-                self.current_left += (self.cols)
-                self.current_right += (self.cols)
-            else:
+            while (self.selected >= self.current_right):
                 self.current_left += 1
                 self.current_right += 1
 
@@ -117,7 +148,7 @@ class GridView(View):
         return w,h
 
     def _render_cell(self, visible_index, imageTextPair):
-        actual_index = self.current_left + visible_index
+        actual_index = (self.current_left + visible_index)%len(self.options)
         image_path = imageTextPair.get_image_path_selected_ideal(self.resized_width, self.resized_height) if actual_index == self.selected else imageTextPair.get_image_path_ideal(self.resized_width, self.resized_height)
 
         x_index = visible_index % self.cols
@@ -143,12 +174,10 @@ class GridView(View):
         else:
             text_height = 0
         
-        if(self.img_offset is not None):
-            img_offset = self.img_offset
-        elif(self.rows == 1):
-            img_offset = 0
+        if(self.rows == 1):
+            img_offset = self.img_offset if self.img_offset is not None else 0
         else:
-            img_offset = Theme.get_system_select_grid_img_y_offset(text_height)
+            img_offset = Theme.get_grid_multi_row_img_y_offset(text_height)
             
         bg_offset = 0
         if (self.resized_width is not None):
@@ -166,15 +195,15 @@ class GridView(View):
                          x_offset,
                          cell_y + bg_offset // offset_divisor,
                          render_mode,
-                         target_width=bg_width,
-                         target_height=bg_height)
+                         target_width=int(bg_width*1.05),
+                         target_height=int(bg_height*1.05))
         elif(self.unselected_bg is not None):
             Display.render_image(self.unselected_bg,
                          x_offset,
                          cell_y,
                          render_mode,
-                         target_width=bg_width,
-                         target_height=bg_height)
+                         target_width=int(bg_width*1.05),
+                         target_height=int(bg_height*1.05))
 
         self._render_primary_image(image_path,
                          x_offset,
@@ -188,9 +217,10 @@ class GridView(View):
 
         if (self.show_grid_text):
             if(self.rows == 1) : 
-                y_text = int(Device.screen_height() * 360/480)
+                y_text = int(Device.screen_height() * 310/480) + Theme.single_row_grid_text_y_offset()
             else:
-                y_text = bottom_row_y - text_height
+                y_text = bottom_row_y - text_height + Theme.multi_row_grid_text_y_offset()
+                
             Display.render_text(imageTextPair.get_primary_text(),
                                  x_offset,
                                  y_text,
@@ -208,7 +238,18 @@ class GridView(View):
             Display.clear(self.top_bar_text)
         self.correct_selected_for_off_list()
 
-        visible_options: List[GridOrListEntry] = self.options[self.current_left:self.current_right]
+        if(self.rows > 1):
+            visible_options: List[GridOrListEntry] = self.options[self.current_left:self.current_right]
+        else:
+            if self.current_left <= self.current_right:
+                # Normal contiguous window
+                visible_options = self.options[self.current_left:self.current_right]
+            else:
+                # Wrapped window: take end → wrap → beginning
+                visible_options = (
+                    self.options[self.current_left:] + 
+                    self.options[:self.current_right]
+                )
 
         for visible_index, imageTextPair in enumerate(visible_options):
             self._render_cell(visible_index=visible_index,imageTextPair=imageTextPair)

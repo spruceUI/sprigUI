@@ -13,6 +13,7 @@ from utils.py_ui_state import PyUiState
 from views.grid_or_list_entry import GridOrListEntry
 from views.selection import Selection
 from views.view_creator import ViewCreator
+from views.view_type import ViewType
 
 
 class GameSystemSelectMenu:
@@ -111,7 +112,12 @@ class GameSystemSelectMenu:
             "zxs": "ZX Spectrum"
         }
     
-    def __init__(self):
+    def __init__(self, app_menu, favorites_menu, collections_menu, recents_menu, settings_menu):
+        self.app_menu = app_menu
+        self.favorites_menu = favorites_menu
+        self.collections_menu = collections_menu
+        self.recents_menu = recents_menu
+        self.settings_menu = settings_menu
         self.game_utils : GameSystemUtils = Device.get_game_system_utils()
         self.rom_select_menu : GameSelectMenu = GameSelectMenu()
         self.use_emu_cfg = False
@@ -190,6 +196,95 @@ class GameSystemSelectMenu:
                return f"{len(roms)} games"  
         else:
             return f"{len(roms)} game"
+        
+    def game_system_selected(self, input_value, game_system : GameSystem):
+        if(ControllerInput.A == input_value):
+            PyUiState.set_last_system_selection(game_system.display_name)
+            return_value = self.rom_select_menu.run_rom_selection(game_system)
+            if(return_value is not None):
+                if(ControllerInput.B == return_value):
+                    PyUiState.set_in_game_selection_screen(None)
+                if(Theme.skip_main_menu()):
+                    return return_value
+        elif(ControllerInput.MENU == input_value):
+            return_value = self.game_system_select_menu_popup.run_popup_menu_selection(game_system)
+            if(return_value is not None):
+                return return_value
+
+    def run_extra(self, input_value, primary_text, run_function):
+        PyUiState.set_last_system_selection(primary_text)
+        if(ControllerInput.A == input_value):
+            PyUiState.set_in_game_selection_screen(True)
+            run_function()
+            PyUiState.set_in_game_selection_screen(False)
+
+    def get_main_menu_icon(self, name, backup):
+        preferred_path = Theme.get_system_icon(name)
+    
+        if(preferred_path is None):
+            return backup
+        return preferred_path
+
+    def get_main_menu_icon_selected(self, name, backup):
+        preferred_path = Theme.get_system_icon_selected(name)
+    
+        if(preferred_path is None):
+            return backup
+        return preferred_path
+
+    def add_extras_to_systems_list(self, systems_list):
+        if(Theme.skip_main_menu() and Theme.show_extras_in_system_select_menu()) or Theme.merge_main_menu_and_game_menu():
+            if(Theme.get_apps_enabled()):
+                systems_list.append(GridOrListEntry(
+                        primary_text="Apps",
+                        primary_text_long="Applications",
+                        image_path=self.get_main_menu_icon("apps",Theme.app()),
+                        image_path_selected=self.get_main_menu_icon_selected("apps",Theme.app_selected()),
+                        description = "Launch Applications",
+                        icon=None,
+                        value=lambda input_value: self.run_extra(input_value, "Apps",self.app_menu.run_app_selection)
+             ))        
+            if(Theme.get_favorites_enabled()):
+                systems_list.append(GridOrListEntry(
+                        primary_text="Favorites",
+                        primary_text_long="Favorites",
+                        image_path=self.get_main_menu_icon("favorites",Theme.favorite()),
+                        image_path_selected=self.get_main_menu_icon_selected("favorites",Theme.favorite_selected()),
+                        description = "Launch Favorites",
+                        icon=None,
+                        value=lambda input_value: self.run_extra(input_value, "Favorites", self.favorites_menu.run_rom_selection)
+                    ) )         
+            if(Theme.get_recents_enabled()):
+                systems_list.append(GridOrListEntry(
+                        primary_text="Recents",
+                        primary_text_long="Recents",
+                        image_path=self.get_main_menu_icon("recents",Theme.recent()),
+                        image_path_selected=self.get_main_menu_icon_selected("recents",Theme.recent_selected()),
+                        description = "Launch Recents",
+                        icon=None,
+                        value=lambda input_value: self.run_extra(input_value, "Recents", self.recents_menu.run_rom_selection)
+                    )  )
+            if(Theme.get_collections_enabled()):
+                systems_list.append(GridOrListEntry(
+                        primary_text="Collections",
+                        primary_text_long="Collections",
+                        image_path=self.get_main_menu_icon("collections",Theme.collection()),
+                        image_path_selected=self.get_main_menu_icon_selected("collections",Theme.collection_selected()),
+                        description = "Launch Collections",
+                        icon=None,
+                        value=lambda input_value: self.run_extra(input_value, "Collections", self.collections_menu.run_rom_selection)
+                    )          )    
+            if(Theme.get_settings_enabled() or Theme.merge_main_menu_and_game_menu()):
+                systems_list.append(GridOrListEntry(
+                        primary_text="Settings",
+                        primary_text_long="Settings",
+                        image_path=self.get_main_menu_icon("settings",Theme.settings()),
+                        image_path_selected=self.get_main_menu_icon_selected("settings",Theme.settings_selected()),
+                        description = "Launch Settings",
+                        icon=None,
+                        value=lambda input_value: self.settings_menu.show_menu() if ControllerInput.A == input_value else None
+                    )  )
+
 
     def build_system_list(self):
         systems_list = []
@@ -209,19 +304,22 @@ class GameSystemSelectMenu:
                     image_path_selected=image_path_selected,
                     description = lambda idx=index, gs=game_system: f"{gs.display_name} - {self.get_rom_count_text(gs)} - System {idx} of {total_count}",
                     icon=icon,
-                    value=game_system
+                    value=lambda input_value, game_system=game_system: self.game_system_selected(input_value, game_system)
                 )          
             systems_list.append(option)
-            if(game_system.display_name == PyUiState.get_last_system_selection()):
-                selected = Selection(option,None,index-1)
-        
+
+        self.add_extras_to_systems_list(systems_list)        
+
+        for entry in systems_list:
+            if(entry.get_primary_text() == PyUiState.get_last_system_selection()):
+                selected = Selection(entry,None,systems_list.index(entry))
+                break
         return systems_list, selected
 
     def run_system_selection(self) :
-
         if(self.selected is not None):
             if(PyUiState.get_in_game_selection_screen()):
-                return_value = self.rom_select_menu.run_rom_selection(self.selected.get_selection().get_value())
+                return_value = self.selected.get_selection().get_value()(ControllerInput.A)
                 if(return_value is not None):
                     if(ControllerInput.B == return_value):
                         PyUiState.set_in_game_selection_screen(None)
@@ -233,18 +331,38 @@ class GameSystemSelectMenu:
             
         view = None
         if(view is None):
+
             view = ViewCreator.create_view(
-                view_type=Theme.get_view_type_for_system_select_menu(),
-                top_bar_text=Language.games(), 
-                options=self.systems_list, 
-                cols=Theme.get_game_system_select_col_count(), 
-                rows=Theme.get_game_system_select_row_count(),
-                selected_index=self.selected.get_index(),
-                use_mutli_row_grid_select_as_backup_for_single_row_grid_select=Theme.get_system_select_show_sel_bg_grid_mode(),
-                hide_grid_bg=not Theme.get_system_select_show_sel_bg_grid_mode(),
-                show_grid_text=Theme.get_system_select_show_text_grid_mode(),
-                full_screen_grid_render_text_overlay=Theme.get_system_select_render_full_screen_grid_text_overlay()
-            )
+                        view_type=Theme.get_view_type_for_system_select_menu(),
+                        top_bar_text=Language.games(), 
+                        options=self.systems_list, 
+                        selected_index=self.selected.get_index(),
+                        cols=Theme.get_game_system_select_col_count(), 
+                        rows=Theme.get_game_system_select_row_count(),
+                        carousel_cols=Theme.get_game_system_select_carousel_col_count(),
+                        use_mutli_row_grid_select_as_backup_for_single_row_grid_select=Theme.get_system_select_show_sel_bg_grid_mode(),
+                        hide_grid_bg=not Theme.get_system_select_show_sel_bg_grid_mode(),
+                        show_grid_text=Theme.get_system_select_show_text_grid_mode(),
+                        full_screen_grid_render_text_overlay=Theme.get_system_select_render_full_screen_grid_text_overlay(),
+                        allow_scrolling_text=True, 
+                        #missing_image_path=Theme.get_missing_image_path(),
+                        full_screen_grid_resize_type=Theme.get_full_screen_grid_system_select_menu_resize_type(),
+                        grid_resized_width=Theme.get_grid_system_select_img_width(),
+                        grid_resized_height=Theme.get_grid_system_select_img_height(),
+                        image_resize_height_multiplier=None, #TODO?
+                        set_top_bar_text_to_selection=Theme.get_system_selection_set_top_bar_text(), 
+                        set_bottom_bar_text_to_selection=Theme.get_system_selection_set_bottom_bar_text(),
+                        grid_selected_bg=Theme.get_grid_system_selected_bg(),
+                        grid_resize_type=Theme.get_grid_system_selected_resize_type(),
+                        grid_img_y_offset=Theme.get_grid_system_img_y_offset(),
+                        carousel_selected_entry_width_percent=Theme.get_carousel_system_select_primary_img_width(),
+                        carousel_shrink_further_away=Theme.get_carousel_system_select_shrink_further_away(),
+                        carousel_sides_hang_off_edge=Theme.get_carousel_system_select_sides_hang_off(),
+                        carousel_x_pad=Theme.get_carousel_system_x_pad(),
+                        carousel_x_offset=Theme.get_carousel_system_external_x_offset(),
+                        carousel_fixed_width=Theme.get_carousel_system_fixed_width() if not Theme.get_carousel_system_use_percentage_mode() else None,
+                        grid_view_wrap_around_single_row=Theme.get_system_select_grid_wrap_around_single_row()
+                     )
         else:
             view.set_options(self.systems_list)
 
@@ -255,16 +373,8 @@ class GameSystemSelectMenu:
 
         while(not exit):
             self.selected = view.get_selection(accepted_inputs)
-            if(ControllerInput.A == self.selected.get_input()):
-                PyUiState.set_last_system_selection(self.selected.get_selection().get_value().display_name)
-                return_value = self.rom_select_menu.run_rom_selection(self.selected.get_selection().get_value())
-                if(return_value is not None):
-                    if(ControllerInput.B == return_value):
-                        PyUiState.set_in_game_selection_screen(None)
-                    if(Theme.skip_main_menu()):
-                        return return_value
-            elif(ControllerInput.MENU == self.selected.get_input()):
-                return_value = self.game_system_select_menu_popup.run_popup_menu_selection(self.selected.get_selection().get_value())
+            if(ControllerInput.A == self.selected.get_input() or ControllerInput.MENU == self.selected.get_input()):
+                return_value = self.selected.get_selection().get_value()(self.selected.get_input())
                 if(return_value is not None):
                     return return_value
             elif(ControllerInput.B == self.selected.get_input() and not Theme.skip_main_menu()):

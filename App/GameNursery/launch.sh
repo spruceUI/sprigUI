@@ -160,6 +160,7 @@ get_system_icon_from_theme() {
         "Game Boy family")  icon_name="gba";        emu_name="GBA" ;;
         "Game Tank")        icon_name="gametank";   emu_name="GAMETANK" ;;
         "NES")              icon_name="fc";         emu_name="FC" ;;
+        "SNES")             icon_name="sfc";        emu_name="SFC" ;;
         "Ports")            icon_name="ports";      emu_name="PORTS" ;;
         "ZX Spectrum")      icon_name="zxs";        emu_name="ZXS" ;;
         *) return 1 ;;
@@ -250,7 +251,7 @@ if ! is_config_valid; then construct_config; fi
 RESULT_FILE="/mnt/SDCARD/App/PyUI/selection.txt"
 rm -f "$RESULT_FILE"
 
-log_and_display_message "OPTION_LIST:$CONFIG_DIR"/nursery_config
+display_option_list "$CONFIG_DIR/nursery_config"
 
 while true; do
     if [ -f "$RESULT_FILE" ]; then
@@ -266,7 +267,7 @@ while true; do
             eval "$content"
             # Remove the file after running
             rm -f "$RESULT_FILE"
-            log_and_display_message "OPTION_LIST:$CONFIG_DIR"/nursery_config
+            display_option_list "$CONFIG_DIR/nursery_config"
         fi
     fi
 

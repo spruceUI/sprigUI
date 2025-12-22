@@ -10,7 +10,9 @@
       "display": "Retroarch Core",
       "options": [
         "uae4arm",
-        "puae2021"
+        "puae2021",
+        "puae",
+        "km_puae_xtreme_amped"
       ],
       "selected": "uae4arm",
       "overrides": {}

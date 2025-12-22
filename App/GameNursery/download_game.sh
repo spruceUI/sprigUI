@@ -47,9 +47,7 @@ rm -r ./* 2>/dev/null
 # attempt to download the game
 
 log_and_display_message "Now downloading $GAME_NAME!"
-if ! wget --quiet --no-check-certificate --output-document="$TMP_DIR/$ZIP_NAME" "$GAME_URL"; then
-	log_and_display_message "Unable to download $GAME_NAME from repository. Please try again later."
-    sleep 4
+if ! download_and_display_progress "$GAME_URL" "$TMP_DIR/$ZIP_NAME" "$GAME_NAME" "$TARGET_SIZE_BYTES"; then
 	exit 1
 fi
 

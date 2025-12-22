@@ -35,6 +35,23 @@ class ThemeSettingsMainMenu(ThemeSettingsMenuCommon):
             )
         )
 
+        option_list.append(
+            self.build_enabled_disabled_entry(
+                primary_text=Language.merge_main_menu_and_game_menu(),
+                get_value_func=Theme.merge_main_menu_and_game_menu,
+                set_value_func=Theme.set_merge_main_menu_and_game_menu
+            )
+        )
+
+        if(Theme.skip_main_menu()):
+            option_list.append(
+                self.build_enabled_disabled_entry(
+                    primary_text=Language.show_extras_in_system_select_menu(),
+                    get_value_func=Theme.show_extras_in_system_select_menu,
+                    set_value_func=Theme.set_show_extras_in_system_select_menu
+                )
+            )
+
         if(not Theme.skip_main_menu()):
             option_list.append(
                 self.build_view_type_entry(
@@ -59,7 +76,12 @@ class ThemeSettingsMainMenu(ThemeSettingsMenuCommon):
                         set_value_func=Theme.set_main_menu_show_text_grid_mode
                     )
                 )
-            
+                option_list.append(
+                    self.build_enabled_disabled_entry("Wrap-Around", 
+                        Theme.get_main_menu_grid_wrap_around_single_row, 
+                        Theme.set_main_menu_grid_wrap_around_single_row)
+                    )            
+        if(not Theme.skip_main_menu() or Theme.show_extras_in_system_select_menu()):
             option_list.append(
                 self.build_enabled_disabled_entry(
                     primary_text=Language.show_recents(),

@@ -90,8 +90,8 @@ class ThemeSettingsGameSelectMenu(ThemeSettingsMenuCommon):
         option_list.append(
             self.build_numeric_entry(
                 primary_text=Language.cols(),
-                get_value_func=Theme.get_game_select_col_count,
-                set_value_func=Theme.set_game_select_col_count
+                get_value_func=Theme.get_game_select_carousel_col_count,
+                set_value_func=Theme.set_game_select_carousel_col_count
             )
         )
         option_list.append(
@@ -107,7 +107,7 @@ class ThemeSettingsGameSelectMenu(ThemeSettingsMenuCommon):
                 Theme.get_set_top_bar_text_to_game_selection,
                 Theme.set_set_top_bar_text_to_game_selection)
         )
-        if (Theme.get_game_select_col_count() > 3):
+        if (Theme.get_game_select_carousel_col_count() > 3):
             option_list.append(
                 self.build_enabled_disabled_entry(
                     primary_text=Language.shrink_further_away(),

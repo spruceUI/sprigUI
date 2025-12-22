@@ -1,9 +1,13 @@
 
 import os
+import sys
 from controller.controller_inputs import ControllerInput
 from devices.device import Device
 from display.display import Display
 from games.utils.game_system import GameSystem
+from menus.games.utils.collections_manager import CollectionsManager
+from menus.games.utils.favorites_manager import FavoritesManager
+from menus.games.utils.recents_manager import RecentsManager
 from menus.games.utils.rom_info import RomInfo
 from menus.games.utils.rom_select_options_builder import get_rom_select_options_builder
 from utils.logger import PyUiLogger
@@ -93,7 +97,7 @@ class GameConfigMenu:
                     update_value(entry_name, all_options[selected_index])
 
     def toggle_overridable_entries(self,input_value, rom_file_path, overridable_entries):
-        if(ControllerInput.A == input):
+        if(ControllerInput.A == input_value):
             all_overriden = True
             for entry_name in overridable_entries:
                 if not self.game_system.game_system_config.contains_menu_override(entry_name,rom_file_path):
@@ -136,6 +140,11 @@ class GameConfigMenu:
                 os.remove(self.game.rom_file_path)
                 self.perform_boxart_deletion()
                 Display.display_message(f"{self.game.rom_file_path} deleted.",2000)
+                FavoritesManager.remove_favorite(self.game)
+                RecentsManager.remove_game(self.game)
+                CollectionsManager.remove_game_from_collections(self.game)
+                #TODO don't be hackish and reload. Instead remove it from caches
+                sys.exit()
     
     def perform_boxart_deletion(self):
         PyUiLogger.get_logger().info(f"Deleting boxart for {self.game.rom_file_path}")
@@ -223,17 +232,13 @@ class GameConfigMenu:
                         )
 
             if(not Device.get_system_config().simple_mode_enabled()):
-                # Might add back in later, makes it annoying as we would
-                # need to invalidate system caches. Just delete in dingux?
-                if(False):
-                    config_list.append(
-                        GridOrListEntry(
-                            primary_text=Language.delete_rom(),
-                            value=lambda input_value
-                                    : self.delete_rom(input_value)
-                        )
-                    )                
-                # What about this one?
+                config_list.append(
+                    GridOrListEntry(
+                        primary_text=Language.delete_rom(),
+                         value=lambda input_value
+                                 : self.delete_rom(input_value)
+                    )
+                )                
                 config_list.append(
                     GridOrListEntry(
                         primary_text=Language.delete_boxart(),

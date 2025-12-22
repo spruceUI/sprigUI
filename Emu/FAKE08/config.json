@@ -5,7 +5,17 @@
   "launch": "../.emu_setup/standard_launch.sh",
   "extlist": "p8|png",
   "launchlist": [],
-  "menuOptions": {},
+  "menuOptions": {
+    "Emulator": {
+      "display": "Retroarch Core",
+      "options": [
+        "fake08",
+        "retro8"
+      ],
+      "selected": "fake08",
+      "overrides": {}
+    }
+  },
   "sortOrder": 2200,
   "brand": "modernengine",
   "type": "fantasy",

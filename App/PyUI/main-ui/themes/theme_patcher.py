@@ -3,7 +3,6 @@ import os
 import shutil
 import time
 from devices.device import Device
-from display.font_purpose import FontPurpose
 from utils.logger import PyUiLogger
 
 
@@ -12,7 +11,13 @@ class ThemePatcher():
     # Add properties you want to scale (case-sensitive)
     SCALABLE_KEYS = {"grid1x4","grid3x4","FontSize","gameSelectImgWidth","gameSelectImgHeight","gridGameSelectImgWidth",
                      "gridGameSelectImgHeight","listGameSelectImgWidth","listGameSelectImgHeight","gridMultiRowSelBgResizePadWidth",
-                     "gridMultiRowSelBgResizePadHeight","gridMultiRowExtraYPad", "topBarInitialXOffset"}
+                     "gridMultiRowSelBgResizePadHeight","gridMultiRowExtraYPad", "topBarInitialXOffset","gridMultiRowImageYOffset",
+                     "singleRowGridTextYOffset","multiRowGridTextYOffset","carouselSystemXPad",
+                     "gridSystemImageYOffset","gridSystemSelectImgWidth","listSystemSelectImgWidth","carouselSystemSelectPrimaryImgWidth",
+                     "gridSystemSelectImgHeight","listSystemSelectImgHeight"}
+    WIDTH_SCALABLE_KEYS = {"gameSystemSelectColCount","carouselSystemExternalXPad",
+                           "carouselSystemFixedWidth","mainMenuColCount","gameSelectColCount"}
+    HEIGHT_SCALABLE_KEYS = {"gameSystemSelectRowCount", "gameSelectRowCount"}
 
     @classmethod
     def convert_to_qoi(cls, path):
@@ -68,7 +73,11 @@ class ThemePatcher():
         from display.display import Display
         try:
             background_image = os.path.join(path, "skin","background.png")
+            if(not os.path.exists(background_image)):
+                background_image = os.path.join(path, "skin","background.qoi")
+
             theme_width, theme_height = Display.get_image_dimensions(background_image)
+            PyUiLogger.get_logger().debug(f"Theme background size: {theme_width}x{theme_height}, Target size: {target_width}x{target_height}")
             if(theme_width != 0 and theme_width != target_width):
                 cls.scale_theme(path, theme_width, theme_height, target_width, target_height)
             return True
@@ -82,6 +91,14 @@ class ThemePatcher():
         scale_width = target_width / theme_width
         scale_height = target_height / theme_height
         scale = min(scale_width, scale_height)
+        # TODO care about height multiplier at some point
+        if(scale_width > scale_height):
+            width_multiplier = ((scale_width-scale_height) / scale_height) + 1
+            height_multiplier = 1.0
+        else:
+            height_multiplier = ((scale_height-scale_width) / scale_width) + 1
+            width_multiplier = 1.0  
+
         PyUiLogger().get_logger().info(f"Patching theme {config_path} from {theme_width}x{theme_height} to {target_width}x{target_height} w/ a scale factor of {scale}")
 
         Display.clear("Theme Patch")
@@ -105,14 +122,17 @@ class ThemePatcher():
         ])
         Display.present()
 
-        cls.patch_folder(os.path.join(config_path,"icons"),
-                     os.path.join(config_path,f"icons_{target_width}x{target_height}"),
-                     scale,
-                     theme_width, theme_height, target_width, target_height)
+        if(os.path.exists(os.path.join(config_path,"icons"))):
+            cls.patch_folder(os.path.join(config_path,"icons"),
+                        os.path.join(config_path,f"icons_{target_width}x{target_height}"),
+                        scale,
+                        theme_width, theme_height, target_width, target_height)
     
         cls.scale_config_json(os.path.join(config_path,"config.json"),
                      os.path.join(config_path,f"config_{target_width}x{target_height}.json"),
-                     scale)
+                     scale,
+                     width_multiplier,
+                     height_multiplier)
 
     @classmethod
     def patch_folder(cls, input_folder, output_folder, scale, theme_width, theme_height, target_width, target_height):
@@ -141,43 +161,45 @@ class ThemePatcher():
 
     @staticmethod
     def scale_image(input_file, output_file, scale, theme_width, theme_height, target_width, target_height):
-
-        image_utils = Device.get_image_utils()
-        try:
-            img_width ,img_height = image_utils.get_image_dimensions(input_file)
-            new_width = int(img_width * scale)
-            new_height = int(img_height * scale)
-            preserve_aspect_ratio = True
-
-            if(img_width == theme_width and img_height != theme_height):
-                new_width = target_width
-                preserve_aspect_ratio = False
-
-            if(img_height == theme_height and img_width != theme_width):
-                new_height = target_height
-                preserve_aspect_ratio = False
-
-            image_utils.resize_image(input_file, output_file, new_width, new_height,preserve_aspect_ratio=preserve_aspect_ratio)
-
-            if not os.path.exists(output_file):
-                # Means non image -- should this be raised as an error as part of resize?
-                shutil.copyfile(input_file, output_file)
-
-        except Exception as e:
-            # Copy the file instead of scaling if something fails
+        if os.path.exists(output_file):
+            PyUiLogger().get_logger().info(f"Scaled version of {output_file} already exists, skipping scaling.")
+        else:
+            image_utils = Device.get_image_utils()
             try:
-                shutil.copyfile(input_file, output_file)
-                PyUiLogger().get_logger().warning(f"Scaling failed for {input_file}, copied original instead: {e}")
-            except Exception as copy_err:
-                PyUiLogger().get_logger().exception(f"Failed to copy {input_file} to {output_file}: {copy_err}")    
+                img_width ,img_height = image_utils.get_image_dimensions(input_file)
+                new_width = int(img_width * scale)
+                new_height = int(img_height * scale)
+                preserve_aspect_ratio = True
+
+                if(img_width == theme_width and img_height != theme_height):
+                    new_width = target_width
+                    preserve_aspect_ratio = False
+
+                if(img_height == theme_height and img_width != theme_width):
+                    new_height = target_height
+                    preserve_aspect_ratio = False
+
+                image_utils.resize_image(input_file, output_file, new_width, new_height,preserve_aspect_ratio=preserve_aspect_ratio)
+
+                if not os.path.exists(output_file):
+                    # Means non image -- should this be raised as an error as part of resize?
+                    shutil.copyfile(input_file, output_file)
+
+            except Exception as e:
+                # Copy the file instead of scaling if something fails
+                try:
+                    shutil.copyfile(input_file, output_file)
+                    PyUiLogger().get_logger().warning(f"Scaling failed for {input_file}, copied original instead: {e}")
+                except Exception as copy_err:
+                    PyUiLogger().get_logger().exception(f"Failed to copy {input_file} to {output_file}: {copy_err}")    
                         
     @classmethod
-    def scale_config_json(cls, config_path, output_config_path, scale):
+    def scale_config_json(cls, config_path, output_config_path, scale, width_multiplier, height_multiplier):
         try:
             with open(config_path, 'r') as f:
                 config = json.load(f)
 
-            scaled_config = cls._scale_json_values(config, scale)
+            scaled_config = cls._scale_json_values(config, scale, width_multiplier, height_multiplier)
 
             os.makedirs(os.path.dirname(output_config_path), exist_ok=True)
             with open(output_config_path, 'w') as f:
@@ -188,14 +210,27 @@ class ThemePatcher():
             PyUiLogger().get_logger().exception(f"Failed to process JSON config {config_path}: {e}")    
 
     @classmethod
-    def _scale_json_values(cls, obj, scale):
+    def _scale_json_values(cls, obj, scale, width_multiplier, height_multiplier):
         if isinstance(obj, dict):
-            return {
-                k: cls._scale_json_values(v, scale) if not cls._should_scale_key(k) else cls._scale_if_number(v, scale)
-                for k, v in obj.items()
-            }
+            new_dict = {}
+            for k, v in obj.items():
+
+                if cls._should_scale_based_on_width(k):
+                    new_dict[k] = cls._scale_if_number(v, width_multiplier)
+
+                elif cls._should_scale_based_on_height(k):
+                    new_dict[k] = cls._scale_if_number(v, height_multiplier)  
+                elif cls._should_scale_key(k):
+                    new_dict[k] = cls._scale_if_number(v, scale)
+
+                else:
+                    new_dict[k] = cls._scale_json_values(v, scale, width_multiplier, height_multiplier)
+
+            return new_dict
+
         elif isinstance(obj, list):
-            return [cls._scale_json_values(i, scale) for i in obj]
+            return [cls._scale_json_values(i, scale, width_multiplier, height_multiplier) for i in obj]
+
         else:
             return obj
 
@@ -208,6 +243,28 @@ class ThemePatcher():
             PyUiLogger.get_logger().info(f"Not scaling {key}")
         return should_scale
 
+    @classmethod
+    def _should_scale_based_on_width(cls, key):
+        should_scale = key in cls.WIDTH_SCALABLE_KEYS 
+        if(should_scale):
+            PyUiLogger.get_logger().info(f"Width Scaling {key}")
+        else:
+            PyUiLogger.get_logger().info(f"Not scaling {key}")
+        return should_scale
+    
+    @classmethod
+    def _should_scale_based_on_height(cls, key):
+        should_scale = key in cls.HEIGHT_SCALABLE_KEYS 
+        if(should_scale):
+            PyUiLogger.get_logger().info(f"Height Scaling {key}")
+        else:
+            PyUiLogger.get_logger().info(f"Not scaling {key}")
+        return should_scale
+    
+    
+
     @staticmethod
     def _scale_if_number(value, scale):
         return int(value * scale) if isinstance(value, (int, float)) else value
+    
+    

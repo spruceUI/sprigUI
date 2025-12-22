@@ -61,7 +61,7 @@ class TopBar:
             x_offset = x_offset - w - img_padding
 
         #Wifi
-        if(Device.supports_wifi()):
+        if(Device.supports_wifi() and Device.is_wifi_enabled()):
             wifi_status = Device.get_wifi_status()
             wifi_icon = Theme.get_wifi_icon(wifi_status)
             w, h = Display.render_image(wifi_icon,x_offset,center_of_bar, RenderMode.MIDDLE_RIGHT_ALIGNED)
@@ -69,7 +69,12 @@ class TopBar:
  
         #Volume
         if(time.time() - self.volume_changed_time < 3 and Device.supports_volume()):
-            Display.render_image(Theme.get_volume_indicator(self.volume),x_offset,center_of_bar, RenderMode.MIDDLE_RIGHT_ALIGNED)
+            if(Theme.display_volume_numbers()):
+                w, h = Display.render_text(str(self.volume),x_offset, center_of_bar,  Theme.text_color(FontPurpose.BATTERY_PERCENT), FontPurpose.BATTERY_PERCENT, RenderMode.MIDDLE_RIGHT_ALIGNED)
+                x_offset = x_offset - w  #Don't padd the number from the icon
+            w, h = Display.render_image(Theme.get_volume_indicator(self.volume),x_offset,center_of_bar, RenderMode.MIDDLE_RIGHT_ALIGNED)
+            x_offset = x_offset - w - img_padding
+
 
     def render_top_bar_menu_not_skipped(self, title, hide_top_bar_icons = False) :
         from display.display import Display
@@ -85,7 +90,8 @@ class TopBar:
             self.top_bar_w = max(self.top_bar_w, text_w)
             self.top_bar_h = max(self.top_bar_h, text_h)
 
-        if(Device.supports_wifi()):
+        wifi_icon = None
+        if(Device.supports_wifi() and Device.is_wifi_enabled()):
             wifi_status = Device.get_wifi_status()
             wifi_icon = Theme.get_wifi_icon(wifi_status)
             wifi_w, wifi_h = Display.get_image_dimensions(wifi_icon)
@@ -113,15 +119,19 @@ class TopBar:
                     battery_icon ,x_offset,center_of_bar,RenderMode.MIDDLE_RIGHT_ALIGNED)
                 x_offset = x_offset - w - padding
 
-            if(Device.supports_wifi()):
+            if(wifi_icon is not None):
                 #Wifi
                 w, h = Display.render_image(wifi_icon,x_offset,center_of_bar, RenderMode.MIDDLE_RIGHT_ALIGNED)
                 x_offset = x_offset - w - padding
                 #Volume
             if(time.time() - self.volume_changed_time < 3):
-                Display.render_image(Theme.get_volume_indicator(self.volume),x_offset,center_of_bar, RenderMode.MIDDLE_RIGHT_ALIGNED)
+                if(Theme.display_volume_numbers()):
+                    w, h = Display.render_text(str(self.volume),x_offset, center_of_bar,  Theme.text_color(FontPurpose.BATTERY_PERCENT), FontPurpose.BATTERY_PERCENT, RenderMode.MIDDLE_RIGHT_ALIGNED)
+                    x_offset = x_offset - w - padding
+                w,h = Display.render_image(Theme.get_volume_indicator(self.volume),x_offset,center_of_bar, RenderMode.MIDDLE_RIGHT_ALIGNED)
+                x_offset = x_offset - w - padding
 
-            if(PyUiConfig.show_clock()):   
+            if(Theme.show_clock()):   
                 x_offset = Theme.get_top_bar_initial_x_offset()
                 w, h = Display.render_text(str(self.get_current_time_hhmm()),x_offset, center_of_bar,  Theme.text_color(FontPurpose.BATTERY_PERCENT), FontPurpose.BATTERY_PERCENT, RenderMode.MIDDLE_LEFT_ALIGNED)
                 x_offset += w +padding

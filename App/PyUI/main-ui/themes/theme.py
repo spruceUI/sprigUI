@@ -1,13 +1,11 @@
 import json
-import logging
 import os
-import subprocess
 import sys
 import traceback
+from turtle import color
 
 from devices.charge.charge_status import ChargeStatus
 from devices.device import Device
-from devices.utils.process_runner import ProcessRunner
 from devices.wifi.wifi_status import WifiStatus
 from display.font_purpose import FontPurpose
 from display.resize_type import ResizeType
@@ -51,8 +49,8 @@ class Theme():
         cls._load_from_file(os.path.join(path, config_path))
 
         cls._path = path
-        cls._skin_folder = cls._get_asset_folder("skin", width, height)
-        cls._icon_folder = cls._get_asset_folder("icons", width, height)
+        cls._skin_folder = cls._get_asset_folder(cls._path, "skin", width, height)
+        cls._icon_folder = cls._get_asset_folder(cls._path, "icons", width, height)
         daijisho_theme_index_file = os.path.join(cls._path, cls._icon_folder,"index.json")
         if os.path.exists(daijisho_theme_index_file):
             try:
@@ -134,17 +132,17 @@ class Theme():
         cls._load_from_file(os.path.join(path, "config.json"))
 
         cls._path = path
-        cls._skin_folder = cls._get_asset_folder("skin", -1, -1)
-        cls._icon_folder = cls._get_asset_folder("icons", -1, -1)
+        cls._skin_folder = cls._get_asset_folder(cls._path,"skin", -1, -1)
+        cls._icon_folder = cls._get_asset_folder(cls._path,"icons", -1, -1)
 
     @classmethod
     def get_theme_path(cls):
         return cls._path
 
     @classmethod
-    def _get_asset_folder(cls, base_folder, width, height):
+    def _get_asset_folder(cls, path, base_folder, width, height):
         folder = f"{base_folder}_{width}x{height}"
-        full_path = os.path.join(cls._path, folder)
+        full_path = os.path.join(path, folder)
         if os.path.isdir(full_path):
             #PyUiLogger.get_logger().info(f"Resolution specific assets found, using {folder}")
             return folder
@@ -181,9 +179,20 @@ class Theme():
         PyUiLogger.get_logger().info(f"Wrote Theme : {cls._data.get('description', 'UNKNOWN')}")
         from display.display import Display
         Display.clear_cache()
+    
         
     @classmethod
-    def _resolve_file(cls, base_folder, parts):
+    def _resolve_png_path(cls, base_folder, parts):
+        path = os.path.join(cls._path, base_folder, *parts)
+
+        if path.endswith(".qoi"):
+            png_path = path[:-4] + ".png"
+            return png_path
+
+        return path
+        
+    @classmethod
+    def _resolve_file(cls, base_folder, parts, cache_missing=True):
         """
         Shared resolver:
         - Checks full path
@@ -214,12 +223,13 @@ class Theme():
                 return tga_path
 
         # Nothing found
-        cls._asset_cache[key] = None
+        if(cache_missing):
+            cls._asset_cache[key] = None
         return None
 
     @classmethod
-    def _asset(cls, *parts):
-        return cls._resolve_file(cls._skin_folder, parts)
+    def _asset(cls, *parts, cache_missing=True):
+        return cls._resolve_file(cls._skin_folder, parts, cache_missing)
 
     @classmethod
     def _icon(cls, *parts):
@@ -308,10 +318,27 @@ class Theme():
     def get_list_large_selected_bg(cls): return cls._asset("bg-list-l.qoi")
    
     @classmethod
-    def menu_popup_bg_large(cls): return cls._asset("bg-pop-menu-4.qoi")
-    
+    def menu_popup_bg_large(cls): 
+        menu_selected_bg = cls._asset("bg-pop-menu-4.qoi", cache_missing=False)
+        if(menu_selected_bg is None):
+            cls.create_bg_pop_menu_4()
+        return cls._asset("bg-pop-menu-4.qoi")
+
     @classmethod
-    def keyboard_bg(cls): return cls._asset("bg-grid-s.qoi")
+    def create_bg_pop_menu_4(cls):  
+        #Background isn't the best but its the only one that often doesnt have transparency on the bottom
+        input_image = cls._resolve_png_path(cls._skin_folder,["background.png"])
+        output_image = cls._resolve_png_path(cls._skin_folder,["bg-pop-menu-4.png"])
+        PyUiLogger.get_logger().info(f"Creating resized {output_image} from {input_image}")      
+        Device.get_image_utils().resize_image(input_image,
+                                              output_image,
+                                              320,
+                                              240,
+                                              preserve_aspect_ratio=False)
+ 
+    @classmethod
+    def keyboard_bg(cls): 
+        return cls._asset("bg-grid-s.qoi")
     
     @classmethod
     def keyboard_entry_bg(cls): return cls._asset("bg-list-l.qoi")
@@ -326,7 +353,22 @@ class Theme():
     def get_list_small_selected_bg(cls): return cls._asset("bg-list-s.qoi")
     
     @classmethod
-    def get_popup_menu_selected_bg(cls): return cls._asset("bg-list-s2.qoi")
+    def create_bg_list_s2(cls):  
+        input_image = cls._resolve_png_path(cls._skin_folder,["bg-list-s.png"])
+        output_image = cls._resolve_png_path(cls._skin_folder,["bg-list-s2.png"])
+        PyUiLogger.get_logger().info(f"Creating resized {output_image} from {input_image}")      
+        Device.get_image_utils().resize_image(input_image,
+                                              output_image,
+                                              320,
+                                              60,
+                                              preserve_aspect_ratio=False)
+
+    @classmethod
+    def get_popup_menu_selected_bg(cls): 
+        menu_selected_bg = cls._asset("bg-list-s2.qoi", cache_missing=False)
+        if(menu_selected_bg is None):
+            cls.create_bg_list_s2()
+        return cls._asset("bg-list-s2.qoi")
     
     @classmethod
     def get_missing_image_path(cls): return cls._asset("missing_image.qoi")
@@ -391,6 +433,10 @@ class Theme():
     @classmethod
     def get_grid_game_selected_bg(cls):
         return cls._asset("grid-game-selected.qoi")
+
+    @classmethod
+    def get_grid_system_selected_bg(cls):
+        return cls._asset("grid-system-selected.qoi")
 
     @classmethod
     def get_system_icon(cls, system):
@@ -635,8 +681,11 @@ class Theme():
                     return cls.hex_to_color(cls._data["grid"]["selectedcolor"])
                 case FontPurpose.LIST | FontPurpose.DESCRIPTIVE_LIST_TITLE | FontPurpose.DESCRIPTIVE_LIST_DESCRIPTION:
                     if(cls._data.get("list") and cls._data.get("list").get("selectedcolor")):
-                        return cls.hex_to_color(cls._data.get("list").get("selectedcolor"))
+                        color = cls.hex_to_color(cls._data.get("list").get("selectedcolor"))
+                        #PyUiLogger.get_logger().error(f"list selected color is {color}")                        
+                        return color
                     else:
+                        #PyUiLogger.get_logger().error(f"list selectedcolor not found, using grid")
                         return cls.hex_to_color(cls._data["grid"]["selectedcolor"])
                 case FontPurpose.MESSAGE:
                     return cls.hex_to_color(cls._data["grid"]["selectedcolor"])
@@ -697,6 +746,24 @@ class Theme():
     @classmethod
     def set_system_select_show_sel_bg_grid_mode(cls, value):
         cls._data["systemSelectShowSelectedBgGridMode"] = value
+        cls.save_changes()
+
+    @classmethod
+    def get_system_selection_set_top_bar_text(cls):
+        return cls._data.get("systemSelectionSetTopBarText", False)
+    
+    @classmethod
+    def set_system_selection_set_top_bar_text(cls, value):
+        cls._data["systemSelectionSetTopBarText"] = value
+        cls.save_changes()
+
+    @classmethod
+    def get_system_selection_set_bottom_bar_text(cls):
+        return cls._data.get("systemSelectionSetBottomBarText", False)
+    
+    @classmethod
+    def set_system_selection_set_bottom_bar_text(cls, value):
+        cls._data["systemSelectionSetBottomBarText"] = value
         cls.save_changes()
 
     @classmethod
@@ -798,12 +865,67 @@ class Theme():
         cls.save_changes()
 
     @classmethod
+    def get_grid_system_selected_resize_type(cls):
+        view_type_str = cls._data.get("systemSelectGridResizeType", "NONE")
+        return getattr(ResizeType, view_type_str, ResizeType.NONE)
+
+    @classmethod
+    def set_grid_system_selected_resize_type(cls, view_type):
+        cls._data["systemSelectGridResizeType"] = view_type.name
+        cls.save_changes()
+
+    @classmethod
     def get_grid_game_img_y_offset(cls):
         return cls._data.get("gridGameImageYOffset", 0)
 
     @classmethod
     def set_grid_game_img_y_offset(cls, value):
         cls._data["gridGameImageYOffset"] = value
+        cls.save_changes()
+
+    @classmethod
+    def get_grid_system_img_y_offset(cls):
+        return cls._data.get("gridSystemImageYOffset", 0)
+
+    @classmethod
+    def set_grid_system_img_y_offset(cls, value):
+        cls._data["gridSystemImageYOffset"] = value
+        cls.save_changes()
+
+    @classmethod
+    def get_carousel_system_x_pad(cls):
+        return cls._data.get("carouselSystemXPad", 0)
+
+    @classmethod
+    def set_carousel_system_x_pad(cls, value):
+        cls._data["carouselSystemXPad"] = value
+        cls.save_changes()
+
+    @classmethod
+    def get_carousel_system_external_x_offset(cls):
+        return cls._data.get("carouselSystemExternalXPad", 0)
+
+    @classmethod
+    def set_carousel_system_external_x_offset(cls, value):
+        cls._data["carouselSystemExternalXPad"] = value
+        cls.save_changes()
+
+    @classmethod
+    def get_carousel_system_use_percentage_mode(cls):
+        return cls._data.get("carouselSystemUsePercentageMode", True)
+
+    @classmethod
+    def set_carousel_system_use_percentage_mode(cls, value):
+        cls._data["carouselSystemUsePercentageMode"] = value
+        cls.save_changes()
+
+    @classmethod
+    def get_carousel_system_fixed_width(cls):
+        return cls._data.get("carouselSystemFixedWidth", 100)
+
+    @classmethod
+    def set_carousel_system_fixed_width(cls, value):
+        cls._data["carouselSystemFixedWidth"] = value
         cls.save_changes()
 
     @classmethod
@@ -822,6 +944,16 @@ class Theme():
     @classmethod
     def set_game_system_select_col_count(cls, count):
         cls._data["gameSystemSelectColCount"] = count
+        cls.save_changes()
+
+
+    @classmethod
+    def get_game_system_select_carousel_col_count(cls):
+        return cls._data.get("gameSystemSelectCarouselColCount", cls.get_game_system_select_col_count())
+    
+    @classmethod
+    def set_game_system_select_carousel_col_count(cls, count):
+        cls._data["gameSystemSelectCarouselColCount"] = count
         cls.save_changes()
 
     @classmethod
@@ -877,7 +1009,7 @@ class Theme():
 
     @classmethod
     def get_main_menu_column_count(cls):
-        return cls._data.get("mainMenuColCount", 4)
+        return cls._data.get("mainMenuColCount", int(4 * cls.width_multiplier))
 
     @classmethod
     def set_main_menu_column_count(cls, count):
@@ -943,7 +1075,9 @@ class Theme():
         cls.save_changes()
 
     @classmethod
-    def get_game_select_col_count(cls):
+    def get_game_select_col_count(cls, default_value=None):
+        if default_value is not None:
+            return cls._data.get("gameSelectColCount", default_value)
         return cls._data.get("gameSelectColCount", int(4*cls.width_multiplier)) 
 
     @classmethod
@@ -952,8 +1086,16 @@ class Theme():
         cls.save_changes()
 
     @classmethod
+    def get_game_select_carousel_col_count(cls):
+        return cls._data.get("gameSelectCarouselColCount", cls.get_game_select_col_count(int(3*cls.width_multiplier))) 
+
+    @classmethod
+    def set_game_select_carousel_col_count(cls, value):
+        cls._data["gameSelectCarouselColCount"] = value
+        cls.save_changes()
+
+    @classmethod
     def get_game_select_img_width(cls):
-        from devices.device import Device
         return cls._data.get("gameSelectImgWidth", int(320 * cls._default_multiplier))
     
     @classmethod
@@ -980,12 +1122,39 @@ class Theme():
         cls.save_changes()
 
     @classmethod
+    def get_grid_system_select_img_width(cls):
+        return cls._data.get("gridSystemSelectImgWidth", int(cls._grid_game_default_size * cls._default_multiplier))
+    
+    @classmethod
+    def set_grid_system_select_img_width(cls, value):
+        cls._data["gridSystemSelectImgWidth"] = value
+        cls.save_changes()
+
+    @classmethod
+    def get_list_system_select_img_width(cls):
+        return cls._data.get("listSystemSelectImgWidth", cls.get_game_select_img_width())
+    
+    @classmethod
+    def set_list_system_select_img_width(cls, value):
+        cls._data["listSystemSelectImgWidth"] = value
+        cls.save_changes()
+
+    @classmethod
     def get_carousel_game_select_primary_img_width(cls):
-        return cls._data.get("carouselGameSelectPrimaryImgWidth", 40)
+        return cls._data.get("carouselGameSelectPrimaryImgWidth", 50)
     
     @classmethod
     def set_carousel_game_select_primary_img_width(cls, value):
         cls._data["carouselGameSelectPrimaryImgWidth"] = value
+        cls.save_changes()
+
+    @classmethod
+    def get_carousel_system_select_primary_img_width(cls):
+        return cls._data.get("carouselSystemSelectPrimaryImgWidth", 40)
+    
+    @classmethod
+    def set_carousel_system_select_primary_img_width(cls, value):
+        cls._data["carouselSystemSelectPrimaryImgWidth"] = value
         cls.save_changes()
 
     @classmethod
@@ -998,17 +1167,34 @@ class Theme():
         cls.save_changes()
 
     @classmethod
+    def get_carousel_system_select_shrink_further_away(cls):
+        return cls._data.get("carouselSystemSelectShrinkFurtherAway", False)
+    
+    @classmethod
+    def set_carousel_system_select_shrink_further_away(cls, value):
+        cls._data["carouselSystemSelectShrinkFurtherAway"] = value
+        cls.save_changes()
+
+    @classmethod
     def get_carousel_game_select_sides_hang_off(cls):
-        return cls._data.get("carouselGameSelectSidesHangOff", True)
+        return cls._data.get("carouselGameSelectSidesHangOff", False)
 
     @classmethod
     def set_carousel_game_select_sides_hang_off(cls, value):
         cls._data["carouselGameSelectSidesHangOff"] = value
+        cls.save_changes()   
+
+    @classmethod
+    def get_carousel_system_select_sides_hang_off(cls):
+        return cls._data.get("carouselSystemSelectSidesHangOff", True)
+
+    @classmethod
+    def set_carousel_system_select_sides_hang_off(cls, value):
+        cls._data["carouselSystemSelectSidesHangOff"] = value
         cls.save_changes()    
 
     @classmethod
     def get_game_select_img_height(cls):
-        from devices.device import Device
         return cls._data.get("gameSelectImgHeight", int(300 * cls._default_multiplier))
     
     @classmethod
@@ -1035,6 +1221,24 @@ class Theme():
         cls.save_changes()
 
     @classmethod
+    def get_grid_system_select_img_height(cls):
+        return cls._data.get("gridSystemSelectImgHeight", int(cls._grid_game_default_size * cls._default_multiplier))
+    
+    @classmethod
+    def set_grid_system_select_img_height(cls, value):
+        cls._data["gridSystemSelectImgHeight"] = value
+        cls.save_changes()
+
+    @classmethod
+    def get_list_system_select_img_height(cls):
+        return cls._data.get("listSystemSelectImgHeight", cls.get_game_select_img_height())
+    
+    @classmethod
+    def set_list_system_select_img_height(cls, value):
+        cls._data["listSystemSelectImgHeight"] = value
+        cls.save_changes()
+
+    @classmethod
     def get_set_top_bar_text_to_game_selection(cls):
         return cls._data.get("setTopBarTextToGameSelection", False)
     
@@ -1044,12 +1248,53 @@ class Theme():
         cls.save_changes()
 
     @classmethod
+    def get_system_select_grid_wrap_around_single_row(cls):
+        return cls._data.get("systemSelectGridWrapAroundSingleRow", True)
+    
+    @classmethod
+    def set_system_select_grid_wrap_around_single_row(cls, value):
+        cls._data["systemSelectGridWrapAroundSingleRow"] = value
+        cls.save_changes()
+        
+    @classmethod
+    def set_set_top_bar_text_to_game_selection(cls, value):
+        cls._data["setTopBarTextToGameSelection"] = value
+        cls.save_changes()
+
+    @classmethod
+    def get_main_menu_grid_wrap_around_single_row(cls):
+        return cls._data.get("mainMenuGridWrapAroundSingleRow", False)
+    
+    @classmethod
+    def set_main_menu_grid_wrap_around_single_row(cls, value):
+        cls._data["mainMenuGridWrapAroundSingleRow"] = value
+        cls.save_changes()
+
+    @classmethod
     def skip_main_menu(cls):
         return cls._data.get("skipMainMenu", False)
-    
+
     @classmethod
     def set_skip_main_menu(cls, value):
         cls._data["skipMainMenu"] = value
+        cls.save_changes()
+
+    @classmethod
+    def merge_main_menu_and_game_menu(cls):
+        return cls._data.get("mergeMainMenuAndGameMenu", False)
+
+    @classmethod
+    def set_merge_main_menu_and_game_menu(cls, value):
+        cls._data["mergeMainMenuAndGameMenu"] = value
+        cls.save_changes()
+
+    @classmethod
+    def show_extras_in_system_select_menu(cls):
+        return cls._data.get("showExtrasInSystemSelectMenu", False)
+
+    @classmethod
+    def set_show_extras_in_system_select_menu(cls, value):
+        cls._data["showExtrasInSystemSelectMenu"] = value
         cls.save_changes()
 
     @classmethod
@@ -1080,12 +1325,21 @@ class Theme():
         cls.save_changes()
     
     @classmethod
-    def get_system_select_grid_img_y_offset(cls, text_height):
+    def get_grid_multi_row_img_y_offset(cls, text_height):
         default_height = -25
         if(0 != text_height):
             default_height = -1 * text_height        
 
-        return cls._data.get("systemSelectGridImageYOffset", default_height)
+        return default_height + cls._data.get("gridMultiRowImageYOffset", 0)
+
+    @classmethod
+    def get_grid_multi_row_img_y_offset_raw(cls):
+        return cls._data.get("gridMultiRowImageYOffset", 0)
+
+    @classmethod
+    def set_grid_multi_row_img_y_offset(cls, value):
+        cls._data["gridMultiRowImageYOffset"] = value
+        cls.save_changes()
 
     @classmethod
     def get_app_icon(cls, app_name):
@@ -1119,12 +1373,24 @@ class Theme():
     @classmethod
     def get_full_screen_grid_game_menu_resize_type(cls):
         view_type_str = cls._data.get("fullScreenGridGameMenuResizeType", "ZOOM")
-        return getattr(ResizeType, view_type_str, ResizeType.ZOOM)
+        return getattr(ResizeType, view_type_str, ResizeType.ZOOM)    
 
     @classmethod
     def set_full_screen_grid_game_menu_resize_type(cls, resize_type):
         cls._data["fullScreenGridGameMenuResizeType"] = resize_type.name
         cls.save_changes()
+
+    @classmethod
+    def get_full_screen_grid_system_select_menu_resize_type(cls):
+        view_type_str = cls._data.get("fullScreenGridSystemSelectMenuResizeType", "ZOOM")
+        return getattr(ResizeType, view_type_str, ResizeType.ZOOM)
+
+
+    @classmethod
+    def set_full_screen_grid_system_select_menu_resize_type(cls, resize_type):
+        cls._data["fullScreenGridSystemSelectMenuResizeType"] = resize_type.name
+        cls.save_changes()
+
 
     @classmethod
     def get_set_top_bar_text_to_game_selection_for_game_switcher(cls):
@@ -1163,6 +1429,24 @@ class Theme():
         cls.save_changes()
 
     @classmethod
+    def display_volume_numbers(cls):
+        return cls._data.get("displayVolumeNumbers", False)
+        
+    @classmethod
+    def set_display_volume_numbers(cls, value):
+        cls._data["displayVolumeNumbers"] = value
+        cls.save_changes()
+
+    @classmethod
+    def show_bottom_bar_buttons(cls):
+        return cls._data.get("showBottomBarButtons", True)
+        
+    @classmethod
+    def set_show_bottom_bar_buttons(cls, value):
+        cls._data["showBottomBarButtons"] = value
+        cls.save_changes()
+
+    @classmethod
     def get_main_menu_title(cls):
         return cls._data.get("mainMenuTitle", PyUiConfig.get_main_menu_title())
     
@@ -1171,3 +1455,84 @@ class Theme():
         cls._data["mainMenuTitle"] = value
         cls.save_changes()
 
+    @classmethod
+    def show_clock(cls):
+        return cls._data.get("showClock", True)
+
+    @classmethod
+    def set_show_clock(cls, value):
+        cls._data["showClock"] = value
+        cls.save_changes()
+
+    @classmethod
+    def single_row_grid_text_y_offset(cls):
+        return cls._data.get("singleRowGridTextYOffset", 0)
+
+    @classmethod
+    def set_single_row_grid_text_y_offset(cls, value):
+        cls._data["singleRowGridTextYOffset"] = value
+        cls.save_changes()
+
+    @classmethod
+    def multi_row_grid_text_y_offset(cls):
+        return cls._data.get("multiRowGridTextYOffset", 0)
+
+    @classmethod
+    def set_multi_row_grid_text_y_offset(cls, value):
+        cls._data["multiRowGridTextYOffset"] = value
+        cls.save_changes()
+
+    @classmethod
+    def check_and_create_asset(cls, output_image, input_image, target_width, target_height, target_alpha_channel):
+        if(not os.path.exists(output_image)):
+            PyUiLogger.get_logger().info(f"Creating resized {output_image} from {input_image}")      
+            Device.get_image_utils().resize_image(input_image,
+                                                  output_image,
+                                                  target_width,
+                                                  target_height,
+                                                  preserve_aspect_ratio=False,
+                                                  target_alpha_channel=target_alpha_channel)
+
+    @classmethod
+    def check_and_create_ra_assets(cls):  
+        cls.check_and_create_asset( cls._resolve_png_path(cls._skin_folder,["menu-6line-bg.png"]),
+                                    cls._resolve_png_path(cls._skin_folder,["background.png"]),
+                                    320,
+                                    420,
+                                    0.75)
+
+        cls.check_and_create_asset( cls._resolve_png_path(cls._skin_folder,["list-item-select-bg-short.png"]),
+                                    cls._resolve_png_path(cls._skin_folder,["bg-list-s.png"]),
+                                    320,
+                                    60,
+                                    1.00)
+
+
+
+    @classmethod
+    def get_cfw_default_icon(cls, icon_name):
+        cfw_theme = PyUiConfig.get("theme")
+        PyUiLogger.get_logger().debug(f"Getting CFW default icon '{icon_name}' for theme '{cfw_theme}'")
+        if(cfw_theme is None):
+            PyUiLogger.get_logger().debug(f"CFW theme is None, cannot get icon")
+            return None
+        else:
+            cfw_theme_path = os.path.join(PyUiConfig.get("themeDir"),cfw_theme)
+            PyUiLogger.get_logger().debug(f"cfw_theme_path is '{cfw_theme_path}'")
+            path = os.path.join(cfw_theme_path, 
+                                cls._get_asset_folder(cfw_theme_path, "icons", 
+                                                      Device.screen_width(), 
+                                                      Device.screen_height()), 
+                                "app",icon_name)
+
+            PyUiLogger.get_logger().debug(f"icon path resolved to '{path}'")
+            if os.path.exists(path):
+                return path
+
+            # Fallback only makes sense for .qoi assets/icons
+            if path.endswith(".qoi"):
+                png_path = path[:-4] + ".png"
+                if os.path.exists(png_path):
+                    return png_path
+
+            return None

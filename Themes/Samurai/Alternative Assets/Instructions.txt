@@ -1,0 +1,7 @@
+Replace the assets in the:
+
+"Themes/Samurai/skin_750x560" folder with their corresponding assets from the pack you choose.
+
+If you are prompted to overwrite the files, select yes to all.
+
+Note "Pack 3, and Original Assets" requires all eleven assets to be replaced.

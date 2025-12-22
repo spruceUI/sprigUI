@@ -5,7 +5,6 @@ from apps.pyui_app import PyUiAppConfig
 from controller.controller import Controller
 from controller.controller_inputs import ControllerInput
 from devices.device import Device
-from devices.miyoo.system_config import SystemConfig
 from display.display import Display
 from menus.app.app_menu_popup import AppMenuPopup
 from menus.app.hidden_apps_manager import AppsManager
@@ -60,19 +59,25 @@ class AppMenu:
         Display.reinitialize()
         
     def append_pyui_apps(self, app_list):
-        boxart_scraper_config = PyUiAppConfig("Boxart Scraper")
-        
-        app_list.append(
-                GridOrListEntry(
-                    primary_text=boxart_scraper_config.get_label() + "(Hidden)" if AppsManager.is_hidden(boxart_scraper_config) else boxart_scraper_config.get_label(),
-                    image_path=None,
-                    image_path_selected=None,
-                    description="Scrape game boxart",
-                    icon=self.get_icon(None,"scraper.png"),
-                    extra_data=boxart_scraper_config,
-                    value=BoxArtScraper().scrape_boxart
+        system_config = Device.get_system_config()
+        if(not system_config.simple_mode_enabled()):
+            boxart_scraper_config = PyUiAppConfig("Boxart Scraper")
+            hidden = AppsManager.is_hidden(boxart_scraper_config) and not self.show_all_apps
+            if(not hidden):
+                icon = self.get_icon(None,"scraper.png")
+                if(icon is None):
+                    icon = Theme.get_cfw_default_icon("scraper.png")
+                app_list.append(
+                        GridOrListEntry(
+                            primary_text=boxart_scraper_config.get_label() + "(Hidden)" if AppsManager.is_hidden(boxart_scraper_config) else boxart_scraper_config.get_label(),
+                            image_path=None,
+                            image_path_selected=None,
+                            description="Scrape game boxart",
+                            icon=icon,
+                            extra_data=boxart_scraper_config,
+                            value=BoxArtScraper().scrape_boxart
+                        )
                 )
-        )
                 
     def run_app_selection(self) :
         running = True
@@ -134,8 +139,7 @@ class AppMenu:
                     selected.get_selection().get_value()()
                 elif(ControllerInput.B == selected.get_input()):
                     self.save_app_selection(selected)
-                    if(not Theme.skip_main_menu()):
-                        running = False
+                    running = False
                 elif(ControllerInput.MENU == selected.get_input()):
                     self.save_app_selection(selected)
                     if(selected.get_selection()):

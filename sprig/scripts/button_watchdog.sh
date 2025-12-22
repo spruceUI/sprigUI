@@ -24,8 +24,8 @@ is_mid_scrape() {
     if pgrep -f "App/BoxartScraper" >/dev/null 2>&1; then return 0; else return 1; fi
 }
 
-is_mid_nursery_download() {
-    if pgrep -f "App/GameNursery" >/dev/null 2>&1 && pgrep -f "wget" >/dev/null 2>&1; then return 0; else return 1; fi
+is_mid_download() {
+    if pgrep -f "App/" >/dev/null 2>&1 && pgrep -f "wget" >/dev/null 2>&1; then return 0; else return 1; fi
 }
 
 reset_poweroff_timer() {
@@ -47,7 +47,7 @@ monitor_poweroff_timer() {
         time_left="$(cat "$IDLE_TIMER_FILE")"
         if [ "$POWEROFF_TIME" = "Off" ]; then
             sleep 5
-        elif is_mid_scrape || is_mid_nursery_download; then
+        elif is_mid_scrape || is_mid_download; then
             log_message "Currently downloading content. Idle timer will be paused an additional 30 seconds."
             sleep 30
         elif is_mid_update; then
@@ -157,9 +157,7 @@ evtest "$DEVICE" 2>/dev/null | while read -r line; do
 
                 if pgrep "retroarch" >/dev/null; then
                     log_message "Triggering RA in game menu"
-                    send_event 42:1 97:1
-                    sleep 0.2
-                    send_event 42:0 97:0
+                    ra_network_command MENU_TOGGLE
                 fi
             fi
             ;;

@@ -5,6 +5,7 @@ import subprocess
 import threading
 import time
 from audio.audio_player_delegate_sdl2 import AudioPlayerDelegateSdl2
+from audio.audio_player_none import AudioPlayerNone
 from controller.controller_inputs import ControllerInput
 from controller.key_state import KeyState
 from controller.key_watcher import KeyWatcher
@@ -19,7 +20,6 @@ from devices.utils.file_watcher import FileWatcher
 from devices.utils.process_runner import ProcessRunner
 from display.display import Display
 from menus.games.utils.rom_info import RomInfo
-import sdl2
 from utils import throttle
 from utils.config_copier import ConfigCopier
 from utils.ffmpeg_image_utils import FfmpegImageUtils
@@ -33,17 +33,17 @@ class MiyooA30(MiyooDevice):
 
     def __init__(self, device_name, main_ui_mode):
         self.device_name = device_name
-        self.system_config = None
+        self.audio_player = AudioPlayerDelegateSdl2()
+        script_dir = Path(__file__).resolve().parent
+        source = script_dir / 'a30-system.json'
+        ConfigCopier.ensure_config("/mnt/SDCARD/Saves/a30-system.json", source)
+        self.system_config = SystemConfig("/mnt/SDCARD/Saves/a30-system.json")
+
         if(main_ui_mode):
-            script_dir = Path(__file__).resolve().parent
-            source = script_dir / 'a30-system.json'
-            ConfigCopier.ensure_config("/mnt/SDCARD/Saves/a30-system.json", source)
-            self.system_config = SystemConfig("/mnt/SDCARD/Saves/a30-system.json")
             self.miyoo_games_file_parser = MiyooGamesFileParser()        
             self.ensure_wpa_supplicant_conf()
             miyoo_stock_json_file = script_dir.parent / 'stock/a30.json'
             ConfigCopier.ensure_config(MiyooA30.MIYOO_STOCK_CONFIG_LOCATION, miyoo_stock_json_file)
-            self.audio_player = AudioPlayerDelegateSdl2()
 
             threading.Thread(target=self.monitor_wifi, daemon=True).start()
             #self.hardware_poller = MiyooFlipPoller(self)
@@ -76,8 +76,9 @@ class MiyooA30(MiyooDevice):
             self.config_watcher_thread, self.config_watcher_thread_stop_event = FileWatcher().start_file_watcher(
                 "/mnt/SDCARD/Saves/a30-system.json", self.on_system_config_changed, interval=1.0)
 
-        if(self.system_config is None):
-            self.system_config = SystemConfig("/mnt/SDCARD/Saves/a30-system.json")
+    @property
+    def power_off_cmd(self):
+        return "poweroff"
 
 
     def startup_init(self, include_wifi=True):
