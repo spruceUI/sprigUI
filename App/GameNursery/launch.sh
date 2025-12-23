@@ -54,7 +54,7 @@ get_latest_jsons() {
     cd "$JSON_DIR"
     rm -r ./* 2>/dev/null
 
-    if ! download_and_display_progress "$JSON_URL" "$JSON_DIR/INFO.7z" "Game Nursery Info Files"; then
+    if ! wget --quiet --no-check-certificate --max-redirect=20 -O "$JSON_DIR/INFO.7z" "$JSON_URL"; then
         log_and_display_message "Unable to download latest info files from repository. Please try again later."
         sleep 3
         exit 1
