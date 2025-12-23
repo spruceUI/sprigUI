@@ -3,6 +3,6 @@
   "icon": "bootlogo.png",
   "launch": "launch.sh",
   "description": "Swap the boot logo at startup",
-  "devices": ["MIYOO_MINI_V4", "MIYOO_MINI_FLIP"],
+  "devices": ["SPRIG_MIYOO_MINI_PLUS", "SPRIG_MIYOO_MINI_FLIP"],
   "hideInSimpleMode": true
 }
