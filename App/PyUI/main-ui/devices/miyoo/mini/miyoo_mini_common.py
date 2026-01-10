@@ -71,6 +71,9 @@ class MiyooMiniCommon(MiyooDevice):
             self._set_brightness_to_config()
             self.ensure_wpa_supplicant_conf()
             self.init_gpio()
+            # Initialize USB audio monitoring
+            self.usb_audio_status = None
+            threading.Thread(target=self.monitor_usb_audio, daemon=True).start()
             self.mainui_volume = None
             self.mainui_config_thread, self.mainui_config_thread_stop_event = FileWatcher().start_file_watcher(
                 "/appconfigs/system.json", self.on_mainui_config_change, interval=0.2)
@@ -113,6 +116,8 @@ class MiyooMiniCommon(MiyooDevice):
             self.start_wifi_services()
         self.on_mainui_config_change()
         self.apply_timezone(self.system_config.get_timezone())
+        # Set initial USB audio state
+        self.update_usb_audio_output()
 
     def build_controller_interface(self):
         key_mappings = {}  
@@ -163,7 +168,36 @@ class MiyooMiniCommon(MiyooDevice):
 
     def init_gpio(self):
         #self.init_sleep_gpio()
-        pass
+        # Export GPIO44 and GPIO45 for USB audio adapter detection and speaker control
+        # GPIO45: Input - detects USB-C audio adapter presence
+        # GPIO44: Output - controls speaker muting (0=USB audio, 1=internal speaker)
+        try:
+            # Export GPIO45 for USB audio detection
+            if not os.path.exists("/sys/class/gpio/gpio45"):
+                with open("/sys/class/gpio/export", "w") as f:
+                    f.write("45")
+                # Set as input
+                with open("/sys/class/gpio/gpio45/direction", "w") as f:
+                    f.write("in")
+                # Set edge detection for rising and falling edges
+                with open("/sys/class/gpio/gpio45/edge", "w") as f:
+                    f.write("both")
+        except Exception as e:
+            PyUiLogger.get_logger().warning(f"Unable to export GPIO45 for USB audio detection: {e}")
+        
+        try:
+            # Export GPIO44 for speaker control
+            if not os.path.exists("/sys/class/gpio/gpio44"):
+                with open("/sys/class/gpio/export", "w") as f:
+                    f.write("44")
+                # Set as output
+                with open("/sys/class/gpio/gpio44/direction", "w") as f:
+                    f.write("out")
+                # Initialize to internal speaker (1)
+                with open("/sys/class/gpio/gpio44/value", "w") as f:
+                    f.write("1")
+        except Exception as e:
+            PyUiLogger.get_logger().warning(f"Unable to export GPIO44 for speaker control: {e}")
 
     def init_sleep_gpio(self):
         try:
@@ -181,6 +215,34 @@ class MiyooMiniCommon(MiyooDevice):
                 return "0" == value 
         except (FileNotFoundError, IOError) as e:
             return False
+    
+    def is_usb_audio_connected(self):
+        """Check if USB-C audio adapter is connected via GPIO45.
+        
+        Returns:
+            bool: True if USB audio adapter is connected (GPIO45 = 0), False otherwise
+        """
+        try:
+            with open("/sys/class/gpio/gpio45/value", "r") as f:
+                value = f.read().strip()
+                # GPIO45 reads 0 when USB audio adapter is connected
+                return "0" == value
+        except (FileNotFoundError, IOError) as e:
+            return False
+    
+    def set_speaker_output(self, use_internal_speaker: bool):
+        """Control the internal speaker via GPIO44.
+        
+        Args:
+            use_internal_speaker: True to enable internal speaker, False to mute it (USB audio)
+        """
+        try:
+            gpio_value = "1" if use_internal_speaker else "0"
+            with open("/sys/class/gpio/gpio44/value", "w") as f:
+                f.write(gpio_value)
+            PyUiLogger.get_logger().debug(f"Set speaker output: {'enabled' if use_internal_speaker else 'muted (USB audio)'}")
+        except (FileNotFoundError, IOError) as e:
+            PyUiLogger.get_logger().error(f"Failed to control speaker output via GPIO44: {e}")
         
     def is_lid_closed(self):
         return False
@@ -480,6 +542,40 @@ class MiyooMiniCommon(MiyooDevice):
     def apply_timezone(self, timezone):
         ProcessRunner.run(["rm", "-f", "/tmp/localtime"])
         ProcessRunner.run(["ln", "-s", "/mnt/SDCARD/miyoo285/zoneinfo/"+timezone ,"/tmp/localtime"])
+
+    def update_usb_audio_output(self):
+        """Update speaker output based on USB audio adapter status."""
+        is_usb_audio = self.is_usb_audio_connected()
+        # When USB audio is connected, mute the internal speaker
+        self.set_speaker_output(not is_usb_audio)
+        # Set audiofix flag in shared memory
+        self.miyoo_mini_flip_shared_memory_writer.set_audiofix(0 if is_usb_audio else 1)
+        return is_usb_audio
+
+    def monitor_usb_audio(self):
+        """Continuously monitor USB audio adapter status and update speaker accordingly.
+        
+        This runs in a background thread and detects when a USB-C audio adapter
+        is plugged in or removed, automatically muting/unmuting the internal speaker.
+        """
+        PyUiLogger.get_logger().info("Starting USB audio monitoring for Miyoo Mini Flip")
+        
+        while True:
+            try:
+                new_usb_audio_status = self.is_usb_audio_connected()
+                
+                # Only update if status changed
+                if new_usb_audio_status != self.usb_audio_status:
+                    self.usb_audio_status = new_usb_audio_status
+                    self.update_usb_audio_output()
+                    
+                    status_msg = "USB audio adapter connected - internal speaker muted" if new_usb_audio_status else "USB audio adapter disconnected - internal speaker enabled"
+                    PyUiLogger.get_logger().info(status_msg)
+                
+            except Exception as e:
+                PyUiLogger.get_logger().error(f"Error in USB audio monitoring: {e}")
+            
+            time.sleep(1)  # Check every second
 
     def supports_caching_rom_lists(self):
         return True #Is there enough RAM
