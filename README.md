@@ -2,6 +2,11 @@
 
 _a twig of spruce_
 
+**Note: development of sprigUI has been discontinued.**
+[spruceOS](https://github.com/spruceUI/spruceOS) itself now supports the Miyoo Mini Flip and Miyoo Mini Plus. If you are happy with your device on sprigUI as it is today - great! No need to swap to spruce. If you would like to see continued updates, however, spruce is the way. Like something better about sprig and would like to see it implemented in spruce? Open an issue on the spruceOS GitHub page to request it!
+
+Thanks for all your support!
+
 ![Screenshot_20251016-210046](https://github.com/user-attachments/assets/12f9a825-7b78-4cb9-91d5-f15bceb17431)
 
 ## What is sprigUI?
