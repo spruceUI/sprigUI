@@ -25,5 +25,34 @@ sync
 if is_mini_og; then
     reboot          # OG Mini hangs if you use the poweroff command
 else
-    poweroff
+    # Storage-only tail for Wi-Fi Miyoo models. Keep every stock SprigUI
+    # autoresume, signal, wait, and sync operation above unchanged. Closing
+    # inherited standard descriptors prevents an SD-backed caller log from
+    # keeping the FAT filesystem writable during the remount.
+    exec </dev/null >/dev/null 2>&1
+    PATH=/usr/sbin:/usr/bin:/sbin:/bin
+    export PATH
+
+    # A successful vfat RW-to-RO remount performs the same FAT clean-state
+    # transition as unmount, while keeping SprigUI's bind mounts readable.
+    # Verify the exact base mount after the single attempt.  On failure, use
+    # the same firmware poweroff action as stock rather than leaving a frozen
+    # screen that would force a dirtier hardware cut.
+    sd_ro_count=0
+    if mount -o remount,ro /dev/mmcblk0p1 /mnt/SDCARD; then
+        while read -r sd_device sd_mount sd_type sd_options sd_rest; do
+            if [ "$sd_device" = "/dev/mmcblk0p1" ] && \
+                    [ "$sd_mount" = "/mnt/SDCARD" ] && \
+                    [ "$sd_type" = "vfat" ]; then
+                case ",$sd_options," in
+                    *,ro,*) sd_ro_count=$((sd_ro_count + 1)) ;;
+                esac
+            fi
+        done < /proc/mounts
+    fi
+    if [ "$sd_ro_count" -ne 1 ]; then
+        /sbin/poweroff
+        exit $?
+    fi
+    /sbin/poweroff
 fi
