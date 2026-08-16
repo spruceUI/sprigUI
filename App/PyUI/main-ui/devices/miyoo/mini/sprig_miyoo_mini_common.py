@@ -63,7 +63,7 @@ class SprigMiyooMiniCommon(MiyooMiniCommon):
                 # Fallback to shell script if hardware access fails
                 subprocess.run([
                     "/bin/sh", "-c",
-                    f". /mnt/SDCARD/sprig/helperFunctions.sh && set_backlight {backlight}"
+                    f". /mnt/SDCARD/sprig/scripts/helperFunctions.sh && set_backlight {backlight}"
                 ], check=False)
             
             PyUiLogger.get_logger().info(f"Sprig backlight set to {backlight} (raw:{backlight_raw})")
@@ -80,17 +80,17 @@ class SprigMiyooMiniCommon(MiyooMiniCommon):
         return self.system_config.get_backlight()
 
     def change_volume(self, amount):
-        """Override to handle Sprig's 0-50 volume range (displays as 0-10)"""
+        """Adjust PyUI's 0-100 volume range in five-point (one Sprig level) steps."""
         from display.display import Display
         
-        # Get current volume (0-50 range for display as 0-10)
+        # SystemConfig maps Sprig's stored 0-20 levels to PyUI's 0-100 range.
         volume = self.get_volume() + amount
         
-        # Clamp to 0-50 for Sprig
+        # The settings row and top bar divide this value by five for display.
         if volume < 0:
             volume = 0
-        elif volume > 50:
-            volume = 50
+        elif volume > 100:
+            volume = 100
         
         self._set_volume(volume)
         
@@ -100,11 +100,11 @@ class SprigMiyooMiniCommon(MiyooMiniCommon):
     def _set_volume(self, volume: int) -> int:
         """Set volume using direct hardware control for instant feedback"""
         try:
-            # Clamp volume between 0 and 50 (displays as 0-10)
-            volume = max(0, min(50, volume))
+            # PyUI uses 0-100; Sprig stores and applies 21 levels from 0-20.
+            volume = max(0, min(100, volume))
             
-            # Scale from 0-50 to 0-20 for hardware
-            volume_hw = int(volume * 20 / 50)  # Maps 0-50 to 0-20
+            # PyUI changes volume in multiples of five, so this is an exact map.
+            volume_hw = volume // 5
             
             # Hardware volume mapping (same as helperFunctions.sh)
             volume_map = {
@@ -130,7 +130,7 @@ class SprigMiyooMiniCommon(MiyooMiniCommon):
                 # Fallback if hw access fails
                 subprocess.run([
                     "/bin/sh", "-c",
-                    f". /mnt/SDCARD/sprig/helperFunctions.sh && set_volume {volume_hw}"
+                    f". /mnt/SDCARD/sprig/scripts/helperFunctions.sh && set_volume {volume_hw}"
                 ], check=False)
             
             # Update system config
